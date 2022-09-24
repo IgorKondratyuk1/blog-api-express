@@ -1,5 +1,14 @@
-import {body} from "express-validator";
+import {body, CustomValidator} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {blogsRepository} from "../repositories/blogs-repository";
+
+const isValidBlogId: CustomValidator = value => {
+    const blog = blogsRepository.findBlogById(value);
+
+    if (!blog) return Promise.reject("Invalid blogId");
+
+    return Promise.resolve();
+};
 
 export const postValidationSchema = [
     body("title")
@@ -24,6 +33,7 @@ export const postValidationSchema = [
         .exists({checkFalsy: true}).withMessage("Field 'blogId' is not exist")
         .isString().withMessage("Field 'blogId' is not string")
         .notEmpty({ignore_whitespace: true}).withMessage("Field 'blogId' is empty")
-        .trim(),
+        .trim()
+        .custom(isValidBlogId),
     inputValidationMiddleware
 ];
