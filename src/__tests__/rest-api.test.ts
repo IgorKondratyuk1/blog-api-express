@@ -9,29 +9,31 @@ import {UpdateBlogModel} from "../models/blog/update-blog-model";
 import {UpdatePostModel} from "../models/post/update-post-model";
 
 
+// BLOGS
 describe("blogs", () => {
     // GET
-    it("GET:blogs should return 3 posts", async () => {
-        const result = await request(app)
-            .get("/api/blogs");
-
-        expect(result.status).toBe(200);
-        expect(result.body.length).toBe(3);
-    });
-
-    it("GET:blogs should return post with id 1", async () => {
-        const result = await request(app)
-            .get("/api/blogs/1");
-
-        expect(result.status).toBe(200);
-
-        const expectedObj: BlogViewModel = {
-            id: "1",
-            name: "first-blog",
-            youtubeUrl: "url-1"
-        };
-        expect(result.body).toEqual(expectedObj);
-    });
+    // it("GET:blogs should return 3 posts", async () => {
+    //     const result = await request(app)
+    //         .get("/api/blogs");
+    //
+    //     expect(result.status).toBe(200);
+    //     expect(result.body.length).toBe(3);
+    // });
+    //
+    // it("GET:blogs should return post with id 1", async () => {
+    //     const result = await request(app)
+    //         .get("/api/blogs/1");
+    //
+    //     expect(result.status).toBe(200);
+    //
+    //     const expectedObj: BlogViewModel = {
+    //         id: "1",
+    //         name: "first-blog",
+    //         youtubeUrl: "url-1",
+    //         createdAt: expect.any(String)
+    //     };
+    //     expect(result.body).toEqual(expectedObj);
+    // });
 
     // POST
     let firstBlog: any = null;
@@ -49,10 +51,11 @@ describe("blogs", () => {
         firstBlog = result.body;
 
         expect(result.status).toBe(201);
-        const expectedObj = {
+        const expectedObj: BlogViewModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl
+            youtubeUrl: data.youtubeUrl,
+            createdAt: expect.any(String)
         };
         expect(result.body).toEqual(    expectedObj);
     });
@@ -82,7 +85,8 @@ describe("blogs", () => {
         const expecedObj: BlogViewModel = {
             id: expect.any(String),
             name: data.name.trim(),
-            youtubeUrl: data.youtubeUrl
+            youtubeUrl: data.youtubeUrl,
+            createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expecedObj);
     });
@@ -190,10 +194,11 @@ describe("blogs", () => {
             .get(`/api/blogs/${firstBlog?.id}`);
 
         expect(result.status).toBe(200);
-        const expectedObj = {
+        const expectedObj: BlogViewModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl
+            youtubeUrl: data.youtubeUrl,
+            createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);
     });
@@ -259,16 +264,18 @@ describe("blogs", () => {
             .expect(204);
     });
 
-    it("GET:blogs should be again returned 3 posts", async () => {
-        const result = await request(app)
-            .get("/api/blogs");
-
-        expect(result.status).toBe(200);
-        expect(result.body.length).toBe(3);
-        //console.log(result.body);
-    });
+    // it("GET:blogs should be again returned 3 posts", async () => {
+    //     const result = await request(app)
+    //         .get("/api/blogs");
+    //
+    //     expect(result.status).toBe(200);
+    //     expect(result.body.length).toBe(3);
+    //     //console.log(result.body);
+    // });
 });
 
+
+// POSTS
 describe("posts", () => {
    // GET
     it("GET: should return empty array", async () => {
@@ -301,7 +308,8 @@ describe("posts", () => {
             shortDescription: data.shortDescription,
             content: data.content,
             blogId: data.blogId,
-            blogName: expect.any(String)
+            blogName: expect.any(String),
+            createdAt: expect.any(String)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);
@@ -394,7 +402,8 @@ describe("posts", () => {
             shortDescription: data.shortDescription,
             content: data.content,
             blogId: data.blogId,
-            blogName: expect.any(String)
+            blogName: expect.any(String),
+            createdAt: expect.any(String)
         };
         expect(updatedPost.body).toEqual(expectedObj);
     });
@@ -490,7 +499,8 @@ describe("testing/delete", () => {
             shortDescription: data.shortDescription,
             content: data.content,
             blogId: data.blogId,
-            blogName: expect.any(String)
+            blogName: expect.any(String),
+            createdAt: expect.any(String)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);

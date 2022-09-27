@@ -1,59 +1,33 @@
 import {BlogType} from "../types/types";
-
-export let blogs: BlogType[] = [
-    {
-        "id": "1",
-        "name": "first-blog",
-        "youtubeUrl": "url-1"
-    },
-    {
-        "id": "2",
-        "name": "second-blog",
-        "youtubeUrl": "url-2"
-    },
-    {
-        "id": "3",
-        "name": "third-blog",
-        "youtubeUrl": "url-3"
-    }
-];
+import {blogsCollection} from "./db";
 
 export const blogsRepository = {
-    findAllBlogs() {
-        return blogs;
+    async findAllBlogs(): Promise<BlogType[]> {
+        return blogsCollection.find({}).toArray();
     },
-    findBlogById(id: string) {
-        const foundedBlog = blogs.find(b => b.id === id);
-        return foundedBlog;
+    async findBlogById(id: string): Promise<BlogType | null> {
+        return blogsCollection.findOne({id: id});
     },
-    createBlog(name: string, youtubeUrl: string) {
-        const newBlog = {
+    async createBlog(name: string, youtubeUrl: string): Promise<BlogType> {
+        const newBlog: BlogType = {
             id: (+new Date()).toString(),
             name,
-            youtubeUrl
+            youtubeUrl,
+            createdAt: (new Date()).toISOString()
         }
 
-        blogs.push(newBlog);
+        await blogsCollection.insertOne(newBlog);
         return newBlog;
     },
-    updateBlog(id: string, name: string, youtubeUrl: string) {
-        let blog = blogs.find(p => p.id === id);
-        if(blog) {
-            blog.name = name;
-            blog.youtubeUrl = youtubeUrl;
-            return true;
-        } else {
-            return false;
-        }
+    async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
+        let result = await blogsCollection.updateOne({id: id}, { $set: { name, youtubeUrl }});
+        return result.matchedCount === 1;
     },
-    deleteBlog(id: string) {
-        for (let i = 0; i < blogs.length; i++) {
-            if (blogs[i].id === id) {
-                blogs.splice(i,1);
-                return true;
-            }
-        }
-
-        return false;
+    async deleteBlog(id: string): Promise<boolean> {
+        let result = await blogsCollection.deleteOne({id: id});
+        return result.deletedCount === 1;
+    },
+    async deleteAllBlogs() {
+        return blogsCollection.deleteMany({});
     }
 }

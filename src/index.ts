@@ -4,6 +4,7 @@ import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {errorsHandlingMiddleware} from "./middlewares/errors-handling-middleware";
 import {testingRouter} from "./routes/testing-router";
+import {connectToDB} from "./repositories/db";
 
 enum URL_ROUTES {
     blogs = "/api/blogs",
@@ -28,9 +29,14 @@ app.use(bodyParser.json());
 app.use(URL_ROUTES.blogs, blogsRouter);
 app.use(URL_ROUTES.posts, postsRouter);
 app.use(URL_ROUTES.testing, testingRouter);
-
 app.use(errorsHandlingMiddleware); // Error handling
 
-app.listen(port, () => {
-    console.log(`Server is running on ${port}`);
-});
+const startApp = async () => {
+    await connectToDB();
+
+    app.listen(port, () => {
+        console.log(`Server is running on ${port}`);
+    });
+}
+
+startApp();

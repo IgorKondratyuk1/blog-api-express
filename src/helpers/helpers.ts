@@ -6,7 +6,8 @@ export const getBlogViewModel = (dbBlog: BlogType): BlogViewModel => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
-        youtubeUrl: dbBlog.youtubeUrl
+        youtubeUrl: dbBlog.youtubeUrl,
+        createdAt: dbBlog.createdAt
     }
 }
 
@@ -17,6 +18,7 @@ export const getPostViewModel = (dbPost: PostType): PostViewModel => {
         shortDescription: dbPost.shortDescription,
         content: dbPost.content,
         blogId:	dbPost.blogId,
-        blogName: dbPost.blogName
+        blogName: dbPost.blogName,
+        createdAt: dbPost.createdAt
     }
 }

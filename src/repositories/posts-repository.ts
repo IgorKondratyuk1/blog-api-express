@@ -1,20 +1,17 @@
 import {PostType} from "../types/types";
-import {blogsRepository} from "./blogs-repository";
-
-export let posts: PostType[] = [];
+import {blogsCollection, postsCollection} from "./db";
 
 export const postsRepository = {
-    findAllPosts() {
-        return posts;
+    async findAllPosts(): Promise<PostType[]> {
+        return postsCollection.find({}).toArray();
     },
-    findPostById(id: string) {
-        const foundedPost = posts.find(p => p.id === id);
-        return foundedPost;
+    async findPostById(id: string): Promise<PostType | null> {
+        return postsCollection.findOne({id: id});
     },
-    createPost(title: string, shortDescription: string,
+    async createPost(title: string, shortDescription: string,
                content: string, blogId: string) {
 
-        const foundedBlog = blogsRepository.findBlogById(blogId);
+        const foundedBlog = await blogsCollection.findOne({id: blogId});
         if (!foundedBlog) {
             throw new Error("BlogId#'BlogId' is incorrect");
         }
@@ -25,40 +22,29 @@ export const postsRepository = {
             shortDescription,
             content,
             blogId,
-            blogName: foundedBlog.name
+            blogName: foundedBlog.name,
+            createdAt: (new Date()).toISOString()
         }
 
-        posts.push(newPost);
+        postsCollection.insertOne(newPost);
         return newPost;
-
     },
-    updatePost(id: string, title: string, shortDescription: string,
-               content: string, blogId: string) {
-        let post = posts.find(p => p.id === id);
+    async updatePost(id: string, title: string, shortDescription: string,
+               content: string, blogId: string): Promise<boolean> {
 
-        const foundedBlog = blogsRepository.findBlogById(blogId);
+        const foundedBlog = await blogsCollection.findOne({id: blogId});
         if (!foundedBlog) {
             throw new Error("BlogId#'BlogId' is incorrect");
         }
 
-        if(post) {
-            post.title = title;
-            post.shortDescription = shortDescription;
-            post.content = content;
-            post.blogId = blogId;
-            return true;
-        } else {
-            return false;
-        }
+        const result = await postsCollection.updateOne({id: id}, { $set: { title, shortDescription, content, blogId }});
+        return result.matchedCount === 1;
     },
-    deletePost(id: string) {
-        for (let i = 0; i < posts.length; i++) {
-            if (posts[i].id === id) {
-                posts.splice(i,1);
-                return true;
-            }
-        }
-
-        return false;
+    async deletePost(id: string): Promise<boolean> {
+        const result = await postsCollection.deleteOne({ id: id });
+        return result.deletedCount === 1;
+    },
+    async deleteAllPosts() {
+        return postsCollection.deleteMany({});
     }
 }

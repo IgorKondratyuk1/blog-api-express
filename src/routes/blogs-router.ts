@@ -1,8 +1,8 @@
 import {Request, Response, Router} from "express";
 import {blogsRepository} from "../repositories/blogs-repository";
-import {blogValidationSchema} from "../schemas/blog-schema";
+import {blogValidationSchema} from "../schemas/blog-validation-schema";
 import {BlogViewModel} from "../models/blog/blog-view-model";
-import {RequestWithBody, RequestWithBodyAndParams, RequestWithParams} from "../types/types";
+import {BlogType, RequestWithBody, RequestWithBodyAndParams, RequestWithParams} from "../types/types";
 import {CreateBlogModel} from "../models/blog/create-blog-model";
 import {UpdateBlogModel} from "../models/blog/update-blog-model";
 import {URIParamsBlogModel} from "../models/blog/uri-params-blog-model";
@@ -12,13 +12,13 @@ import {authenticationMiddleware} from "../middlewares/authentication-middleware
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", (req: Request, res: Response<BlogViewModel[]>) => {
-    const foundedBlogs = blogsRepository.findAllBlogs();
+blogsRouter.get("/", async (req: Request, res: Response<BlogViewModel[]>) => {
+    const foundedBlogs: BlogType[] = await blogsRepository.findAllBlogs();
     res.json(foundedBlogs.map(getBlogViewModel));
 });
 
-blogsRouter.get("/:id", (req: RequestWithParams<URIParamsBlogModel>, res: Response<BlogViewModel>) => {
-    const foundedBlog = blogsRepository.findBlogById(req.params.id);
+blogsRouter.get("/:id", async (req: RequestWithParams<URIParamsBlogModel>, res: Response<BlogViewModel>) => {
+    const foundedBlog: BlogType | null = await blogsRepository.findBlogById(req.params.id);
 
     if (foundedBlog) {
         res.json(getBlogViewModel(foundedBlog));
@@ -30,8 +30,8 @@ blogsRouter.get("/:id", (req: RequestWithParams<URIParamsBlogModel>, res: Respon
 blogsRouter.post("/",
     authenticationMiddleware,
     blogValidationSchema,
-    (req: RequestWithBody<CreateBlogModel>, res: Response<BlogViewModel>) => {
-    const createdBlog = blogsRepository.createBlog(req.body.name, req.body.youtubeUrl);
+    async (req: RequestWithBody<CreateBlogModel>, res: Response<BlogViewModel>) => {
+    const createdBlog: BlogType = await blogsRepository.createBlog(req.body.name, req.body.youtubeUrl);
 
     res.status(HTTP_STATUSES.CREATED_201)
         .json(getBlogViewModel((createdBlog)));
@@ -40,8 +40,8 @@ blogsRouter.post("/",
 blogsRouter.put("/:id",
     authenticationMiddleware,
     blogValidationSchema,
-    (req: RequestWithBodyAndParams<URIParamsBlogModel, UpdateBlogModel>, res: Response) => {
-    const isBlogUpdated = blogsRepository.updateBlog(req.params.id, req.body.name, req.body.youtubeUrl);
+    async (req: RequestWithBodyAndParams<URIParamsBlogModel, UpdateBlogModel>, res: Response) => {
+    const isBlogUpdated = await blogsRepository.updateBlog(req.params.id, req.body.name, req.body.youtubeUrl);
 
     if(isBlogUpdated) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
@@ -52,8 +52,8 @@ blogsRouter.put("/:id",
 
 blogsRouter.delete("/:id",
     authenticationMiddleware,
-    (req: RequestWithParams<URIParamsBlogModel>, res: Response) => {
-    const isBlogDeleted = blogsRepository.deleteBlog(req.params.id);
+    async (req: RequestWithParams<URIParamsBlogModel>, res: Response) => {
+    const isBlogDeleted = await blogsRepository.deleteBlog(req.params.id);
 
     if(isBlogDeleted) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

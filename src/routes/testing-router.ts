@@ -1,20 +1,12 @@
 import {Request, Response, Router} from "express";
-import {blogs} from "../repositories/blogs-repository";
-import {posts} from "../repositories/posts-repository";
 import {HTTP_STATUSES} from "../index";
+import {blogsRepository} from "../repositories/blogs-repository";
+import {postsRepository} from "../repositories/posts-repository";
 
 export const testingRouter = Router();
 
-testingRouter.delete("/all-data", (req: Request, res: Response) => {
-    const arrBlogsLength = blogs.length;
-    for(let i = 0; i < arrBlogsLength; i++) {
-        blogs.pop();
-    }
-
-    const arrPostsLength = posts.length;
-    for(let i = 0; i < arrPostsLength; i++) {
-        posts.pop();
-    }
-
+testingRouter.delete("/all-data", async (req: Request, res: Response) => {
+    await blogsRepository.deleteAllBlogs();
+    await postsRepository.deleteAllPosts();
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
