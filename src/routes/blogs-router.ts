@@ -120,7 +120,7 @@ blogsRouter.get("/:id/posts",
         return;
     }
 
-    const foundedPostsOfBlog: Paginator<ViewPostModel> = await postsQueryRepository.findBlogPosts(filters, req.params.id);
+    const foundedPostsOfBlog: Paginator<ViewPostModel> = await postsQueryRepository.findPostOfBlog(filters, req.params.id);
     res.json(foundedPostsOfBlog);
 });
 
