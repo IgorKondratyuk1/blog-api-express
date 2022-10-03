@@ -25,6 +25,7 @@ import {postsQueryRepository} from "../repositories/posts/query-post-repository"
 import {postsService} from "../domain/posts-service";
 import {CreatePostofBlogModel} from "../models/post/create-post-of-blog";
 import {queryValidationSchema} from "../schemas/query/query-validation-schema";
+import {postOfBlogValidationSchema} from "../schemas/create/post-of-blog-validation-schema";
 
 
 export const blogsRouter = Router();
@@ -123,8 +124,10 @@ blogsRouter.get("/:id/posts",
     res.json(foundedPostsOfBlog);
 });
 
+// TODO validate body
 blogsRouter.post("/:id/posts",
     authenticationMiddleware,
+    postOfBlogValidationSchema,
     async (req: RequestWithParamsAndBody<URIParamsBlogModel, CreatePostofBlogModel>, res: Response<ViewPostModel>) => {
     const foundedBlog: BlogType | null = await blogsQueryRepository.findBlogById(req.params.id);
 
@@ -134,5 +137,6 @@ blogsRouter.post("/:id/posts",
     }
 
     const createdPostOfBlog: PostType = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.id);
-    res.json(getPostViewModel(createdPostOfBlog));
+    res.status(HTTP_STATUSES.CREATED_201)
+        .json(getPostViewModel(createdPostOfBlog));
 });

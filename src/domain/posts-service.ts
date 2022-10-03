@@ -38,6 +38,6 @@ export const postsService = {
         return postsRepository.deletePost(id);
     },
     async deleteAllPosts() {
-        return blogsRepository.deleteAllBlogs();
+        return postsRepository.deleteAllPosts();
     }
 }
