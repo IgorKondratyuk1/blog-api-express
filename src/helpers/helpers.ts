@@ -1,8 +1,8 @@
-import {BlogViewModel} from "../models/blog/blog-view-model";
+import {ViewBlogModel} from "../models/blog/view-blog-model";
 import {BlogType, PostType} from "../types/types";
-import {PostViewModel} from "../models/post/post-view-model";
+import {ViewPostModel} from "../models/post/view-post-model";
 
-export const getBlogViewModel = (dbBlog: BlogType): BlogViewModel => {
+export const getBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
@@ -11,7 +11,7 @@ export const getBlogViewModel = (dbBlog: BlogType): BlogViewModel => {
     }
 }
 
-export const getPostViewModel = (dbPost: PostType): PostViewModel => {
+export const getPostViewModel = (dbPost: PostType): ViewPostModel => {
     return {
         id:	dbPost.id,
         title: dbPost.title,

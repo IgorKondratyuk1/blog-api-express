@@ -1,6 +1,5 @@
-export type CreatePostModel = {
+export type CreatePostofBlogModel = {
     title: string
     shortDescription: string
     content: string
-    blogId: string
 }

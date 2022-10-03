@@ -1,13 +1,19 @@
 import request from 'supertest';
 import {app} from "../index";
 import {CreateBlogModel} from "../models/blog/create-blog-model";
-import {BlogViewModel} from "../models/blog/blog-view-model";
+import {ViewBlogModel} from "../models/blog/view-blog-model";
 import {APIErrorResult} from "../types/types";
-import {PostViewModel} from "../models/post/post-view-model";
+import {ViewPostModel} from "../models/post/view-post-model";
 import {CreatePostModel} from "../models/post/create-post-model";
 import {UpdateBlogModel} from "../models/blog/update-blog-model";
 import {UpdatePostModel} from "../models/post/update-post-model";
 
+/**
+ * TODO
+ * 1. Before all clear data
+ * 2. Check that db is empty
+ * 3. Make test for GET all items
+**/
 
 // BLOGS
 describe("blogs", () => {
@@ -26,7 +32,7 @@ describe("blogs", () => {
     //
     //     expect(result.status).toBe(200);
     //
-    //     const expectedObj: BlogViewModel = {
+    //     const expectedObj: ViewBlogModel = {
     //         id: "1",
     //         name: "first-blog",
     //         youtubeUrl: "url-1",
@@ -51,7 +57,7 @@ describe("blogs", () => {
         firstBlog = result.body;
 
         expect(result.status).toBe(201);
-        const expectedObj: BlogViewModel = {
+        const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
             youtubeUrl: data.youtubeUrl,
@@ -82,7 +88,7 @@ describe("blogs", () => {
         secondBlog = result.body;
 
         expect(result.status).toBe(201);
-        const expecedObj: BlogViewModel = {
+        const expecedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name.trim(),
             youtubeUrl: data.youtubeUrl,
@@ -194,7 +200,7 @@ describe("blogs", () => {
             .get(`/api/blogs/${firstBlog?.id}`);
 
         expect(result.status).toBe(200);
-        const expectedObj: BlogViewModel = {
+        const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
             youtubeUrl: data.youtubeUrl,
@@ -274,6 +280,11 @@ describe("blogs", () => {
     // });
 });
 
+/**
+ * TODO
+ * 1. Creation BLog before Post
+ * 2. Before all clear data
+**/
 
 // POSTS
 describe("posts", () => {
@@ -302,7 +313,7 @@ describe("posts", () => {
         firstPost = result.body;
         //console.log(firstPost);
 
-        const expectedObj: PostViewModel = {
+        const expectedObj: ViewPostModel = {
             id: expect.any(String),
             title: data.title,
             shortDescription: data.shortDescription,
@@ -396,7 +407,7 @@ describe("posts", () => {
         const updatedPost = await request(app)
             .get(`/api/posts/${firstPost.id}`);
 
-        const expectedObj: PostViewModel = {
+        const expectedObj: ViewPostModel = {
             id: expect.any(String),
             title: data.title,
             shortDescription: data.shortDescription,
@@ -493,7 +504,7 @@ describe("testing/delete", () => {
 
         const firstPost = result.body;
 
-        const expectedObj: PostViewModel = {
+        const expectedObj: ViewPostModel = {
             id: expect.any(String),
             title: data.title,
             shortDescription: data.shortDescription,

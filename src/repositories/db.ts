@@ -1,9 +1,9 @@
-import * as dotenv from 'dotenv';
-dotenv.config()
 import {MongoClient} from "mongodb";
 import {BlogType, PostType} from "../types/types";
+import {envConfig} from "../env-config";
 
-const mongoURL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017";
+console.log("Env: " + envConfig.MONGO_URL);
+const mongoURL: string = envConfig.MONGO_URL;
 export const mongoClient = new MongoClient(mongoURL);
 
 const db = mongoClient.db("network");
