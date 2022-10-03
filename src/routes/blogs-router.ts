@@ -18,7 +18,6 @@ import {HTTP_STATUSES} from "../index";
 import {authenticationMiddleware} from "../middlewares/authentication-middleware";
 import {QueryBlogModel} from "../models/blog/query-blog-model";
 import {blogsQueryRepository} from "../repositories/blogs/query-blog-repository";
-import {URIParamsPostModel} from "../models/post/uri-params-post-model";
 import {QueryPostModel} from "../models/post/query-post-model";
 import {ViewPostModel} from "../models/post/view-post-model";
 import {postsQueryRepository} from "../repositories/posts/query-post-repository";

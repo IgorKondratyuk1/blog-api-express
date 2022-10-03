@@ -15,8 +15,18 @@ import {UpdatePostModel} from "../models/post/update-post-model";
  * 3. Make test for GET all items
 **/
 
+
+
 // BLOGS
 describe("blogs", () => {
+
+    // beforeAll(() => {
+    //     await request(app)
+    //         .post("/api/blogs")
+    //         .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+    //         .send(data);
+    // });
+
     // GET
     // it("GET:blogs should return 3 posts", async () => {
     //     const result = await request(app)
