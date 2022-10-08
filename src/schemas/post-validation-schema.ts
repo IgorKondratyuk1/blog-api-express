@@ -1,9 +1,9 @@
 import {body, CustomValidator} from "express-validator";
-import {inputValidationMiddleware} from "../../middlewares/input-validation-middleware";
-import {blogsQueryRepository} from "../../repositories/blogs/query-blog-repository";
+import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {blogsRepository} from "../repositories/blogs/blogs-repository";
 
 const isValidBlogId: CustomValidator = async (value) => {
-    const blog = await blogsQueryRepository.findBlogById(value);
+    const blog = await blogsRepository.findBlogById(value);
 
     if (!blog) return Promise.reject("Invalid blogId");
 

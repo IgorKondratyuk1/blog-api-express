@@ -1,15 +1,7 @@
-import {BlogType, FilterType} from "../../types/types";
+import {BlogType} from "../../types/types";
 import {blogsCollection} from "../db";
 
 export const blogsRepository = {
-    async findAllBlogs(filters: FilterType): Promise<BlogType[]> {
-        const {pageSize, pageNumber, sortBy, sortDirection, searchNameTerm} = filters;
-        const skipValue = (pageNumber - 1) * pageSize;
-        const sortValue = sortDirection === "asc" ? 1 : -1;
-        const searchNameTermValue = searchNameTerm || "";
-
-        return blogsCollection.find({name: {$regex: searchNameTermValue}}).sort({[sortBy]: sortValue}).skip(skipValue).limit(pageSize).toArray();
-    },
     async findBlogById(id: string): Promise<BlogType | null> {
         return blogsCollection.findOne({id: id});
     },

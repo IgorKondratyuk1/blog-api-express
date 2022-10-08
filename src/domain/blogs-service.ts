@@ -1,10 +1,11 @@
+import { v4 as uuidv4 } from 'uuid';
 import {blogsRepository} from "../repositories/blogs/blogs-repository";
-import {BlogType, PostType} from "../types/types";
+import {BlogType} from "../types/types";
 
 export const blogsService = {
     async createBlog(name: string, youtubeUrl: string): Promise<BlogType> {
         const newBlog: BlogType = {
-            id: (+new Date()).toString(),
+            id: uuidv4(),
             name,
             youtubeUrl,
             createdAt: (new Date()).toISOString()

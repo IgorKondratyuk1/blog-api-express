@@ -1,23 +1,29 @@
 import {postsCollection} from "../db";
 import {FilterType, Paginator, PostType} from "../../types/types";
 import {ViewPostModel} from "../../models/post/view-post-model";
-import {getPostViewModel} from "../../helpers/helpers";
+import {getFilters, getPagesCount, getPostViewModel, getSkipValue, getSortValue} from "../../helpers/helpers";
+import {QueryPostModel} from "../../models/post/query-post-model";
+
 
 export const postsQueryRepository = {
-    async findPosts(filters: FilterType): Promise<Paginator<PostType>> {
-        const {pageSize, pageNumber, sortBy, sortDirection} = filters;
-        const skipValue = (pageNumber - 1) * pageSize;
-        const sortValue = sortDirection === "asc" ? 1 : -1;
-        //const searchNameTermValue = searchNameTerm || "";
+    async findPosts(queryObj: QueryPostModel): Promise<Paginator<PostType>> {
+        const filters: FilterType = getFilters(queryObj);
+        const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
+        const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
 
-        const foundedPosts: PostType[] = await postsCollection.find({}).sort({[sortBy]: sortValue}).skip(skipValue).limit(pageSize).toArray();
+        const foundedPosts: PostType[] = await postsCollection
+            .find({})
+            .sort({[filters.sortBy]: sortValue})
+            .skip(skipValue)
+            .limit(filters.pageSize).toArray();
         const postsViewModels: ViewPostModel[] = foundedPosts.map(getPostViewModel); // Get Output/View models of Posts via mapping
         const totalCount: number = await postsCollection.countDocuments();
+        const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
-            pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            pagesCount: pagesCount,
+            page: filters.pageNumber,
+            pageSize: filters.pageSize,
             totalCount: totalCount,
             items: postsViewModels
         };
@@ -25,22 +31,24 @@ export const postsQueryRepository = {
     async findPostById(id: string): Promise<PostType | null> {
         return postsCollection.findOne({id: id});
     },
+    async findPostOfBlog(blogId: string, queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
+        const filters: FilterType = getFilters(queryObj);
+        const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
+        const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
 
-    // TODO refactore
-    async findPostOfBlog(filters: FilterType, blogId: string): Promise<Paginator<ViewPostModel>> {
-        const {pageSize, pageNumber, sortBy, sortDirection} = filters;
-        const skipValue = (pageNumber - 1) * pageSize;
-        const sortValue = sortDirection === "asc" ? 1 : -1;
-        //const searchNameTermValue = searchNameTerm || "";
-
-        const foundedPosts: PostType[] = await postsCollection.find({blogId: blogId}).sort({[sortBy]: sortValue}).skip(skipValue).limit(pageSize).toArray();
-        const postsViewModels: ViewPostModel[] = foundedPosts.map(getPostViewModel); // Get Output/View models of Posts via mapping
+        const foundedPosts: PostType[] = await postsCollection
+            .find({blogId: blogId})
+            .sort({[filters.sortBy]: sortValue})
+            .skip(skipValue)
+            .limit(filters.pageSize).toArray();
+        const postsViewModels: ViewPostModel[] = foundedPosts.map(getPostViewModel); // Get View models of Posts via mapping
         const totalCount: number = await postsCollection.countDocuments({blogId: blogId});
+        const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
-            pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            pagesCount: pagesCount,
+            page: filters.pageNumber,
+            pageSize: filters.pageSize,
             totalCount: totalCount,
             items: postsViewModels
         };

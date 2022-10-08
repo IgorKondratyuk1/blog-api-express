@@ -5,8 +5,12 @@ import {postsRouter} from "./routes/posts-router";
 import {errorsHandlingMiddleware} from "./middlewares/errors-handling-middleware";
 import {testingRouter} from "./routes/testing-router";
 import {connectToDB} from "./repositories/db";
+import {usersRouter} from "./routes/users-router";
+import {authRouter} from "./routes/auth";
 
 enum URL_ROUTES {
+    auth = "/api/auth",
+    users = "/api/users",
     blogs = "/api/blogs",
     posts = "/api/posts",
     testing = "/api/testing"
@@ -26,6 +30,8 @@ const port = process.env.PORT || 3000;
 export const app = express();
 
 app.use(bodyParser.json());
+app.use(URL_ROUTES.auth, authRouter);
+app.use(URL_ROUTES.users, usersRouter);
 app.use(URL_ROUTES.blogs, blogsRouter);
 app.use(URL_ROUTES.posts, postsRouter);
 app.use(URL_ROUTES.testing, testingRouter);

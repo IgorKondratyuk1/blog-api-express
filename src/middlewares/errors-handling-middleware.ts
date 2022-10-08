@@ -10,14 +10,7 @@ export const errorsHandlingMiddleware = (error: unknown, req: Request, res: Resp
     if (typeof error === "string") {
         message = error.toUpperCase();
     } else if (error instanceof Error) {
-
-        if (error.message.includes("#")) {
-            fieldName = error.message.split("#")[0];
-            message = error.message.split("#")[1];
-        } else {
-            message = error.message;
-        }
-
+        message = error.message;
     } else if (typeof error === "undefined") {
         message = "Some error occurred";
     }

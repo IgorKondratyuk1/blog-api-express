@@ -32,6 +32,14 @@ export type PostType = {
     createdAt: string
 }
 
+export type QueryType = {
+    searchNameTerm?: string
+    pageNumber?: string
+    pageSize?: string
+    sortBy?: string
+    sortDirection?: string
+}
+
 export type BlogPostInputModel = {
     id:	string
     shortDescription: string

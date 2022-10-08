@@ -1,7 +1,7 @@
 import {Response, Router} from "express";
 import {getPostViewModel} from "../helpers/helpers";
 import {
-    FilterType, Paginator,
+    Paginator,
     PostType,
     RequestWithBody,
     RequestWithParamsAndBody,
@@ -10,28 +10,22 @@ import {
 import {URIParamsPostModel} from "../models/post/uri-params-post-model";
 import {ViewPostModel} from "../models/post/view-post-model";
 import {CreatePostModel} from "../models/post/create-post-model";
-import {postValidationSchema} from "../schemas/create/post-validation-schema";
+import {postValidationSchema} from "../schemas/post-validation-schema";
 import {HTTP_STATUSES} from "../index";
 import {authenticationMiddleware} from "../middlewares/authentication-middleware";
 import {postsQueryRepository} from "../repositories/posts/query-post-repository";
 import {QueryPostModel} from "../models/post/query-post-model";
 import {postsService} from "../domain/posts-service";
 import {queryValidationSchema} from "../schemas/query/query-validation-schema";
+import {UpdatePostModel} from "../models/post/update-post-model";
 
 export const postsRouter = Router();
 
 postsRouter.get("/",
     queryValidationSchema,
     async (req: RequestWithQuery<QueryPostModel>, res: Response<Paginator<ViewPostModel>>) => {
-    const filters: FilterType = {
-        // searchNameTerm: req.query.searchNameTerm || null,
-        pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
-        pageSize: req.query.pageSize ? +req.query.pageSize : 10,
-        sortBy: req.query.sortBy || "createdAt",
-        sortDirection: req.query.sortDirection === 'asc' ? 'asc' : 'desc'
-    }
-    
-    const foundedPosts: Paginator<PostType> = await postsQueryRepository.findPosts(filters);
+
+    const foundedPosts: Paginator<PostType> = await postsQueryRepository.findPosts(req.query);
     res.json(foundedPosts);
 });
 
@@ -49,7 +43,7 @@ postsRouter.post("/",
     authenticationMiddleware,
     postValidationSchema,
     async (req: RequestWithBody<CreatePostModel>, res: Response<ViewPostModel>) => {
-    const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId);
+    const createdPost = await postsService.createPost(req.body.blogId, req.body);
 
     res.status(HTTP_STATUSES.CREATED_201)
         .json(getPostViewModel((createdPost)));
@@ -58,8 +52,8 @@ postsRouter.post("/",
 postsRouter.put("/:id",
     authenticationMiddleware,
     postValidationSchema,
-    async (req: RequestWithParamsAndBody<URIParamsPostModel,CreatePostModel>, res: Response) => {
-    const isPostUpdated = await postsService.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId);
+    async (req: RequestWithParamsAndBody<URIParamsPostModel,UpdatePostModel>, res: Response) => {
+    const isPostUpdated = await postsService.updatePost(req.params.id, req.body);
 
     if(isPostUpdated) {
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

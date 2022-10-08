@@ -1,20 +1,17 @@
 import {PostType} from "../../types/types";
-import {blogsCollection, postsCollection} from "../db";
+import {postsCollection} from "../db";
+import {UpdatePostModel} from "../../models/post/update-post-model";
 
 export const postsRepository = {
-    // async findAllPosts(): Promise<PostType[]> {
-    //     return postsCollection.find({}).toArray();
-    // },
     async findPostById(id: string): Promise<PostType | null> {
         return postsCollection.findOne({id: id});
     },
-    async createPost(newPost: PostType) {
-        postsCollection.insertOne(newPost);
+    async createPost(newPost: PostType): Promise<PostType> {
+        await postsCollection.insertOne(newPost);
         return newPost;
     },
-    async updatePost(id: string, title: string, shortDescription: string,
-               content: string, blogId: string): Promise<boolean> {
-
+    async updatePost(id: string, post: UpdatePostModel): Promise<boolean> {
+        const {title, shortDescription, content, blogId} = post;
         const result = await postsCollection.updateOne({id: id}, { $set: { title, shortDescription, content, blogId }});
         return result.matchedCount === 1;
     },

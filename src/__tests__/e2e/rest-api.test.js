@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
-const src_1 = require("../index");
+const src_1 = require("../../index");
 describe("blogs", () => {
     // GET
     it("GET:blogs should return 3 posts", () => __awaiter(void 0, void 0, void 0, function* () {
