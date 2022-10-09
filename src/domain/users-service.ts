@@ -1,12 +1,12 @@
 import {UserDBType, UserType} from "../types/user-types";
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {usersRepository} from "../repositories/users/users-repository";
 import {ObjectId} from "mongodb";
 import {ViewUserModel} from "../models/users/view-user-model";
 
 export const usersService = {
-    async createUser(login:	string, password: string, email: string): Promise<ViewUserModel> {
+    async createUser(login: string, password: string, email: string): Promise<ViewUserModel> {
         const passwordSalt: string = await bcrypt.genSalt(10);
         const passwordHash: string = await this._generateHash(password, passwordSalt);
 
@@ -27,6 +27,9 @@ export const usersService = {
     },
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id);
+    },
+    async deleteAllUsers() {
+        return usersRepository.deleteAllUsers();
     },
     async checkCredentials(password: string, userLogin: string): Promise<boolean> {
         const user = await usersRepository.findUserByLogin(userLogin);

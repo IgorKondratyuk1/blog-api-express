@@ -18,7 +18,10 @@ export const usersRepository = {
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id});
-        return result.deletedCount === 1 ? true : false;
+        return result.deletedCount === 1;
+    },
+    async deleteAllUsers() {
+        return usersCollection.deleteMany({});
     },
     _mapUserDBTypeToUserType(dbUser: UserDBType): UserType {
         return {
