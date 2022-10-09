@@ -2,17 +2,19 @@ import {UserDBType, UserType} from "../../types/user-types";
 import {usersCollection} from "../db";
 
 export const usersRepository = {
-    async findUserById(id: string): Promise<UserDBType | null> {
+    async findUserById(id: string): Promise<UserType | null> {
         const dbUser: UserDBType | null = await usersCollection.findOne({id: id});
-        return dbUser;
+        if (!dbUser) return null;
+        return this._mapUserDBTypeToUserType(dbUser);
     },
-    async findUserByLogin(login: string): Promise<UserDBType | null> {
+    async findUserByLogin(login: string): Promise<UserType | null> {
         const dbUser: UserDBType | null = await usersCollection.findOne({userName: login});
-        return dbUser;
+        if (!dbUser) return null
+        return this._mapUserDBTypeToUserType(dbUser);
     },
-    async createUser(newUser: UserDBType): Promise<UserDBType> {
+    async createUser(newUser: UserDBType): Promise<UserType> {
         await usersCollection.insertOne(newUser);
-        return newUser;
+        return this._mapUserDBTypeToUserType(newUser);
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id});
