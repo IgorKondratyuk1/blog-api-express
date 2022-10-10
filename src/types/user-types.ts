@@ -11,7 +11,7 @@ export type UserType = {
 export type UserDBType = {
     _id: ObjectId
     id:	string
-    userName: string
+    login: string
     email: string
     passwordHash: string
     createdAt: string

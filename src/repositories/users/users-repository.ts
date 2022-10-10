@@ -27,7 +27,7 @@ export const usersRepository = {
         return {
             id: dbUser.id,
             email: dbUser.email,
-            login: dbUser.userName,
+            login: dbUser.login,
             passwordHash: dbUser.passwordHash,
             createdAt: dbUser.createdAt
         }

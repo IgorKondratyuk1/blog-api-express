@@ -20,9 +20,7 @@ export const usersQueryRepository = {
             .limit(filters.pageSize).toArray();
 
         const usersViewModels: ViewUserModel[] = foundedUsers.map(this._mapUserDBTypeToViewUserModel); // Get View models of Blogs
-        const totalCount: number = await usersCollection.countDocuments(
-            {$or: [{login: {$regex: searchLoginTermValue, $options: "(?i)a(?-i)cme"}}, {email: {$regex: searchEmailTermValue, $options: "(?i)a(?-i)cme"}}]}
-        );
+        const totalCount: number = await usersCollection.countDocuments({$or: [{login: {$regex: searchLoginTermValue, $options: "(?i)a(?-i)cme"}}, {email: {$regex: searchEmailTermValue, $options: "(?i)a(?-i)cme"}}]});
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
@@ -43,7 +41,7 @@ export const usersQueryRepository = {
         return {
             id: dbUser.id,
             email: dbUser.email,
-            login: dbUser.userName,
+            login: dbUser.login,
             createdAt: dbUser.createdAt
         }
     }

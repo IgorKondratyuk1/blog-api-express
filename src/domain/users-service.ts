@@ -14,7 +14,7 @@ export const usersService = {
             _id: new ObjectId(),
             id: uuidv4(),
             createdAt: (new Date()).toISOString(),
-            userName: login,
+            login: login,
             email: email,
             passwordHash: passwordHash
         }
