@@ -8,7 +8,7 @@ export const usersRepository = {
         return this._mapUserDBTypeToUserType(dbUser);
     },
     async findUserByLogin(login: string): Promise<UserType | null> {
-        const dbUser: UserDBType | null = await usersCollection.findOne({userName: login});
+        const dbUser: UserDBType | null = await usersCollection.findOne({login: login});
         if (!dbUser) return null
         return this._mapUserDBTypeToUserType(dbUser);
     },
