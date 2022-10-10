@@ -11,15 +11,18 @@ export const usersQueryRepository = {
         const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
         const searchLoginTermValue = filters.searchLoginTerm || "";
         const searchEmailTermValue = filters.searchEmailTerm || "";
-
+        console.log(searchLoginTermValue);
+        console.log(searchEmailTermValue);
         const foundedUsers: UserDBType[] = await usersCollection
-            .find({$or: [{login: {$regex: new RegExp(searchLoginTermValue, 'i')}}, {email: {$regex: new RegExp(searchEmailTermValue, 'i')}}]})
+            .find({$or: [{login: {$regex: searchLoginTermValue, $options: "(?i)a(?-i)cme"}}, {email: {$regex: searchEmailTermValue, $options: "(?i)a(?-i)cme"}}]})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
             .limit(filters.pageSize).toArray();
 
         const usersViewModels: ViewUserModel[] = foundedUsers.map(this._mapUserDBTypeToViewUserModel); // Get View models of Blogs
-        const totalCount: number = await usersCollection.countDocuments({$or: [{login: {$regex: new RegExp(searchLoginTermValue, 'i')}}, {email: {$regex: new RegExp(searchEmailTermValue, 'i')}}]});
+        const totalCount: number = await usersCollection.countDocuments(
+            {$or: [{login: {$regex: searchLoginTermValue, $options: "(?i)a(?-i)cme"}}, {email: {$regex: searchEmailTermValue, $options: "(?i)a(?-i)cme"}}]}
+        );
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
