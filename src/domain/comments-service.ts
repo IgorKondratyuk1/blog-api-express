@@ -29,17 +29,22 @@ export const commentsService = {
 
         return commentsRepository.createComment(newComment);
     },
-    async updateComment(id: string, comment: UpdateCommentModel): Promise<boolean> {
-        //postId: string, userLogin: string,
-        // const foundedPost: PostType | null  = await postsRepository.findPostById(postId);
-        // const foundedUser: UserType | null = await usersRepository.findUserByLogin(userLogin);
-        //
-        // if (!foundedPost) throw new Error("'PostId' is incorrect");
-        // if (!foundedUser) throw new Error("'UserLogin' is incorrect");
+    async updateComment(id: string, userId: string, comment: UpdateCommentModel): Promise<boolean> {
+        const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
+
+        if (foundedComment?.userId !== userId) {
+            throw Error('Change comment of other user is forbidden');
+        }
 
         return await commentsRepository.updateComment(id, comment);
     },
-    async deleteComment(id: string): Promise<boolean> {
+    async deleteComment(id: string, userId: string): Promise<boolean> {
+        const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
+
+        if (foundedComment?.userId !== userId) {
+            throw Error('Delete comment of other user is forbidden');
+        }
+
         return commentsRepository.deleteComment(id);
     },
     async deleteAllComments() {

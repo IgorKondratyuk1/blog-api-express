@@ -29,26 +29,36 @@ commentsRouter.put("/:id",
     commentValidationSchema,
     async (req: RequestWithParamsAndBody<UriParamsCommentModel, UpdateCommentModel>, res: Response) => {
 
-    const isCommentUpdated: boolean = await commentsService.updateComment(req.params.id, req.body);
+    try {
+        const isCommentUpdated: boolean = await commentsService.updateComment(req.params.id, req.user.id, req.body);
 
-    if(!isCommentUpdated) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return;
+        if(!isCommentUpdated) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            return;
+        } else {
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        }
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
     }
-
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 
 commentsRouter.delete("/:id",
     jwtAuthMiddleware,
     async (req: RequestWithParams<UriParamsCommentModel>, res: Response<ViewCommentModel>) => {
 
-    const isCommentDeleted: boolean = await commentsService.deleteComment(req.params.id);
+    try {
+        const isCommentDeleted: boolean = await commentsService.deleteComment(req.params.id, req.user.id);
 
-    if(!isCommentDeleted) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return;
+        if(!isCommentDeleted) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            return;
+        } else {
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        }
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
     }
-
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
