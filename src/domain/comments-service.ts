@@ -32,7 +32,7 @@ export const commentsService = {
     async updateComment(id: string, userId: string, comment: UpdateCommentModel): Promise<boolean> {
         const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
 
-        if (foundedComment?.userId !== userId) {
+        if (foundedComment && foundedComment.userId !== userId) {
             throw Error('Change comment of other user is forbidden');
         }
 
@@ -41,7 +41,7 @@ export const commentsService = {
     async deleteComment(id: string, userId: string): Promise<boolean> {
         const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
 
-        if (foundedComment?.userId !== userId) {
+        if (foundedComment && foundedComment.userId !== userId) {
             throw Error('Delete comment of other user is forbidden');
         }
 
