@@ -5,16 +5,16 @@ export const usersRepository = {
     async findUserById(id: string): Promise<UserType | null> {
         const dbUser: UserDBType | null = await usersCollection.findOne({id: id});
         if (!dbUser) return null;
-        return this._mapUserDBTypeToUserType(dbUser);
+        return this._mapUserDbTypeToUserType(dbUser);
     },
     async findUserByLogin(login: string): Promise<UserType | null> {
         const dbUser: UserDBType | null = await usersCollection.findOne({login: login});
         if (!dbUser) return null
-        return this._mapUserDBTypeToUserType(dbUser);
+        return this._mapUserDbTypeToUserType(dbUser);
     },
     async createUser(newUser: UserDBType): Promise<UserType> {
         await usersCollection.insertOne(newUser);
-        return this._mapUserDBTypeToUserType(newUser);
+        return this._mapUserDbTypeToUserType(newUser);
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id});
@@ -23,7 +23,7 @@ export const usersRepository = {
     async deleteAllUsers() {
         return usersCollection.deleteMany({});
     },
-    _mapUserDBTypeToUserType(dbUser: UserDBType): UserType {
+    _mapUserDbTypeToUserType(dbUser: UserDBType): UserType {
         return {
             id: dbUser.id,
             email: dbUser.email,

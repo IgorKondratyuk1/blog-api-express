@@ -3,19 +3,17 @@ import {blogsService} from "../domain/blogs-service";
 import {blogValidationSchema} from "../schemas/blog-validation-schema";
 import {ViewBlogModel} from "../models/blog/view-blog-model";
 import {
-    BlogType,
     Paginator,
     RequestWithBody,
     RequestWithParamsAndBody,
     RequestWithParams, RequestWithParamsAndQuery,
-    RequestWithQuery, PostType
+    RequestWithQuery
 } from "../types/types";
 import {CreateBlogModel} from "../models/blog/create-blog-model";
 import {UpdateBlogModel} from "../models/blog/update-blog-model";
 import {URIParamsBlogModel} from "../models/blog/uri-params-blog-model";
-import {getBlogViewModel, getFilters, getPostViewModel} from "../helpers/helpers";
+import {getBlogViewModel, getPostViewModel} from "../helpers/helpers";
 import {HTTP_STATUSES} from "../index";
-import {authenticationMiddleware} from "../middlewares/authentication-middleware";
 import {QueryBlogModel} from "../models/blog/query-blog-model";
 import {blogsQueryRepository} from "../repositories/blogs/query-blog-repository";
 import {QueryPostModel} from "../models/post/query-post-model";
@@ -25,6 +23,9 @@ import {postsService} from "../domain/posts-service";
 import {CreatePostOfBlogModel} from "../models/post/create-post-of-blog";
 import {queryValidationSchema} from "../schemas/query/query-validation-schema";
 import {postOfBlogValidationSchema} from "../schemas/post-of-blog-validation-schema";
+import {BlogType} from "../types/blog-types";
+import {PostType} from "../types/post-types";
+import {basicAuthMiddleware} from "../middlewares/basic-auth-middleware";
 
 export const blogsRouter = Router();
 
@@ -46,7 +47,7 @@ blogsRouter.get("/:id", async (req: RequestWithParams<URIParamsBlogModel>, res: 
 });
 
 blogsRouter.post("/",
-    authenticationMiddleware,
+    basicAuthMiddleware,
     blogValidationSchema,
     async (req: RequestWithBody<CreateBlogModel>, res: Response<ViewBlogModel>) => {
         const createdBlog: BlogType = await blogsService.createBlog(req.body.name, req.body.youtubeUrl);
@@ -56,7 +57,7 @@ blogsRouter.post("/",
     });
 
 blogsRouter.put("/:id",
-    authenticationMiddleware,
+    basicAuthMiddleware,
     blogValidationSchema,
     async (req: RequestWithParamsAndBody<URIParamsBlogModel, UpdateBlogModel>, res: Response) => {
         const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body.name, req.body.youtubeUrl);
@@ -69,7 +70,7 @@ blogsRouter.put("/:id",
     });
 
 blogsRouter.delete("/:id",
-    authenticationMiddleware,
+    basicAuthMiddleware,
     async (req: RequestWithParams<URIParamsBlogModel>, res: Response) => {
         const isBlogDeleted = await blogsService.deleteBlog(req.params.id);
 
@@ -91,13 +92,13 @@ blogsRouter.get("/:id/posts",
             return;
         }
 
-        const foundedPostsOfBlog: Paginator<ViewPostModel> = await postsQueryRepository.findPostOfBlog(req.params.id, req.query);
+        const foundedPostsOfBlog: Paginator<ViewPostModel> = await postsQueryRepository.findPostsOfBlog(req.params.id, req.query);
         res.json(foundedPostsOfBlog);
     }
 );
 
 blogsRouter.post("/:id/posts",
-    authenticationMiddleware,
+    basicAuthMiddleware,
     postOfBlogValidationSchema,
     async (req: RequestWithParamsAndBody<URIParamsBlogModel, CreatePostOfBlogModel>, res: Response<ViewPostModel>) => {
         const foundedBlog: BlogType | null = await blogsQueryRepository.findBlogById(req.params.id);

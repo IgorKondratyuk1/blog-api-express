@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../index";
 
-export const authenticationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authData = "admin:qwerty";
     const serverSecret = Buffer.from(authData).toString('base64'); // auth:password converted into base64
 

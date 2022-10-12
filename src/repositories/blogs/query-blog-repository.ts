@@ -1,17 +1,18 @@
-import {BlogType, FilterType, Paginator} from "../../types/types";
+import {FilterType, Paginator} from "../../types/types";
 import {blogsCollection} from "../db";
 import {getBlogViewModel, getFilters, getPagesCount, getSkipValue, getSortValue} from "../../helpers/helpers";
 import {ViewBlogModel} from "../../models/blog/view-blog-model";
 import {QueryBlogModel} from "../../models/blog/query-blog-model";
+import {BlogDbType} from "../../types/blog-types";
 
 export const blogsQueryRepository = {
-    async findBlogs(queryObj: QueryBlogModel): Promise<Paginator<BlogType>> {
+    async findBlogs(queryObj: QueryBlogModel): Promise<Paginator<ViewBlogModel>> {
         const filters: FilterType = getFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
         const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
         const searchNameTermValue = filters.searchNameTerm || "";
 
-        const foundedBlogs: BlogType[] = await blogsCollection
+        const foundedBlogs: BlogDbType[] = await blogsCollection
             .find({name: {$regex: new RegExp(searchNameTermValue, 'i') }})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
@@ -29,7 +30,7 @@ export const blogsQueryRepository = {
             items: blogsViewModels
         };
     },
-    async findBlogById(id: string): Promise<BlogType | null> {
+    async findBlogById(id: string): Promise<ViewBlogModel | null> {
         return blogsCollection.findOne({id: id});
     }
 }

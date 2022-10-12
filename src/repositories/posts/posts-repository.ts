@@ -1,14 +1,16 @@
-import {PostType} from "../../types/types";
 import {postsCollection} from "../db";
 import {UpdatePostModel} from "../../models/post/update-post-model";
+import {PostDbType, PostType} from "../../types/post-types";
 
 export const postsRepository = {
     async findPostById(id: string): Promise<PostType | null> {
-        return postsCollection.findOne({id: id});
+        const dbPost: PostDbType | null = await postsCollection.findOne({id: id});
+        if (!dbPost) return null;
+        return this._mapPostDbTypeToPostType(dbPost);
     },
-    async createPost(newPost: PostType): Promise<PostType> {
+    async createPost(newPost: PostDbType): Promise<PostType> {
         await postsCollection.insertOne(newPost);
-        return newPost;
+        return this._mapPostDbTypeToPostType(newPost);
     },
     async updatePost(id: string, post: UpdatePostModel): Promise<boolean> {
         const {title, shortDescription, content, blogId} = post;
@@ -21,5 +23,16 @@ export const postsRepository = {
     },
     async deleteAllPosts() {
         return postsCollection.deleteMany({});
+    },
+    _mapPostDbTypeToPostType(dbPost: PostDbType): PostType {
+        return {
+            id: dbPost.id,
+            blogId: dbPost.blogId,
+            content: dbPost.content,
+            createdAt: dbPost.createdAt,
+            shortDescription: dbPost.shortDescription,
+            title: dbPost.title,
+            blogName: dbPost.blogName
+        }
     }
 }

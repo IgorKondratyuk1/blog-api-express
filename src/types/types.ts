@@ -15,35 +15,12 @@ export type FieldError = {
     field: string
 }
 
-export type BlogType = {
-    id: string
-    name: string
-    youtubeUrl: string
-    createdAt: string
-}
-
-export type PostType = {
-    id:	string
-    title: string
-    shortDescription: string
-    content: string
-    blogId:	string
-    blogName: string
-    createdAt: string
-}
-
 export type QueryType = {
     searchNameTerm?: string
     pageNumber?: string
     pageSize?: string
     sortBy?: string
     sortDirection?: string
-}
-
-export type BlogPostInputModel = {
-    id:	string
-    shortDescription: string
-    content: string
 }
 
 export type Paginator<T> = {
@@ -59,5 +36,10 @@ export type FilterType = {
     pageNumber: number
     pageSize: number
     sortBy: string
-    sortDirection: "asc" | "desc"
+    sortDirection: 'asc' | 'desc'
+}
+
+export enum SortDirections {
+    ASC = "asc",
+    DESC = "desc"
 }

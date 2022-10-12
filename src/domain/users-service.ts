@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import {usersRepository} from "../repositories/users/users-repository";
 import {ObjectId} from "mongodb";
-import {ViewUserModel} from "../models/users/view-user-model";
+import {ViewUserModel} from "../models/user/view-user-model";
 
 export const usersService = {
     async createUser(login: string, password: string, email: string): Promise<ViewUserModel> {
@@ -22,7 +22,7 @@ export const usersService = {
         const createdUser: UserType = await usersRepository.createUser(newUser);
         return this._mapUserTypeToViewUserModel(createdUser);
     },
-    async findUserById(id: string): Promise<ViewUserModel | null> {
+    async findUserById(id: string): Promise<UserType | null> {
         return await usersRepository.findUserById(id);
     },
     async deleteUser(id: string): Promise<boolean> {
@@ -31,10 +31,16 @@ export const usersService = {
     async deleteAllUsers() {
         return usersRepository.deleteAllUsers();
     },
-    async checkCredentials(password: string, userLogin: string): Promise<boolean> {
-        const user = await usersRepository.findUserByLogin(userLogin);
-        if (!user) return false;
-        return bcrypt.compareSync(password, user.passwordHash);
+    async checkCredentials(password: string, userLogin: string): Promise<UserType | null> {
+        const user: UserType | null = await usersRepository.findUserByLogin(userLogin);
+        if (!user) return null;
+
+        const haveCredentials = await bcrypt.compare(password, user.passwordHash);
+        if (haveCredentials) {
+            return user;
+        } else {
+            return null;
+        }
     },
     async _generateHash(password: string, salt: string): Promise<string> {
         return await bcrypt.hash(password, salt);

@@ -1,7 +1,10 @@
 import {ViewBlogModel} from "../models/blog/view-blog-model";
-import {BlogType, FilterType, PostType, QueryType} from "../types/types";
+import {FilterType, QueryType, SortDirections} from "../types/types";
 import {ViewPostModel} from "../models/post/view-post-model";
-import {QueryUserModel, UserFilterType} from "../types/user-types";
+import {QueryUserModel, UserDBType, UserFilterType, UserType} from "../types/user-types";
+import {PostType} from "../types/post-types";
+import {BlogType} from "../types/blog-types";
+import {ViewMeModel} from "../models/auth/view-me-model";
 
 export const getBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
     return {
@@ -24,6 +27,14 @@ export const getPostViewModel = (dbPost: PostType): ViewPostModel => {
     }
 }
 
+export const getMeViewModel = (user: UserType | UserDBType): ViewMeModel => {
+    return {
+        email: user.email,
+        login: user.login,
+        userId: user.id
+    }
+}
+
 export const getFilters = (query: QueryType): FilterType => {
     const filters: FilterType = {
         searchNameTerm: query.searchNameTerm || null,
@@ -40,6 +51,17 @@ export const getUserFilters = (query: QueryUserModel): UserFilterType => {
     const filters: UserFilterType = {
         searchEmailTerm: query.searchEmailTerm || null,
         searchLoginTerm: query.searchLoginTerm || null,
+        pageNumber: query.pageNumber ? +query.pageNumber : 1,
+        pageSize: query.pageSize ? +query.pageSize : 10,
+        sortBy: query.sortBy || "createdAt",
+        sortDirection: query.sortDirection === 'asc' ? 'asc' : 'desc'
+    }
+
+    return filters;
+}
+
+export const getCommentsFilters = (query: QueryType): FilterType => {
+    const filters: FilterType = {
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
         pageSize: query.pageSize ? +query.pageSize : 10,
         sortBy: query.sortBy || "createdAt",

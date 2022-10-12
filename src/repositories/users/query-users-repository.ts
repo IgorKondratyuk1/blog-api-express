@@ -1,6 +1,6 @@
 import {QueryUserModel, UserDBType, UserFilterType, UserType} from "../../types/user-types";
 import {Paginator} from "../../types/types";
-import {ViewUserModel} from "../../models/users/view-user-model";
+import {ViewUserModel} from "../../models/user/view-user-model";
 import {getPagesCount, getSkipValue, getSortValue, getUserFilters} from "../../helpers/helpers";
 import {usersCollection} from "../db";
 
@@ -11,10 +11,9 @@ export const usersQueryRepository = {
         const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
         const searchLoginTermValue = filters.searchLoginTerm || "";
         const searchEmailTermValue = filters.searchEmailTerm || "";
-        console.log(searchLoginTermValue);
-        console.log(searchEmailTermValue);
+
         const foundedUsers: UserDBType[] = await usersCollection
-            .find({$or: [{login: {$regex: searchLoginTermValue, $options: "(?i)a(?-i)cme"}}, {email: {$regex: searchEmailTermValue, $options: "(?i)a(?-i)cme"}}]})
+            .find({$or: [{login: {$regex: searchLoginTermValue, $options: "i"}}, {email: {$regex: searchEmailTermValue, $options: "i"}}]})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
             .limit(filters.pageSize).toArray();

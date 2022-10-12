@@ -1,13 +1,15 @@
-import {BlogType} from "../../types/types";
 import {blogsCollection} from "../db";
+import {BlogDbType, BlogType} from "../../types/blog-types";
 
 export const blogsRepository = {
     async findBlogById(id: string): Promise<BlogType | null> {
-        return blogsCollection.findOne({id: id});
+        const dbBlog: BlogDbType | null = await blogsCollection.findOne({id: id});
+        if (!dbBlog) return null;
+        return this._mapBlogDBTypeToBlogType(dbBlog);
     },
-    async createBlog(newBlog: BlogType): Promise<BlogType> {
+    async createBlog(newBlog: BlogDbType): Promise<BlogType> {
         await blogsCollection.insertOne(newBlog);
-        return newBlog;
+        return this._mapBlogDBTypeToBlogType(newBlog);
     },
     async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
         let result = await blogsCollection.updateOne({id: id}, { $set: { name, youtubeUrl }});
@@ -19,5 +21,13 @@ export const blogsRepository = {
     },
     async deleteAllBlogs() {
         return blogsCollection.deleteMany({});
+    },
+    _mapBlogDBTypeToBlogType(dbBlog: BlogDbType): BlogType {
+        return {
+            id: dbBlog.id,
+            name: dbBlog.name,
+            youtubeUrl: dbBlog.youtubeUrl,
+            createdAt: dbBlog.createdAt
+        }
     }
 }

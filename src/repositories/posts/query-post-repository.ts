@@ -1,8 +1,9 @@
 import {postsCollection} from "../db";
-import {FilterType, Paginator, PostType} from "../../types/types";
+import {FilterType, Paginator} from "../../types/types";
 import {ViewPostModel} from "../../models/post/view-post-model";
 import {getFilters, getPagesCount, getPostViewModel, getSkipValue, getSortValue} from "../../helpers/helpers";
 import {QueryPostModel} from "../../models/post/query-post-model";
+import {PostType} from "../../types/post-types";
 
 
 export const postsQueryRepository = {
@@ -31,7 +32,7 @@ export const postsQueryRepository = {
     async findPostById(id: string): Promise<PostType | null> {
         return postsCollection.findOne({id: id});
     },
-    async findPostOfBlog(blogId: string, queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
+    async findPostsOfBlog(blogId: string, queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
         const filters: FilterType = getFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
         const sortValue: 1 | -1 = getSortValue(filters.sortDirection);

@@ -2,12 +2,14 @@ import request from 'supertest';
 import {app} from "../../index";
 import {CreateBlogModel} from "../../models/blog/create-blog-model";
 import {ViewBlogModel} from "../../models/blog/view-blog-model";
-import {APIErrorResult, BlogType, Paginator, PostType} from "../../types/types";
+import {APIErrorResult, Paginator} from "../../types/types";
 import {ViewPostModel} from "../../models/post/view-post-model";
 import {CreatePostModel} from "../../models/post/create-post-model";
 import {UpdateBlogModel} from "../../models/blog/update-blog-model";
 import {UpdatePostModel} from "../../models/post/update-post-model";
 import {CreatePostOfBlogModel} from "../../models/post/create-post-of-blog";
+import {BlogType} from "../../types/blog-types";
+import {PostType} from "../../types/post-types";
 
 const clearDB = async () => {
     await request(app)
