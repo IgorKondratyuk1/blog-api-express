@@ -65,7 +65,7 @@ authRouter.post("/login",
             accessToken: token
         });
     } else {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
     }
 });
 
