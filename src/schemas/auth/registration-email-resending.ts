@@ -5,8 +5,10 @@ import {usersRepository} from "../../repositories/users/users-repository";
 const isEmailExists: CustomValidator = async (value, meta) => {
     const user = await usersRepository.findUserByLoginOrEmail(value);
     if (!user) return Promise.reject(`${meta.path} "${value}" is not registered`);
+    if (user.emailConfirmation.isConfirmed) return Promise.reject(`already confirmed`);
     return Promise.resolve();
 };
+
 
 export const registrationEmailResendingValidationSchema = [
     body("email")

@@ -5,6 +5,7 @@ import {usersRepository} from "../../repositories/users/users-repository";
 const isConfirmationCodeExists: CustomValidator = async (value, meta) => {
     const user = await usersRepository.findUserByConfirmationCode(value)
     if (!user) return Promise.reject(`${meta.path} "${value}" is not registered`);
+    if (user.emailConfirmation.isConfirmed) return Promise.reject(`already confirmed`);
     return Promise.resolve();
 };
 
