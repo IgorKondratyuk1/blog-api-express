@@ -67,7 +67,7 @@ authRouter.post("/login",
         });
         return;
     } else {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
         return;
     }
 });
