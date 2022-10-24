@@ -23,8 +23,9 @@ export const authService = {
     async checkCredentials(password: string, userLoginOrEmail: string): Promise<UserAccountType | null> {
         try {
             const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(userLoginOrEmail);
+            console.log(user);
             if (!user) return null;
-            if (!user.emailConfirmation.isConfirmed) return null;
+            // if (!user.emailConfirmation.isConfirmed) return null;
 
             const haveCredentials = await this._isPasswordCorrect(password, user.accountData.passwordHash);
             if (haveCredentials) {

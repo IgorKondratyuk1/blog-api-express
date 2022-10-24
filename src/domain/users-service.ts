@@ -9,7 +9,7 @@ export const usersService = {
     async findUserById(id: string): Promise<UserAccountType | null> {
         return await usersRepository.findUserById(id);
     },
-    async createUser(login: string, email: string, password: string): Promise<UserAccountType> {
+    async createUser(login: string, email: string, password: string, isConfirmed: boolean = false): Promise<UserAccountType> {
         //TODO
         // If login or email already registered return null or throw error (const user: UserAccountType | null = findByloginOrId ...)
 
@@ -29,7 +29,7 @@ export const usersService = {
                     hours: 1,
                     minutes: 3
                 }).toISOString(),
-                isConfirmed: false
+                isConfirmed: isConfirmed
             }
         }
         const createdUser: UserAccountType = await usersRepository.createUser(newUser);

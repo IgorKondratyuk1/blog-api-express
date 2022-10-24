@@ -21,7 +21,7 @@ usersRouter.post("/",
     basicAuthMiddleware,
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response<ViewUserModel>) => {
-    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password);
+    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password, true);
 
     if (!createdUser) {
         res.sendStatus(400);

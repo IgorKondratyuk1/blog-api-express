@@ -22,8 +22,7 @@ authRouter.post("/registration",
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response) => {
         const user: UserAccountType | null = await authService.saveUser(req.body.login, req.body.email, req.body.password);
-        console.log('User data: ' + req.body.login + " " + req.body.email + " " + req.body.password );
-        console.log(user);
+
         // console.log("___HEADERS___");
         // console.log(req.headers);
 
@@ -60,15 +59,14 @@ authRouter.post("/login",
    userLoginValidationSchema,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
     const user: UserAccountType | null = await authService.checkCredentials(req.body.password, req.body.login);
+
     if (user) {
         const token: string = await jwtService.createJWT(user);
         res.json({
             accessToken: token
         });
-        return;
     } else {
         res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
-        return;
     }
 });
 
