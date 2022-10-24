@@ -3,7 +3,6 @@ import {HTTP_STATUSES} from "../index";
 import {jwtService} from "../application/jwt-service";
 import {usersService} from "../domain/users-service";
 
-
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const clientAuthHeader = req.header("authorization");
     const authType = clientAuthHeader?.split(" ")[0];

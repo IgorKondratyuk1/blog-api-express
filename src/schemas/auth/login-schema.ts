@@ -7,7 +7,7 @@ export const userLoginValidationSchema = [
         .isString().withMessage("Field 'login' is not string")
         .notEmpty({ignore_whitespace: true}).withMessage("Field 'login' is empty")
         .trim()
-        .isLength({min: 3, max: 10}).withMessage("Min length 3 and max length 10 symbols"),
+        .isLength({min: 3, max: 200}).withMessage("Min length 3 and max length 200 symbols"),
     body("password")
         .exists({checkFalsy: true}).withMessage("Field 'password' is not exist")
         .isString().withMessage("Field 'password' is not string")

@@ -1,5 +1,12 @@
-import {body} from "express-validator";
+import {body, CustomValidator} from "express-validator";
 import {inputValidationMiddleware} from "../../middlewares/input-validation-middleware";
+import {usersRepository} from "../../repositories/users/users-repository";
+
+const isLoginOrEmailAvailable: CustomValidator = async (value, meta) => {
+    const user = await usersRepository.findUserByLoginOrEmail(value);
+    if (user) return Promise.reject(`${meta.path} "${value}" is already used`);
+    return Promise.resolve();
+};
 
 export const userRegistrationValidationSchema = [
     body("login")
@@ -7,7 +14,8 @@ export const userRegistrationValidationSchema = [
         .isString().withMessage("Field 'login' is not string")
         .notEmpty({ignore_whitespace: true}).withMessage("Field 'login' is empty")
         .trim()
-        .isLength({min: 3, max: 10}).withMessage("Min length 3 and max length 10 symbols"),
+        .isLength({min: 3, max: 10}).withMessage("Min length 3 and max length 10 symbols")
+        .custom(isLoginOrEmailAvailable),
     body("password")
         .exists({checkFalsy: true}).withMessage("Field 'password' is not exist")
         .isString().withMessage("Field 'password' is not string")
@@ -17,7 +25,9 @@ export const userRegistrationValidationSchema = [
         .exists({checkFalsy: true}).withMessage("Field 'email' is not exist")
         .isString().withMessage("Field 'email' is not string")
         .notEmpty({ignore_whitespace: true}).withMessage("Field 'email' is empty")
+        .isLength({min: 3, max: 200}).withMessage("Min length 3 and max length 200 symbols")
         .trim()
-        .isEmail(),
+        .isEmail()
+        .custom(isLoginOrEmailAvailable),
     inputValidationMiddleware
 ];
