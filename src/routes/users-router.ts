@@ -1,13 +1,14 @@
 import express, {Response} from "express";
 import {Paginator, RequestWithBody, RequestWithParams, RequestWithQuery} from "../types/types";
-import {QueryUserModel, UserDBType} from "../types/user-types";
+import {QueryUserModel, UserAccountType, UserDBType} from "../types/user-types";
 import {ViewUserModel} from "../models/user/view-user-model";
 import {usersQueryRepository} from "../repositories/users/query-users-repository";
 import {usersService} from "../domain/users-service";
 import {CreateUserModel} from "../models/user/create-user-model";
 import {UriParamsUserModel} from "../models/user/uri-params-user-model";
-import {userRegistrationValidationSchema} from "../schemas/user-registration";
+import {userRegistrationValidationSchema} from "../schemas/auth/user-registration";
 import {basicAuthMiddleware} from "../middlewares/basic-auth-middleware";
+import {mapUserAccountTypeToViewUserModel} from "../helpers/helpers";
 
 export const usersRouter = express.Router();
 
@@ -20,14 +21,14 @@ usersRouter.post("/",
     basicAuthMiddleware,
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response<ViewUserModel>) => {
-    const createdUser: ViewUserModel = await usersService.createUser(req.body.login, req.body.password, req.body.email);
+    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password);
 
     if (!createdUser) {
         res.sendStatus(400);
         return;
     }
     res.status(201)
-        .json(createdUser);
+        .json(mapUserAccountTypeToViewUserModel(createdUser));
 });
 
 usersRouter.delete("/:id",

@@ -1,4 +1,10 @@
-import {QueryUserModel, UserDBType, UserFilterType, UserType} from "../../types/user-types";
+import {
+    QueryUserModel,
+    UserAccountDbType, UserAccountType,
+    UserDBType,
+    UserFilterType,
+    UserType
+} from "../../types/user-types";
 import {Paginator} from "../../types/types";
 import {ViewUserModel} from "../../models/user/view-user-model";
 import {getPagesCount, getSkipValue, getSortValue, getUserFilters} from "../../helpers/helpers";
@@ -12,14 +18,14 @@ export const usersQueryRepository = {
         const searchLoginTermValue = filters.searchLoginTerm || "";
         const searchEmailTermValue = filters.searchEmailTerm || "";
 
-        const foundedUsers: UserDBType[] = await usersCollection
-            .find({$or: [{login: {$regex: searchLoginTermValue, $options: "i"}}, {email: {$regex: searchEmailTermValue, $options: "i"}}]})
+        const foundedUsers: UserAccountDbType[] = await usersCollection
+            .find({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
             .limit(filters.pageSize).toArray();
 
-        const usersViewModels: ViewUserModel[] = foundedUsers.map(this._mapUserDBTypeToViewUserModel); // Get View models of Blogs
-        const totalCount: number = await usersCollection.countDocuments({$or: [{login: {$regex: searchLoginTermValue, $options: "i"}}, {email: {$regex: searchEmailTermValue, $options: "i"}}]});
+        const usersViewModels: ViewUserModel[] = foundedUsers.map(this._mapUserAccountDbTypeToViewUserModel); // Get View models of Blogs
+        const totalCount: number = await usersCollection.countDocuments({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]});
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
@@ -34,14 +40,14 @@ export const usersQueryRepository = {
         const dbUser = await usersCollection.findOne({id: id});
         if (!dbUser) return null;
 
-        return this._mapUserDBTypeToViewUserModel(dbUser);
+        return this._mapUserAccountDbTypeToViewUserModel(dbUser);
     },
-    _mapUserDBTypeToViewUserModel(dbUser: UserDBType): ViewUserModel {
+    _mapUserAccountDbTypeToViewUserModel(dbUser: UserAccountDbType): ViewUserModel {
         return {
             id: dbUser.id,
-            email: dbUser.email,
-            login: dbUser.login,
-            createdAt: dbUser.createdAt
+            email: dbUser.accountData.email,
+            login: dbUser.accountData.login,
+            createdAt: dbUser.accountData.createdAt
         }
     }
 }

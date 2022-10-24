@@ -1,20 +1,25 @@
-import {UserDBType, UserType} from "../../types/user-types";
+import {UserAccountDbType, UserAccountType, UserDBType, UserType} from "../../types/user-types";
 import {usersCollection} from "../db";
 
 export const usersRepository = {
-    async findUserById(id: string): Promise<UserType | null> {
-        const dbUser: UserDBType | null = await usersCollection.findOne({id: id});
+    async findUserById(id: string): Promise<UserAccountType | null> {
+        const dbUser: UserAccountDbType | null = await usersCollection.findOne({id: id});
         if (!dbUser) return null;
-        return this._mapUserDbTypeToUserType(dbUser);
+        return this._mapUserAccountDBTypeToUserAccountType(dbUser);
     },
-    async findUserByLogin(login: string): Promise<UserType | null> {
-        const dbUser: UserDBType | null = await usersCollection.findOne({login: login});
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountType | null> {
+        const dbUser: UserAccountDbType | null = await usersCollection.findOne({$or: [{'accountData.login': loginOrEmail}, {'accountData.email': loginOrEmail}]});
         if (!dbUser) return null
-        return this._mapUserDbTypeToUserType(dbUser);
+        return this._mapUserAccountDBTypeToUserAccountType(dbUser);
     },
-    async createUser(newUser: UserDBType): Promise<UserType> {
+    async findUserByConfirmationCode(code: string) {
+        const dbUser: UserAccountDbType | null = await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+        if (!dbUser) return null;
+        return this._mapUserAccountDBTypeToUserAccountType(dbUser);
+    },
+    async createUser(newUser: UserAccountDbType): Promise<UserAccountType> {
         await usersCollection.insertOne(newUser);
-        return this._mapUserDbTypeToUserType(newUser);
+        return this._mapUserAccountDBTypeToUserAccountType(newUser);
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id});
@@ -23,13 +28,15 @@ export const usersRepository = {
     async deleteAllUsers() {
         return usersCollection.deleteMany({});
     },
-    _mapUserDbTypeToUserType(dbUser: UserDBType): UserType {
+    async confirmUserEmail(id: string) {
+        const result = await usersCollection.updateOne({id: id}, {$set: { 'emailConfirmation.isConfirmed': true}});
+        return result.modifiedCount === 1;
+    },
+    _mapUserAccountDBTypeToUserAccountType(dbUser: UserAccountDbType): UserAccountType {
         return {
             id: dbUser.id,
-            email: dbUser.email,
-            login: dbUser.login,
-            passwordHash: dbUser.passwordHash,
-            createdAt: dbUser.createdAt
+            accountData: {...dbUser.accountData},
+            emailConfirmation: {...dbUser.emailConfirmation}
         }
     }
 }

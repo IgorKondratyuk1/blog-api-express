@@ -1,29 +1,40 @@
-import {UserDBType, UserType} from "../types/user-types";
+import {UserAccountDbType, UserAccountType, UserType} from "../types/user-types";
 import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import {usersRepository} from "../repositories/users/users-repository";
 import {ObjectId} from "mongodb";
 import {ViewUserModel} from "../models/user/view-user-model";
+import {add} from "date-fns";
 
 export const usersService = {
-    async createUser(login: string, password: string, email: string): Promise<ViewUserModel> {
-        const passwordSalt: string = await bcrypt.genSalt(10);
-        const passwordHash: string = await this._generateHash(password, passwordSalt);
+    async findUserById(id: string): Promise<UserAccountType | null> {
+        return await usersRepository.findUserById(id);
+    },
+    async createUser(login: string, email: string, password: string): Promise<UserAccountType> {
+        //TODO
+        // If login or email already registered return null or throw error (const user: UserAccountType | null = findByloginOrId ...)
 
-        const newUser: UserDBType = {
+        const passwordHash: string = await this._generateHash(password);
+        const newUser: UserAccountDbType = {
             _id: new ObjectId(),
             id: uuidv4(),
-            createdAt: (new Date()).toISOString(),
-            login: login,
-            email: email,
-            passwordHash: passwordHash
+            accountData: {
+                login,
+                email,
+                passwordHash,
+                createdAt: (new Date()).toISOString()
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                }).toISOString(),
+                isConfirmed: false
+            }
         }
-
-        const createdUser: UserType = await usersRepository.createUser(newUser);
-        return this._mapUserTypeToViewUserModel(createdUser);
-    },
-    async findUserById(id: string): Promise<UserType | null> {
-        return await usersRepository.findUserById(id);
+        const createdUser: UserAccountType = await usersRepository.createUser(newUser);
+        return createdUser;
     },
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id);
@@ -31,26 +42,8 @@ export const usersService = {
     async deleteAllUsers() {
         return usersRepository.deleteAllUsers();
     },
-    async checkCredentials(password: string, userLogin: string): Promise<UserType | null> {
-        const user: UserType | null = await usersRepository.findUserByLogin(userLogin);
-        if (!user) return null;
-
-        const haveCredentials = await bcrypt.compare(password, user.passwordHash);
-        if (haveCredentials) {
-            return user;
-        } else {
-            return null;
-        }
-    },
-    async _generateHash(password: string, salt: string): Promise<string> {
-        return await bcrypt.hash(password, salt);
-    },
-    _mapUserTypeToViewUserModel(user: UserType): ViewUserModel {
-        return {
-            id: user.id,
-            login: user.login,
-            email: user.email,
-            createdAt: user.createdAt
-        }
+    async _generateHash(password: string): Promise<string> {
+        const passwordSalt: string = await bcrypt.genSalt(10);
+        return await bcrypt.hash(password, passwordSalt);
     }
 }

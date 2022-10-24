@@ -6,13 +6,14 @@ import {postsRepository} from "../repositories/posts/posts-repository";
 import {PostType} from "../types/post-types";
 import {CreateCommentModel} from "../models/comment/create-comment-model";
 import {usersRepository} from "../repositories/users/users-repository";
-import {UserType} from "../types/user-types";
+import {UserAccountType} from "../types/user-types";
 import {commentsRepository} from "../repositories/comments/comments-repository";
+import {ViewUserModel} from "../models/user/view-user-model";
 
 export const commentsService = {
     async createComment(postId: string, userId: string, comment: CreateCommentModel): Promise<CommentType> {
         const foundedPost: PostType | null  = await postsRepository.findPostById(postId);
-        const foundedUser: UserType | null = await usersRepository.findUserById(userId)
+        const foundedUser: UserAccountType | null = await usersRepository.findUserById(userId)
         console.log(foundedUser);
         if (!foundedPost) throw new Error("'PostId' is incorrect");
         if (!foundedUser) throw new Error("'UserLogin' is incorrect");
@@ -23,7 +24,7 @@ export const commentsService = {
             postId: foundedPost.id,
             content: comment.content,
             userId: foundedUser.id,
-            userLogin: foundedUser.login,
+            userLogin: foundedUser.accountData.login,
             createdAt: (new Date()).toISOString()
         }
 

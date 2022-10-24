@@ -1,10 +1,15 @@
 import {ViewBlogModel} from "../models/blog/view-blog-model";
-import {FilterType, QueryType, SortDirections} from "../types/types";
+import {FilterType, QueryType} from "../types/types";
 import {ViewPostModel} from "../models/post/view-post-model";
-import {QueryUserModel, UserDBType, UserFilterType, UserType} from "../types/user-types";
+import {
+    QueryUserModel, UserAccountDbType,
+    UserAccountType,
+    UserFilterType,
+} from "../types/user-types";
 import {PostType} from "../types/post-types";
 import {BlogType} from "../types/blog-types";
 import {ViewMeModel} from "../models/auth/view-me-model";
+import {ViewUserModel} from "../models/user/view-user-model";
 
 export const getBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
     return {
@@ -27,11 +32,20 @@ export const getPostViewModel = (dbPost: PostType): ViewPostModel => {
     }
 }
 
-export const getMeViewModel = (user: UserType | UserDBType): ViewMeModel => {
+export const getMeViewModel = (user: UserAccountType | UserAccountDbType): ViewMeModel => {
     return {
-        email: user.email,
-        login: user.login,
+        email: user.accountData.email,
+        login: user.accountData.login,
         userId: user.id
+    }
+}
+
+export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType): ViewUserModel => {
+    return {
+        id: dbUser.id,
+        login: dbUser.accountData.login,
+        email: dbUser.accountData.email,
+        createdAt: dbUser.accountData.createdAt
     }
 }
 

@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from "body-parser";
 import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {errorsHandlingMiddleware} from "./middlewares/errors-handling-middleware";
@@ -8,6 +7,7 @@ import {connectToDB} from "./repositories/db";
 import {usersRouter} from "./routes/users-router";
 import {commentsRouter} from "./routes/comments-router";
 import {authRouter} from "./routes/auth-router";
+import {globalCatch} from "./common/errors";
 
 enum URL_ROUTES {
     auth = "/api/auth",
@@ -32,14 +32,14 @@ export enum HTTP_STATUSES {
 const port = process.env.PORT || 3000;
 export const app = express();
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(URL_ROUTES.auth, authRouter);
 app.use(URL_ROUTES.users, usersRouter);
 app.use(URL_ROUTES.blogs, blogsRouter);
 app.use(URL_ROUTES.posts, postsRouter);
 app.use(URL_ROUTES.comments, commentsRouter);
 app.use(URL_ROUTES.testing, testingRouter);
-app.use(errorsHandlingMiddleware); // Error handling
+//app.use(errorsHandlingMiddleware); // Error handling
 
 const startApp = async () => {
     await connectToDB();
@@ -49,4 +49,6 @@ const startApp = async () => {
     });
 }
 
-startApp();
+startApp().catch(error => {console.log(error)});
+
+globalCatch();

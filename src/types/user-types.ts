@@ -34,3 +34,29 @@ export type UserFilterType = {
     sortBy: string
     sortDirection: "asc" | "desc"
 }
+
+export type UserAccountType = {
+    id:	string,
+    accountData: AccountType,
+    emailConfirmation: EmailConfirmationType
+}
+
+export type UserAccountDbType = {
+    _id: ObjectId
+    id:	string
+    accountData: AccountType,
+    emailConfirmation: EmailConfirmationType
+}
+
+export type AccountType = {
+    login: string
+    email: string
+    passwordHash: string
+    createdAt: string
+}
+
+export type EmailConfirmationType = {
+    confirmationCode: string,
+    expirationDate: string,
+    isConfirmed: boolean
+}
