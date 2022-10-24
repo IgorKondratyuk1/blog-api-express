@@ -17,11 +17,12 @@ usersRouter.get("/", async (req: RequestWithQuery<QueryUserModel>, res: Response
     res.json(users);
 });
 
+// Test creation of users
 usersRouter.post("/",
     basicAuthMiddleware,
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response<ViewUserModel>) => {
-    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password, true);
+    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password, true); // Make confirmed users
 
     if (!createdUser) {
         res.sendStatus(400);
