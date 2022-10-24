@@ -22,7 +22,8 @@ authRouter.post("/registration",
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response) => {
         const user: UserAccountType | null = await authService.saveUser(req.body.login, req.body.email, req.body.password);
-
+        console.log('User data: ' + req.body.login + " " + req.body.email + " " + req.body.password );
+        console.log(user);
         // console.log("___HEADERS___");
         // console.log(req.headers);
 
@@ -64,8 +65,10 @@ authRouter.post("/login",
         res.json({
             accessToken: token
         });
+        return;
     } else {
-        res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        return;
     }
 });
 
