@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import {usersRepository} from "../repositories/users/users-repository";
 import {ObjectId} from "mongodb";
-import {ViewUserModel} from "../models/user/view-user-model";
 import {add} from "date-fns";
 
 export const usersService = {

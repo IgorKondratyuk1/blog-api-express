@@ -47,7 +47,7 @@ authRouter.post("/registration-confirmation",
 authRouter.post("/registration-email-resending",
     registrationEmailResendingValidationSchema,
     async (req: RequestWithBody<RegistrationEmailResendingModel>, res: Response) => {
-        const result: boolean = await authService.emailResending(req.body.email);
+        const result: boolean = await authService.resendConfirmCode(req.body.email);
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
         } else {

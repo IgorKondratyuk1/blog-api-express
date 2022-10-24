@@ -5,6 +5,7 @@ import {usersRepository} from "../repositories/users/users-repository";
 import bcrypt from "bcrypt";
 import {emailManager} from "../manager/email-managers";
 import {usersService} from "./users-service";
+import {v4 as uuidv4} from 'uuid';
 
 export const authService = {
     async saveUser(login: string, email: string, password: string): Promise<UserAccountType | null> {
@@ -44,13 +45,17 @@ export const authService = {
 
         return await usersRepository.confirmUserEmail(user.id);
     },
-    async emailResending(email: string): Promise<boolean> {
+    async resendConfirmCode(email: string): Promise<boolean> {
         const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(email);
         if (!user) return false;
         if (user.emailConfirmation.isConfirmed) return false;
 
+        // Update code with new uuid
+        const updatedUser = await usersRepository.updateUserConfirmCode(user.id, uuidv4());
+        if (!updatedUser) return false;
+
         try {
-            await emailManager.sendEmailConfirmationMessage(user);
+            await emailManager.sendEmailConfirmationMessage(updatedUser);
             return true;
         } catch (error) {
             console.error(error);

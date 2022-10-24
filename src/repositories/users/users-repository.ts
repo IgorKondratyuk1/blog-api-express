@@ -32,6 +32,11 @@ export const usersRepository = {
         const result = await usersCollection.updateOne({id: id}, {$set: { 'emailConfirmation.isConfirmed': true}});
         return result.modifiedCount === 1;
     },
+    async updateUserConfirmCode(id: string, code: string): Promise<UserAccountType | null> {
+        const result = await usersCollection.findOneAndUpdate({id: id}, {$set: {'emailConfirmation.confirmationCode': code}}, {returnDocument: "after"});
+        if (!result.value || !result.ok) return null;
+        return this._mapUserAccountDBTypeToUserAccountType(result.value);
+    },
     _mapUserAccountDBTypeToUserAccountType(dbUser: UserAccountDbType): UserAccountType {
         return {
             id: dbUser.id,
