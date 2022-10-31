@@ -19,6 +19,11 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     }
 
     const refreshTokenData = await jwtService.getDataByToken(refreshToken);
+    if (!refreshTokenData) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        return;
+    }
+
     try {
         console.log(refreshTokenData);
         console.log("iat: " + new Date(1000 * refreshTokenData.iat));
@@ -43,7 +48,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         return;
     }
 
-    if (refreshTokenData.userId) {
+    if (refreshTokenData?.userId) {
         const foundedUser = await usersService.findUserById(refreshTokenData.userId);
         if (!foundedUser) {
             res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
