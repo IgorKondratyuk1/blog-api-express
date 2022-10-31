@@ -9,10 +9,7 @@ export const usersService = {
     async findUserById(id: string): Promise<UserAccountType | null> {
         return await usersRepository.findUserById(id);
     },
-    async createUser(login: string, email: string, password: string, isConfirmed: boolean = false): Promise<UserAccountType> {
-        //TODO
-        // If login or email already registered return null or throw error (const user: UserAccountType | null = findByloginOrId ...)
-
+    async createUser(login: string, email: string, password: string, isConfirmed: boolean = false): Promise<UserAccountType | null> {
         const passwordHash: string = await this._generateHash(password);
         const newUser: UserAccountDbType = {
             _id: new ObjectId(),
@@ -32,7 +29,7 @@ export const usersService = {
                 isConfirmed: isConfirmed
             }
         }
-        const createdUser: UserAccountType = await usersRepository.createUser(newUser);
+        const createdUser: UserAccountType | null = await usersRepository.createUser(newUser);
         return createdUser;
     },
     async deleteUser(id: string): Promise<boolean> {

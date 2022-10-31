@@ -43,3 +43,7 @@ export enum SortDirections {
     ASC = "asc",
     DESC = "desc"
 }
+
+export type RefreshTokenType = {
+    token: string
+}

@@ -107,7 +107,7 @@ postsRouter.post("/:id/comments",
         return;
     }
 
-    const createdCommentsOfPost: ViewCommentModel = await commentsService.createComment(req.params.id, req.user.id, req.body);
+    const createdCommentsOfPost: ViewCommentModel = await commentsService.createComment(req.params.id, req.user!.id, req.body);
 
     res.status(HTTP_STATUSES.CREATED_201)
         .json(createdCommentsOfPost);

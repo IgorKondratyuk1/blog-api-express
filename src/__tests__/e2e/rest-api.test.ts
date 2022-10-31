@@ -172,8 +172,8 @@ describe("/auth", () => {
     let firstUser: any = null;
     it("POST: should create first user", async () => {
         const data: CreateUserModel = {
-            email: "testUser@gmail.com",
-            login: "test12345",
+            email: "testUser1@gmail.com",
+            login: "test1",
             password: usersPassword
         };
 
@@ -198,8 +198,8 @@ describe("/auth", () => {
     let secondUser: any = null;
     it("POST: should create second user", async () => {
         const data: CreateUserModel = {
-            email: "testUser@gmail.com",
-            login: "test12345",
+            email: "testUser2@gmail.com",
+            login: "test2",
             password: usersPassword
         };
 

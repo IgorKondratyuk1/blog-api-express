@@ -22,24 +22,24 @@ usersRouter.post("/",
     basicAuthMiddleware,
     userRegistrationValidationSchema,
     async (req: RequestWithBody<CreateUserModel>, res: Response<ViewUserModel>) => {
-    const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password, true); // Make confirmed users
+        const createdUser: UserAccountType | null = await usersService.createUser(req.body.login, req.body.email, req.body.password, true); // Make confirmed users
 
-    if (!createdUser) {
-        res.sendStatus(400);
-        return;
-    }
-    res.status(201)
-        .json(mapUserAccountTypeToViewUserModel(createdUser));
-});
+        if (!createdUser) {
+            res.sendStatus(400);
+            return;
+        }
+        res.status(201)
+            .json(mapUserAccountTypeToViewUserModel(createdUser));
+    });
 
 usersRouter.delete("/:id",
     basicAuthMiddleware,
     async (req: RequestWithParams<UriParamsUserModel>, res: Response) => {
-    const isDeleted: boolean = await usersService.deleteUser(req.params.id);
+        const isDeleted: boolean = await usersService.deleteUser(req.params.id);
 
-    if (isDeleted) {
-        res.sendStatus(204);
-    } else {
-        res.sendStatus(404);
-    }
-});
+        if (isDeleted) {
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(404);
+        }
+    });

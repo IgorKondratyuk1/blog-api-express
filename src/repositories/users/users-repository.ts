@@ -17,8 +17,9 @@ export const usersRepository = {
         if (!dbUser) return null;
         return this._mapUserAccountDBTypeToUserAccountType(dbUser);
     },
-    async createUser(newUser: UserAccountDbType): Promise<UserAccountType> {
-        await usersCollection.insertOne(newUser);
+    async createUser(newUser: UserAccountDbType): Promise<UserAccountType | null> {
+        const result = await usersCollection.insertOne(newUser);
+        if (!result.insertedId) return null;
         return this._mapUserAccountDBTypeToUserAccountType(newUser);
     },
     async deleteUser(id: string): Promise<boolean> {

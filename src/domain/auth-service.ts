@@ -6,10 +6,14 @@ import bcrypt from "bcrypt";
 import {emailManager} from "../manager/email-managers";
 import {usersService} from "./users-service";
 import {v4 as uuidv4} from 'uuid';
+import {tokensBlackListCollection} from "../repositories/db";
+import {refreshTokensRepository} from "../repositories/auth/auth-repository";
+import {RefreshTokenType} from "../types/types";
 
 export const authService = {
     async saveUser(login: string, email: string, password: string): Promise<UserAccountType | null> {
-        const createdUser: UserAccountType = await usersService.createUser(login, email, password);
+        const createdUser: UserAccountType | null = await usersService.createUser(login, email, password);
+        if (!createdUser) return null;
 
         try {
             await emailManager.sendEmailConfirmationMessage(createdUser);
@@ -25,7 +29,7 @@ export const authService = {
             const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(userLoginOrEmail);
             console.log(user);
             if (!user) return null;
-            // if (!user.emailConfirmation.isConfirmed) return null;
+            if (!user.emailConfirmation.isConfirmed) return null;
 
             const haveCredentials = await this._isPasswordCorrect(password, user.accountData.passwordHash);
             if (haveCredentials) {
@@ -69,5 +73,19 @@ export const authService = {
     },
     async _isPasswordCorrect(password: string, passwordHash: string): Promise<boolean> {
        return await bcrypt.compare(password, passwordHash);
+    },
+    async generateRefreshTokenCode(): Promise<string> {
+        return uuidv4();
+    },
+    async addRefreshTokenToBlackList(token: string) {
+        const t: RefreshTokenType = {token: token};
+        return refreshTokensRepository.addToBlackList(t);
+    },
+    async checkRefreshToken(token: string): Promise<boolean> {
+        const foundedToken: RefreshTokenType | null = await refreshTokensRepository.findToken(token);
+        return foundedToken ? true : false;
+    },
+    async deleteAllRefreshTokens() {
+        return refreshTokensRepository.deleteAllTokens();
     }
 }

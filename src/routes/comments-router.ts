@@ -30,7 +30,7 @@ commentsRouter.put("/:id",
     async (req: RequestWithParamsAndBody<UriParamsCommentModel, UpdateCommentModel>, res: Response) => {
 
     try {
-        const isCommentUpdated: boolean = await commentsService.updateComment(req.params.id, req.user.id, req.body);
+        const isCommentUpdated: boolean = await commentsService.updateComment(req.params.id, req.user!.id, req.body);
 
         if(!isCommentUpdated) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
@@ -49,7 +49,7 @@ commentsRouter.delete("/:id",
     async (req: RequestWithParams<UriParamsCommentModel>, res: Response<ViewCommentModel>) => {
 
     try {
-        const isCommentDeleted: boolean = await commentsService.deleteComment(req.params.id, req.user.id);
+        const isCommentDeleted: boolean = await commentsService.deleteComment(req.params.id, req.user!.id);
 
         if(!isCommentDeleted) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
