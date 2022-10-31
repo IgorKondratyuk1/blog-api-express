@@ -19,12 +19,18 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     }
 
     const refreshTokenData = await jwtService.getDataByToken(refreshToken);
-    console.log(refreshTokenData);
-    console.log("iat: " + new Date(1000 * refreshTokenData.iat));
-    console.log("exp " + new Date(1000 * refreshTokenData.exp));
-    console.log("now " + new Date());
-    //console.log(new Date(1000 * refreshTokenData.exp) < new Date());
-    if (new Date(1000 * refreshTokenData.exp) < new Date()) {
+    try {
+        console.log(refreshTokenData);
+        console.log("iat: " + new Date(1000 * refreshTokenData.iat));
+        console.log("exp " + new Date(1000 * refreshTokenData.exp));
+        console.log("now " + new Date());
+        console.log(new Date(1000 * refreshTokenData.exp) < new Date());
+    } catch (err) {
+        console.log('Error catch');
+        console.log(err);
+    }
+
+    if (refreshTokenData?.exp || new Date(1000 * refreshTokenData.exp) < new Date()) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return;
     }
