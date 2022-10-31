@@ -30,7 +30,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         console.log(err);
     }
 
-    if (refreshTokenData?.exp || new Date(1000 * refreshTokenData.exp) < new Date()) {
+    if (refreshTokenData?.exp && new Date(1000 * refreshTokenData.exp) < new Date()) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return;
     }
