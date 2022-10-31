@@ -14,7 +14,7 @@ testingRouter.delete("/all-data", async (req: Request, res: Response) => {
     await postsService.deleteAllPosts();
     await usersService.deleteAllUsers();
     await commentsService.deleteAllComments();
-    await authService.deleteAllRefreshTokens();
+    //await authService.deleteAllRefreshTokens();
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 

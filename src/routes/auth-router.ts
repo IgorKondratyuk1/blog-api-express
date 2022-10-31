@@ -62,13 +62,12 @@ authRouter.post("/login",
 
     if (user) {
         const accessToken: string = await jwtService.createJWT({userId: user.id}, SETTINGS.JWT_SECRET, Number(SETTINGS.ACCESS_TOKEN_EXPIRATION));
-        //const refreshCode: string = await authService.generateRefreshTokenCode();
         const refreshToken: string = await jwtService.createJWT({userId: user.id}, SETTINGS.JWT_SECRET, Number(SETTINGS.REFRESH_TOKEN_EXPIRATION));
 
         res.cookie('refreshToken', refreshToken,
             {
             httpOnly: true,
-            //secure: true,
+            secure: true,
             maxAge: Number(SETTINGS.REFRESH_TOKEN_EXPIRATION) * 1000 // ms
         });
         res.json({
@@ -97,7 +96,7 @@ authRouter.post("/refresh-token",
             res.cookie('refreshToken', refreshToken,
                 {
                     httpOnly: true,
-                    //secure: true,
+                    secure: true,
                     maxAge: Number(SETTINGS.REFRESH_TOKEN_EXPIRATION) * 1000 // ms
             });
             res.json({
