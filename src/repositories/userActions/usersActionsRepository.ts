@@ -13,7 +13,7 @@ export const usersActionsRepository = {
         return await userActionsCollection.countDocuments({ip, resource});
     },
     async deleteExpiredActions(): Promise<DeleteResult> {
-        const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 1000)));
+        const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 100)));
         return userActionsCollection.deleteMany({lastActiveDate: {$lte: deleteDate}});
     },
     async deleteAllActions() {
