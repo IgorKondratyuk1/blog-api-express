@@ -2,10 +2,10 @@ import {body} from "express-validator";
 import {inputValidationMiddleware} from "../../middlewares/inputValidationMiddleware";
 
 export const userLoginValidationSchema = [
-    body("login")
-        .exists({checkFalsy: true}).withMessage("Field 'login' is not exist")
-        .isString().withMessage("Field 'login' is not string")
-        .notEmpty({ignore_whitespace: true}).withMessage("Field 'login' is empty")
+    body("loginOrEmail")
+        .exists({checkFalsy: true}).withMessage("Field 'loginOrEmail' is not exist")
+        .isString().withMessage("Field 'loginOrEmail' is not string")
+        .notEmpty({ignore_whitespace: true}).withMessage("Field 'loginOrEmail' is empty")
         .trim()
         .isLength({min: 3, max: 200}).withMessage("Min length 3 and max length 200 symbols"),
     body("password")
