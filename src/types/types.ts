@@ -39,11 +39,11 @@ export type FilterType = {
     sortDirection: 'asc' | 'desc'
 }
 
-export enum SortDirections {
-    ASC = "asc",
-    DESC = "desc"
+export type RefreshTokenMetaType = {
+    token: string
 }
 
-export type RefreshTokenType = {
-    token: string
+export type TokensPair = {
+    accessToken: string
+    refreshToken: string
 }

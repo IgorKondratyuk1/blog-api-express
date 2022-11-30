@@ -1,10 +1,11 @@
 import {MongoClient} from "mongodb";
-import {UserAccountDbType} from "../types/user-types";
-import {BlogDbType} from "../types/blog-types";
-import {PostDbType} from "../types/post-types";
 import {SETTINGS} from "../config";
-import {CommentDbType} from "../types/comment-types";
-import {RefreshTokenType} from "../types/types";
+import {DeviceDBType} from "../types/deviceTypes";
+import {BlogDbType} from "../types/blogTypes";
+import {PostDbType} from "../types/postTypes";
+import {UserAccountDbType} from "../types/userTypes";
+import {CommentDbType} from "../types/commentTypes";
+import {UserActionsDbType} from "../types/userActionTypes";
 
 console.log("Env: " + SETTINGS.MONGO_URL);
 const mongoURL: string = SETTINGS.MONGO_URL;
@@ -15,7 +16,8 @@ export const blogsCollection = db.collection<BlogDbType>("blogs");
 export const postsCollection = db.collection<PostDbType>("posts");
 export const usersCollection = db.collection<UserAccountDbType>("users");
 export const commentsCollection = db.collection<CommentDbType>("comments");
-export const tokensBlackListCollection = db.collection<RefreshTokenType>("refreshTokens");
+export const securityCollection = db.collection<DeviceDBType>("security");
+export const userActionsCollection = db.collection<UserActionsDbType>("userActions");
 
 export async function connectToDB() {
     try{
