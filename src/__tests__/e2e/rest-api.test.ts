@@ -342,7 +342,7 @@ describe("/blogs", () => {
     it("POST: should create blog", async () => {
         const data: CreateBlogModel = {
             name: "New Blog",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
 
         const result = await request(app)
@@ -356,7 +356,7 @@ describe("/blogs", () => {
         const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);
@@ -374,7 +374,7 @@ describe("/blogs", () => {
     it("POST: should create blog with spaces", async () => {
         const data: CreateBlogModel = {
             name: "   Spaces       ",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
         const result = await request(app)
             .post("/api/blogs")
@@ -387,7 +387,7 @@ describe("/blogs", () => {
         const expecedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name.trim(),
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expecedObj);
@@ -418,7 +418,7 @@ describe("/blogs", () => {
     it("POST: shouldn`t create blog with lenth > 15", async () => {
         const data: CreateBlogModel = {
             name: "1234567890123456",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
 
         const result = await request(app)
@@ -439,7 +439,7 @@ describe("/blogs", () => {
     });
 
 
-    it("POST: shouldn`t create blog without youtubeUrl", async () => {
+    it("POST: shouldn`t create blog without websiteUrl", async () => {
         const result = await request(app)
             .post("/api/blogs")
             .set("Authorization", basicAuthValue)
@@ -452,7 +452,7 @@ describe("/blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -462,7 +462,7 @@ describe("/blogs", () => {
     it("POST: shouldn`t create blog with lentgth > 100", async () => {
         const data: CreateBlogModel = {
             name: "New post",
-            youtubeUrl: "https://www.youtube.comLorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m1"
+            websiteUrl: "https://www.youtube.comLorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m1"
         };
         const result = await request(app)
             .post("/api/blogs")
@@ -474,7 +474,7 @@ describe("/blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -484,7 +484,7 @@ describe("/blogs", () => {
     it("POST: shouldn`t create blog with wrong url", async () => {
         const data: CreateBlogModel = {
             name: "New blog",
-            youtubeUrl: "https:\\/www.youtube.com"
+            websiteUrl: "https:\\/www.youtube.com"
         };
         const result = await request(app)
             .post("/api/blogs")
@@ -496,7 +496,7 @@ describe("/blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -507,7 +507,7 @@ describe("/blogs", () => {
     it("PUT: blog should be updated by correct data", async () => {
         const data: UpdateBlogModel = {
             name: "Changed title",
-            youtubeUrl: "https://www.google.com"
+            websiteUrl: "https://www.google.com"
         };
 
         await request(app)
@@ -522,7 +522,7 @@ describe("/blogs", () => {
         const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);
@@ -533,7 +533,7 @@ describe("/blogs", () => {
             .put(`/api/blogs/${secondBlog.id}`)
             .set("Authorization", basicAuthValue)
             .send({
-                youtubeUrl: "https://www.google.com"
+                websiteUrl: "https://www.google.com"
             }).expect(400);
 
         const result = await request(app)
@@ -543,7 +543,7 @@ describe("/blogs", () => {
         expect(result.body).toEqual(secondBlog);
     });
 
-    it("PUT: blog shouldn`t be updated by wrong data (without field 'youtubeUrl')", async () => {
+    it("PUT: blog shouldn`t be updated by wrong data (without field 'websiteUrl')", async () => {
         await request(app)
             .put(`/api/blogs/${secondBlog.id}`)
             .set("Authorization", basicAuthValue)
@@ -561,7 +561,7 @@ describe("/blogs", () => {
     it("PUT: blog shouldn`t be updated by wrong data (without wrong id)", async () => {
         const data: UpdateBlogModel = {
             name: "Changed Title",
-            youtubeUrl: "https://www.google.com"
+            websiteUrl: "https://www.google.com"
         };
 
         await request(app)
@@ -615,7 +615,7 @@ describe("/blogs/:blogId/posts", () => {
         for (let i = 0; i < BLOGS_QUANTITY; i++) {
             const data: CreateBlogModel = {
                 name: `New Blog ${i}`,
-                youtubeUrl: `https://www.youtube.com/channel-${1}`
+                websiteUrl: `https://www.youtube.com/channel-${1}`
             };
 
             const result = await request(app)
@@ -629,7 +629,7 @@ describe("/blogs/:blogId/posts", () => {
             const expectedObj: ViewBlogModel = {
                 id: expect.any(String),
                 name: arrOfBlogs[i].name,
-                youtubeUrl: arrOfBlogs[i].youtubeUrl,
+                websiteUrl: arrOfBlogs[i].websiteUrl,
                 createdAt: expect.any(String)
             };
             expect(result.body).toEqual(expectedObj);
@@ -804,7 +804,7 @@ describe("/posts", () => {
     it("POST: should create blog", async () => {
         const data: CreateBlogModel = {
             name: "New Blog",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
 
         const result = await request(app)
@@ -818,7 +818,7 @@ describe("/posts", () => {
         const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);
@@ -1133,7 +1133,7 @@ describe("/comments", () => {
     it("POST: should create blog", async () => {
         const data: CreateBlogModel = {
             name: "New Blog",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
 
         const result = await request(app)
@@ -1147,7 +1147,7 @@ describe("/comments", () => {
         const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);
@@ -1488,7 +1488,7 @@ describe("/testing/delete", () => {
     it("POST: should create blog", async () => {
         const data: CreateBlogModel = {
             name: "New Blog",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
 
         const result = await request(app)
@@ -1502,7 +1502,7 @@ describe("/testing/delete", () => {
         const expectedObj: ViewBlogModel = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl,
+            websiteUrl: data.websiteUrl,
             createdAt: expect.any(String)
         };
         expect(result.body).toEqual(expectedObj);

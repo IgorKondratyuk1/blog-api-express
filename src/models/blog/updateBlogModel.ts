@@ -1,4 +1,5 @@
 export type UpdateBlogModel = {
     name: string
-    youtubeUrl: string
+    websiteUrl: string
+    description: string
 }

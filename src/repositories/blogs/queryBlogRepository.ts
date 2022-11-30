@@ -31,7 +31,7 @@ export const blogsQueryRepository = {
             items: blogsViewModels
         };
     },
-    async findBlogById(id: string): Promise<ViewBlogModel | null> {
+    async findBlogById(id: string): Promise<BlogDbType | null> {
         return blogsCollection.findOne({id: id});
     }
 }

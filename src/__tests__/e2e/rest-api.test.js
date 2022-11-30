@@ -29,7 +29,7 @@ describe("blogs", () => {
         const expectedObj = {
             id: "1",
             name: "first-blog",
-            youtubeUrl: "url-1"
+            websiteUrl: "url-1"
         };
         expect(result.body).toEqual(expectedObj);
     }));
@@ -38,7 +38,7 @@ describe("blogs", () => {
     it("POST:blogs should create post", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "New Blog",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
@@ -48,7 +48,7 @@ describe("blogs", () => {
         const expectedObj = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl
+            websiteUrl: data.websiteUrl
         };
         expect(result.body).toEqual(expectedObj);
     }));
@@ -62,7 +62,7 @@ describe("blogs", () => {
     it("POST:blogs should create post with spaces", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "   Spaces       ",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
@@ -72,14 +72,14 @@ describe("blogs", () => {
         const expecedObj = {
             id: expect.any(String),
             name: data.name.trim(),
-            youtubeUrl: data.youtubeUrl
+            websiteUrl: data.websiteUrl
         };
         expect(result.body).toEqual(expecedObj);
     }));
     it("POST:blogs shouldn`t create post with lenth > 15", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "1234567890123456",
-            youtubeUrl: "https://www.youtube.com"
+            websiteUrl: "https://www.youtube.com"
         };
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
@@ -95,7 +95,7 @@ describe("blogs", () => {
         };
         expect(result.body).toEqual(expectedError);
     }));
-    it("POST:blogs shouldn`t create post without youtubeUrl", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("POST:blogs shouldn`t create post without websiteUrl", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
             .send({
@@ -106,7 +106,7 @@ describe("blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -115,7 +115,7 @@ describe("blogs", () => {
     it("POST:blogs shouldn`t create post with lentgth > 100", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "New post",
-            youtubeUrl: "https://www.youtube.comLorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m1"
+            websiteUrl: "https://www.youtube.comLorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m1"
         };
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
@@ -125,7 +125,7 @@ describe("blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -134,7 +134,7 @@ describe("blogs", () => {
     it("POST:blogs shouldn`t create post with wrong url", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "New post",
-            youtubeUrl: "https:\\/www.youtube.com"
+            websiteUrl: "https:\\/www.youtube.com"
         };
         const result = yield (0, supertest_1.default)(src_1.app)
             .post("/api/blogs")
@@ -144,7 +144,7 @@ describe("blogs", () => {
             errorsMessages: [
                 {
                     "message": expect.any(String),
-                    "field": "youtubeUrl"
+                    "field": "websiteUrl"
                 }
             ]
         };
@@ -154,7 +154,7 @@ describe("blogs", () => {
     it("PUT:blogs should be updated by correct data", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "Changed title",
-            youtubeUrl: "https://www.google.com"
+            websiteUrl: "https://www.google.com"
         };
         yield (0, supertest_1.default)(src_1.app)
             .put(`/api/blogs/${firstPost.id}`)
@@ -165,7 +165,7 @@ describe("blogs", () => {
         const expectedObj = {
             id: expect.any(String),
             name: data.name,
-            youtubeUrl: data.youtubeUrl
+            websiteUrl: data.websiteUrl
         };
         expect(result.body).toEqual(expectedObj);
     }));
@@ -173,14 +173,14 @@ describe("blogs", () => {
         yield (0, supertest_1.default)(src_1.app)
             .put(`/api/blogs/${secondPost.id}`)
             .send({
-            youtubeUrl: "https://www.google.com"
+            websiteUrl: "https://www.google.com"
         }).expect(400);
         const result = yield (0, supertest_1.default)(src_1.app)
             .get(`/api/blogs/${secondPost === null || secondPost === void 0 ? void 0 : secondPost.id}`);
         expect(result.status).toBe(200);
         expect(result.body).toEqual(secondPost);
     }));
-    it("PUT:blogs shouldn`t be updated by wrong data (without field 'youtubeUrl')", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("PUT:blogs shouldn`t be updated by wrong data (without field 'websiteUrl')", () => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, supertest_1.default)(src_1.app)
             .put(`/api/blogs/${secondPost.id}`)
             .send({
@@ -194,7 +194,7 @@ describe("blogs", () => {
     it("PUT:blogs shouldn`t be updated by wrong data (without wrong id)", () => __awaiter(void 0, void 0, void 0, function* () {
         const data = {
             name: "Changed Title",
-            youtubeUrl: "https://www.google.com"
+            websiteUrl: "https://www.google.com"
         };
         yield (0, supertest_1.default)(src_1.app)
             .put(`/api/blogs/1234556789`)

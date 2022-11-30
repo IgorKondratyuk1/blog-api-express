@@ -1,4 +1,4 @@
 export type LoginInputModel = {
-    login: string
+    loginOrEmail: string
     password: string
 }

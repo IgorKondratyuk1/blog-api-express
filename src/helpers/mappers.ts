@@ -45,8 +45,9 @@ export const mapBlogTypeToBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
-        youtubeUrl: dbBlog.youtubeUrl,
-        createdAt: dbBlog.createdAt
+        websiteUrl: dbBlog.websiteUrl,
+        createdAt: dbBlog.createdAt,
+        description: dbBlog.description
     }
 }
 
@@ -94,8 +95,9 @@ export const mapBlogDBTypeToBlogType = (dbBlog: BlogDbType): BlogType => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
-        youtubeUrl: dbBlog.youtubeUrl,
-        createdAt: dbBlog.createdAt
+        websiteUrl: dbBlog.websiteUrl,
+        createdAt: dbBlog.createdAt,
+        description: dbBlog.description
     }
 }
 
@@ -123,7 +125,7 @@ export const mapUserAccountDbTypeToViewUserModel = (dbUser: UserAccountDbType): 
 export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbType): UserActionsType => {
     return {
         ip: dbAction.ip,
-        actionDate: dbAction.actionDate,
+        lastActiveDate: dbAction.lastActiveDate,
         resource: dbAction.resource
     }
 }

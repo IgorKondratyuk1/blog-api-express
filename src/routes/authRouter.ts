@@ -66,7 +66,7 @@ authRouter.post("/login",
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const ip: string = req.ip || "";
         const title: string = req.headers['user-agent'] || "";
-        const result: TokensPair | authError = await authService.login(ip, title, req.body.password, req.body.login);
+        const result: TokensPair | authError = await authService.login(ip, title, req.body.password, req.body.loginOrEmail);
 
         switch (result) {
             case authError.BadRequestError:

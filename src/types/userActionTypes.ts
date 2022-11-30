@@ -2,11 +2,11 @@ export type UserActionsDbType = {
     id: string
     ip: string
     resource: string
-    actionDate: Date
+    lastActiveDate: Date
 }
 
 export type UserActionsType = {
     ip: string
     resource: string
-    actionDate: Date
+    lastActiveDate: Date
 }

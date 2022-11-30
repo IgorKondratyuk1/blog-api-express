@@ -50,7 +50,7 @@ blogsRouter.post("/",
     basicAuthMiddleware,
     blogValidationSchema,
     async (req: RequestWithBody<CreateBlogModel>, res: Response<ViewBlogModel>) => {
-        const createdBlog: BlogType = await blogsService.createBlog(req.body.name, req.body.youtubeUrl);
+        const createdBlog: BlogType = await blogsService.createBlog(req.body.name, req.body.websiteUrl, req.body.description);
 
         res.status(HTTP_STATUSES.CREATED_201)
             .json(mapBlogTypeToBlogViewModel((createdBlog)));
@@ -60,7 +60,7 @@ blogsRouter.put("/:id",
     basicAuthMiddleware,
     blogValidationSchema,
     async (req: RequestWithParamsAndBody<UriParamsBlogModel, UpdateBlogModel>, res: Response) => {
-        const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body.name, req.body.youtubeUrl);
+        const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body.name, req.body.websiteUrl);
 
         if (isBlogUpdated) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

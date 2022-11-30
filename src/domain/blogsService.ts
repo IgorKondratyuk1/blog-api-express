@@ -4,19 +4,20 @@ import {BlogDbType, BlogType} from "../types/blogTypes";
 import {blogsRepository} from "../repositories/blogs/blogsRepository";
 
 export const blogsService = {
-    async createBlog(name: string, youtubeUrl: string): Promise<BlogType> {
+    async createBlog(name: string, websiteUrl: string, description: string): Promise<BlogType> {
         const newBlog: BlogDbType = {
             _id: new ObjectId(),
             id: uuidv4(),
             name,
-            youtubeUrl,
+            websiteUrl,
+            description,
             createdAt: (new Date()).toISOString()
         }
 
         return blogsRepository.createBlog(newBlog);
     },
-    async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
-        return blogsRepository.updateBlog(id, name, youtubeUrl);
+    async updateBlog(id: string, name: string, websiteUrl: string): Promise<boolean> {
+        return blogsRepository.updateBlog(id, name, websiteUrl);
     },
     async deleteBlog(id: string): Promise<boolean> {
         return blogsRepository.deleteBlog(id);

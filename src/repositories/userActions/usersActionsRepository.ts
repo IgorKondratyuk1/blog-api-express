@@ -14,7 +14,7 @@ export const usersActionsRepository = {
     },
     async deleteExpiredActions(): Promise<DeleteResult> {
         const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 1000)));
-        return userActionsCollection.deleteMany({actionDate: {$lte: deleteDate}});
+        return userActionsCollection.deleteMany({lastActiveDate: {$lte: deleteDate}});
     },
     async deleteAllActions() {
         return userActionsCollection.deleteMany({});

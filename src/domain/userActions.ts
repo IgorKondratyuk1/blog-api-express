@@ -6,7 +6,7 @@ export const UserActionsService = {
     async createAndGetCount(ip: string, resource: string): Promise<number> {
         const newUserAction: UserActionsDbType = {
             id: uuidv4(),
-            actionDate: new Date(),
+            lastActiveDate: new Date(),
             ip,
             resource
         };
