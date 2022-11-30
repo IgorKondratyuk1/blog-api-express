@@ -76,7 +76,7 @@ authRouter.post("/login",
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
                 return;
             case authError.NotFoundError:
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
                 return;
             case authError.CreationError:
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
@@ -100,35 +100,40 @@ authRouter.post("/refresh-token",
     checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
         if (!req.user?.id) res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-
-        const result: TokensPair | authError = await authService.refreshTokens({userId: req.user.id, deviceId: req.deviceId, issuedAt: req.issuedAt});
-
-        switch (result) {
-            case authError.BadRequestError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-            case authError.WrongUserError:
-                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                return;
-            case authError.NotFoundError:
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-                return;
-            case authError.CreationError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-            case authError.TokenError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-        }
-
-        if (result) {
-            res.cookie('refreshToken', result.refreshToken, cookiesSettings());
-            res.json({
-                accessToken: result.accessToken
+        try {
+            const result: TokensPair | authError = await authService.refreshTokens({
+                userId: req.user.id,
+                deviceId: req.deviceId,
+                issuedAt: req.issuedAt
             });
-        } else {
-            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        }
+
+            switch (result) {
+                case authError.BadRequestError:
+                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                    return;
+                case authError.WrongUserError:
+                    res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+                    return;
+                case authError.NotFoundError:
+                    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+                    return;
+                case authError.CreationError:
+                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                    return;
+                case authError.TokenError:
+                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                    return;
+            }
+
+            if (result) {
+                res.cookie('refreshToken', result.refreshToken, cookiesSettings());
+                res.json({
+                    accessToken: result.accessToken
+                });
+            } else {
+                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+            }
+        }catch(e){console.log(e)}
     });
 
 authRouter.get("/me",

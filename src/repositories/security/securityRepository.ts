@@ -18,7 +18,7 @@ export const securityRepository = {
         return mapDeviceDBTypeToDeviceType(newDevice);
     },
     async updateDeviceSessionIssuedDate(deviceId: string, issuedAt: string): Promise<boolean> {
-        const result = await securityCollection.updateOne({deviceId: deviceId}, {issuedAt});
+        const result = await securityCollection.updateOne({deviceId: deviceId}, {$set:{issuedAt}});
         return result.modifiedCount === 1;
     },
     async deleteOtherSessions(userId: string, currentDeviceId: string): Promise<boolean> {
@@ -30,6 +30,6 @@ export const securityRepository = {
         return result.deletedCount === 1;
     },
     async deleteAllDevices() {
-        return securityCollection.deleteMany({});
+        return await securityCollection.deleteMany({});
     }
 }

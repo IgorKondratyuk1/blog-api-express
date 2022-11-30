@@ -1,3 +1,4 @@
+// @ts-nocheck
 import request from 'supertest';
 import {app} from "../../index";
 import {CreateBlogModel} from "../../models/blog/create-blog-model";
