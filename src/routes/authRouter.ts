@@ -20,6 +20,42 @@ import {requestsLimiterMiddleware} from "../middlewares/requestsLimiterMiddlewar
 
 export const authRouter = Router({});
 
+authRouter.post("/login",
+    requestsLimiterMiddleware,
+    userLoginValidationSchema,
+    async (req: RequestWithBody<LoginInputModel>, res: Response) => {
+        const ip: string = req.ip || "";
+        const title: string = req.headers['user-agent'] || "";
+        const result: TokensPair | authError = await authService.login(ip, title, req.body.password, req.body.loginOrEmail);
+
+        switch (result) {
+            case authError.BadRequestError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+            case authError.WrongUserError:
+                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+                return;
+            case authError.NotFoundError:
+                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+                return;
+            case authError.CreationError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+            case authError.TokenError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+        }
+
+        if (result) {
+            res.cookie('refreshToken', result.refreshToken, cookiesSettings());
+            res.json({
+                accessToken: result.accessToken
+            });
+        } else {
+            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        }
+    });
+
 authRouter.post("/registration",
     requestsLimiterMiddleware,
     userRegistrationValidationSchema,
@@ -59,42 +95,6 @@ authRouter.post("/registration-email-resending",
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
         }
     });
-
-authRouter.post("/login",
-    requestsLimiterMiddleware,
-    userLoginValidationSchema,
-    async (req: RequestWithBody<LoginInputModel>, res: Response) => {
-        const ip: string = req.ip || "";
-        const title: string = req.headers['user-agent'] || "";
-        const result: TokensPair | authError = await authService.login(ip, title, req.body.password, req.body.loginOrEmail);
-
-        switch (result) {
-            case authError.BadRequestError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-            case authError.WrongUserError:
-                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                return;
-            case authError.NotFoundError:
-                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                return;
-            case authError.CreationError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-            case authError.TokenError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-        }
-
-        if (result) {
-            res.cookie('refreshToken', result.refreshToken, cookiesSettings());
-            res.json({
-                accessToken: result.accessToken
-            });
-        } else {
-            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        }
-});
 
 authRouter.post("/refresh-token",
     checkRefreshTokenMiddleware,
@@ -156,7 +156,7 @@ authRouter.post("/logout",
         console.log('Logout');
         console.log(req.cookies);
 
-        await authService.logout(req.user!.id, req.deviceId); // Refresh token not valid
+        await authService.logout(req.user.id, req.deviceId); // Refresh token not valid
         res.clearCookie('refreshToken');
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     });

@@ -5,6 +5,7 @@ import {postsService} from "../domain/postsService";
 import {usersService} from "../domain/usersService";
 import {commentsService} from "../domain/commentsService";
 import {usersActionsRepository} from "../repositories/userActions/usersActionsRepository";
+import {SETTINGS} from "../config";
 
 export const testingRouter = Router();
 
@@ -32,8 +33,6 @@ testingRouter.get('/cookie', async (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-testingRouter.get('/headers', async (req: Request, res: Response) => {
-    console.log(req.path);
-    console.log(req.url);
-    res.sendStatus(200);
+testingRouter.get('/envs', async (req: Request, res: Response) => {
+    res.json(SETTINGS);
 });

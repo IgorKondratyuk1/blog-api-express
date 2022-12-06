@@ -34,6 +34,14 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     // 2. Get data from refresh token
     const refreshTokenData: JWTDataType = await jwtService.getDataByToken(refreshToken);
+
+    // 2.1. Check that refreshTokenData is exists
+    if (!refreshTokenData) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        return;
+    }
+
+    // 2.2. Check that all data in token is exists
     const {userId, deviceId, issuedAt} = refreshTokenData;
     if (!userId || !deviceId || !issuedAt) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
@@ -41,7 +49,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     }
 
     logData(refreshTokenData);
-
+    // Check that refresh token is not expired (deprecated - if token expired validation function will return NULL)
     // if (refreshTokenData?.exp && new Date(1000 * refreshTokenData.exp) < new Date()) {
     //     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
     //     return;

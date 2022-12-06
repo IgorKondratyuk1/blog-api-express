@@ -1,22 +1,11 @@
-// @ts-nocheck
+// @ts-ignore
 import request from 'supertest';
 import {app} from "../../index";
-import {CreateUserModel} from "../../models/user/create-user-model";
-import {ViewUserModel} from "../../models/user/view-user-model";
-import {LoginInputModel} from "../../models/auth/login/login-input-model";
+import {basicAuthValue, clearDB, later, usersPassword} from "./helpers/helpers";
+import {CreateUserModel} from "../../models/user/createUserModel";
+import {LoginInputModel} from "../../models/auth/login/loginInputModel";
+import {ViewUserModel} from "../../models/user/viewUserModel";
 
-const basicAuthValue = "Basic YWRtaW46cXdlcnR5";
-const usersPassword: string = "12345678";
-
-// Helper functions
-const later = (delay: any) => new Promise(resolve => setTimeout(resolve, delay));
-const clearDB = async () => {
-    await request(app)
-        .delete("/api/testing/all-data")
-        .set("Authorization", basicAuthValue);
-
-    console.log("Database is empty");
-}
 
 jest.setTimeout(21000); //Tests timeout 30s
 
@@ -59,7 +48,7 @@ describe("/login", () => {
     //Login
     it("POST: user should login", async () => {
        const data: LoginInputModel = {
-           login: firstUser.login,
+           loginOrEmail: firstUser.login,
            password: usersPassword
        }
 
@@ -100,7 +89,7 @@ describe("/login", () => {
     // Login
     it("POST: user should login", async () => {
         const data: LoginInputModel = {
-            login: firstUser.login,
+            loginOrEmail: firstUser.login,
             password: usersPassword
         }
 
@@ -123,7 +112,12 @@ describe("/login", () => {
             .expect(200);
 
         expect(result.body).toEqual({accessToken: expect.any(String)});
+
+        // Save new access and refresh tokens
         accessToken = result.body.accessToken;
+
+        const cookies = result.headers['set-cookie'][0].split(',').map((item: any) => item.split(';')[0]);
+        refreshToken = cookies[0];
     });
 
     it("GET: user should get his info with new access token", async () => {
@@ -138,7 +132,6 @@ describe("/login", () => {
             "userId": expect.any(String)
         });
     });
-
 
     it("POST: user shouldn`t get new refresh and access tokens with expired refresh token", async () => {
         await later(20100);
@@ -156,10 +149,11 @@ describe("/login", () => {
             .expect(401);
     });
 
-    //Login
+
+    // Check logout
     it("POST: user should login", async () => {
         const data: LoginInputModel = {
-            login: firstUser.login,
+            loginOrEmail: firstUser.login,
             password: usersPassword
         }
 
@@ -187,5 +181,37 @@ describe("/login", () => {
             .post("/api/auth/refresh-token")
             .set('Cookie', [refreshToken])
             .expect(401);
+    });
+
+
+    // Check 429 "Too many requests"
+    it("POST: should success login 5 times", async () => {
+        await later(10010);
+
+        const data: LoginInputModel = {
+            loginOrEmail: firstUser.login,
+            password: usersPassword
+        }
+
+        for (let i = 0; i < 5; i++) {
+            const result = await request(app)
+                .post("/api/auth/login")
+                .send(data)
+                .expect(200);
+
+            expect(result.body).toEqual({accessToken: expect.any(String)});
+        }
+    });
+
+    it("POST: should get 429 status on 6-th request", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: firstUser.login,
+            password: usersPassword
+        }
+
+        await request(app)
+            .post("/api/auth/login")
+            .send(data)
+            .expect(429);
     });
 });

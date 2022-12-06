@@ -9,7 +9,7 @@ export const securityRepository = {
         return result.map(mapDeviceDBTypeToDeviceType);
     },
     async findDeviceSession(deviceId: string): Promise<DeviceType | null> {
-        const result: DeviceDBType | null = await securityCollection.findOne({deviceId: deviceId});
+        const result: DeviceDBType | null = await securityCollection.findOne({deviceId});
         if (!result) return null;
         return mapDeviceDBTypeToDeviceType(result);
     },

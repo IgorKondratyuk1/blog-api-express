@@ -64,7 +64,7 @@ export const authService = {
         // }
     },
     async logout(userId: string, deviceId: string): Promise<securityError> {
-        const result: securityError = await securityService.deleteDeviceSession(userId,deviceId);
+        const result: securityError = await securityService.deleteDeviceSession(userId, deviceId);
         return result;
     },
     async refreshTokens(tokenPayload: JWTDataType): Promise<TokensPair | authError> {
