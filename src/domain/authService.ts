@@ -41,27 +41,22 @@ export const authService = {
         return authError.Success;
     },
     async login(ip: string, title: string, password: string, userLoginOrEmail: string): Promise<TokensPair | authError> {
-        // try {
-            // 1. Get user
-            const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(userLoginOrEmail);
-            console.log(user);
-            if (!user) return authError.NotFoundError;
-            if (!user.emailConfirmation.isConfirmed) return authError.BadRequestError;
+        // 1. Get user
+        const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(userLoginOrEmail);
+        console.log(user);
+        if (!user) return authError.NotFoundError;
+        if (!user.emailConfirmation.isConfirmed) return authError.BadRequestError;
 
-            // 2. Check users credentials
-            const haveCredentials = await this._isPasswordCorrect(password, user.accountData.passwordHash);
-            if (!haveCredentials) return authError.WrongUserError;
+        // 2. Check users credentials
+        const haveCredentials = await this._isPasswordCorrect(password, user.accountData.passwordHash);
+        if (!haveCredentials) return authError.WrongUserError;
 
-            // 3. Create device session
-            const createdSession: DeviceType | null = await securityService.createDeviceSession(user.id, ip, title);
-            if (!createdSession) return authError.BadRequestError;
+        // 3. Create device session
+        const createdSession: DeviceType | null = await securityService.createDeviceSession(user.id, ip, title);
+        if (!createdSession) return authError.BadRequestError;
 
-            const tokensPair = createTokensPair(createdSession);
-            return tokensPair;
-        // } catch (error) {
-        //     console.error(error);
-        //     return authError.BadRequestError;
-        // }
+        const tokensPair = createTokensPair(createdSession);
+        return tokensPair;
     },
     async logout(userId: string, deviceId: string): Promise<securityError> {
         const result: securityError = await securityService.deleteDeviceSession(userId, deviceId);
@@ -94,7 +89,7 @@ export const authService = {
         return tokensPair;
     },
     async confirmEmail(code: string): Promise<boolean> {
-        const user: UserAccountType | null = await usersRepository.findUserByConfirmationCode(code);
+        const user: UserAccountType | null = await usersRepository.findUserByEmailConfirmationCode(code);
         if (!user) return false;
         if (user.emailConfirmation.isConfirmed) return false;
         if (new Date(user.emailConfirmation.expirationDate) < new Date()) return false;
@@ -118,9 +113,31 @@ export const authService = {
             return false;
         }
     },
-    async _generateHash(password: string): Promise<string> {
-        const passwordSalt: string = await bcrypt.genSalt(10);
-        return await bcrypt.hash(password, passwordSalt);
+    // recovery password
+    async sendRecoveryCode(email: string): Promise<boolean> {
+        const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(email);
+        if (!user) return false;
+
+        const updatedUser: UserAccountType | null = await usersService.updateRecoveryCode(user.id);
+        if (!updatedUser) return false;
+
+        try {
+            await emailManager.sendPasswordRecoveryMessage(updatedUser);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    },
+    async confirmNewPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
+        const user: UserAccountType | null = await usersRepository.findUserByPasswordConfirmationCode(recoveryCode);
+
+        // Validation
+        if (!user || !user.passwordRecovery) return false;
+        if (user.passwordRecovery.isUsed) return false;
+        if (new Date(user.emailConfirmation.expirationDate) < new Date()) return false;
+
+        return await usersService.updateUserPassword(user.id, newPassword);
     },
     async _isPasswordCorrect(password: string, passwordHash: string): Promise<boolean> {
        return await bcrypt.compare(password, passwordHash);

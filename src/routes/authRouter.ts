@@ -4,7 +4,6 @@ import {UserAccountType} from "../types/userTypes";
 import {HTTP_STATUSES} from "../index";
 import {CreateUserModel} from "../models/user/createUserModel";
 import {userRegistrationValidationSchema} from "../schemas/auth/userRegistration";
-import {RegisrationConfirmationCodeModel} from "../models/auth/registration/regisrationConfirmationCodeModel";
 import {registrationConfirmationValidationSchema} from "../schemas/auth/registrationConfirmationSchema";
 import {LoginInputModel} from "../models/auth/login/loginInputModel";
 import {userLoginValidationSchema} from "../schemas/auth/loginSchema";
@@ -17,6 +16,11 @@ import {jwtAuthMiddleware} from "../middlewares/jwtAuthMiddlewsre";
 import {usersService} from "../domain/usersService";
 import {mapUserAccountTypeToMeViewModel} from "../helpers/mappers";
 import {requestsLimiterMiddleware} from "../middlewares/requestsLimiterMiddleware";
+import {passwordRecoveryValidationSchema} from "../schemas/auth/passwordRecoverySchema";
+import {newPasswordValidationSchema} from "../schemas/auth/newPasswordSchema";
+import {PasswordRecoveryModel} from "../models/auth/registration/passwordRecoveryModel";
+import {NewPasswordModel} from "../models/auth/registration/newPasswordModel";
+import {RegistrationConfirmationCodeModel} from "../models/auth/registration/regisrationConfirmationCodeModel";
 
 export const authRouter = Router({});
 
@@ -75,7 +79,7 @@ authRouter.post("/registration",
 authRouter.post("/registration-confirmation",
     requestsLimiterMiddleware,
     registrationConfirmationValidationSchema,
-    async (req: RequestWithBody<RegisrationConfirmationCodeModel>, res: Response) => {
+    async (req: RequestWithBody<RegistrationConfirmationCodeModel>, res: Response) => {
         const result: boolean = await authService.confirmEmail(req.body.code);
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
@@ -136,6 +140,38 @@ authRouter.post("/refresh-token",
         }catch(e){console.log(e)}
     });
 
+authRouter.post("/password-recovery",
+    requestsLimiterMiddleware,
+    passwordRecoveryValidationSchema,
+    async (req: RequestWithBody<PasswordRecoveryModel>, res: Response) => {
+        await authService.sendRecoveryCode(req.body.email);
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+    });
+
+authRouter.post("/new-password",
+    requestsLimiterMiddleware,
+    newPasswordValidationSchema,
+    async (req: RequestWithBody<NewPasswordModel>, res: Response) => {
+        const result: boolean = await authService.confirmNewPassword(req.body.newPassword, req.body.recoveryCode);
+
+        if (result) {
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        } else {
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+        }
+    });
+
+authRouter.post("/logout",
+    checkRefreshTokenMiddleware,
+    async (req: Request, res: Response) => {
+        console.log('Logout');
+        console.log(req.cookies);
+
+        await authService.logout(req.user.id, req.deviceId); // Refresh token not valid
+        res.clearCookie('refreshToken');
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+    });
+
 authRouter.get("/me",
     jwtAuthMiddleware,
     async (req: Request, res: Response) => {
@@ -149,14 +185,3 @@ authRouter.get("/me",
 
     res.json(mapUserAccountTypeToMeViewModel(user));
 });
-
-authRouter.post("/logout",
-    checkRefreshTokenMiddleware,
-    async (req: Request, res: Response) => {
-        console.log('Logout');
-        console.log(req.cookies);
-
-        await authService.logout(req.user.id, req.deviceId); // Refresh token not valid
-        res.clearCookie('refreshToken');
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
-    });

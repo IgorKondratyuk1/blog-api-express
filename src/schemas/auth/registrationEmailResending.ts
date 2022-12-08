@@ -9,7 +9,6 @@ const isEmailExists: CustomValidator = async (value, meta) => {
     return Promise.resolve();
 };
 
-
 export const registrationEmailResendingValidationSchema = [
     body("email")
         .exists({checkFalsy: true}).withMessage("Field 'email' is not exist")

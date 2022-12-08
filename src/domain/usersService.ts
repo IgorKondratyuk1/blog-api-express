@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import {ObjectId} from "mongodb";
 import {add} from "date-fns";
-import {UserAccountDbType, UserAccountType} from "../types/userTypes";
+import {PasswordRecoveryType, UserAccountDbType, UserAccountType} from "../types/userTypes";
 import {usersRepository} from "../repositories/users/usersRepository";
 
 export const usersService = {
@@ -27,10 +27,27 @@ export const usersService = {
                     minutes: 3
                 }).toISOString(),
                 isConfirmed: isConfirmed
-            }
+            },
+            passwordRecovery: {}
         }
+
         const createdUser: UserAccountType | null = await usersRepository.createUser(newUser);
         return createdUser;
+    },
+    async updateRecoveryCode(id: string): Promise<UserAccountType | null> {
+        const recoveryData: PasswordRecoveryType = {
+            recoveryCode: uuidv4(),
+            expirationDate: add(new Date(), {
+                hours: 1,
+                minutes: 3
+            }).toISOString(),
+            isUsed: false
+        };
+        return await usersRepository.updatePasswordRecoveryCode(id, recoveryData);
+    },
+    async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
+        const newPasswordHash: string = await this._generateHash(newPassword);
+        return await usersRepository.updateUserPassword(id, newPasswordHash);
     },
     async deleteUser(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id);

@@ -1,22 +1,5 @@
 import {ObjectId} from "mongodb";
 
-export type UserType = {
-    id:	string
-    login: string
-    email: string
-    passwordHash: string
-    createdAt: string
-}
-
-export type UserDBType = {
-    _id: ObjectId
-    id:	string
-    login: string
-    email: string
-    passwordHash: string
-    createdAt: string
-}
-
 export type QueryUserModel = {
     searchLoginTerm?: string
     searchEmailTerm?: string
@@ -35,19 +18,6 @@ export type UserFilterType = {
     sortDirection: "asc" | "desc"
 }
 
-export type UserAccountType = {
-    id:	string,
-    accountData: AccountType,
-    emailConfirmation: EmailConfirmationType
-}
-
-export type UserAccountDbType = {
-    _id: ObjectId
-    id:	string
-    accountData: AccountType,
-    emailConfirmation: EmailConfirmationType
-}
-
 export type AccountType = {
     login: string
     email: string
@@ -59,4 +29,25 @@ export type EmailConfirmationType = {
     confirmationCode: string,
     expirationDate: string,
     isConfirmed: boolean
+}
+
+export type PasswordRecoveryType = {
+    recoveryCode?: string,
+    expirationDate?: string,
+    isUsed?: boolean
+}
+
+export type UserAccountType = {
+    id:	string,
+    accountData: AccountType,
+    emailConfirmation: EmailConfirmationType,
+    passwordRecovery: PasswordRecoveryType
+}
+
+export type UserAccountDbType = {
+    _id: ObjectId
+    id:	string
+    accountData: AccountType,
+    emailConfirmation: EmailConfirmationType,
+    passwordRecovery: PasswordRecoveryType
 }

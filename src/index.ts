@@ -6,9 +6,9 @@ import {usersRouter} from "./routes/usersRouter";
 import {blogsRouter} from "./routes/blogsRouter";
 import {postsRouter} from "./routes/postsRouter";
 import {commentsRouter} from "./routes/commentsRouter";
-import {testingRouter} from "./routes/testingRouter";
 import {connectToDB} from "./repositories/db";
 import {securityRouter} from "./routes/securityRouter";
+import {deleteAllRouter} from "./routes/deleteAllRouter";
 
 enum URL_ROUTES {
     auth = "/api/auth",
@@ -61,7 +61,7 @@ app.use(URL_ROUTES.users, usersRouter);
 app.use(URL_ROUTES.blogs, blogsRouter);
 app.use(URL_ROUTES.posts, postsRouter);
 app.use(URL_ROUTES.comments, commentsRouter);
-app.use(URL_ROUTES.testing, testingRouter);
+app.use(URL_ROUTES.testing, deleteAllRouter);
 //app.use(errorsHandlingMiddleware); // Error handling
 
 

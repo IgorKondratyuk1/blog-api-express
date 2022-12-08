@@ -39,10 +39,6 @@ export type FilterType = {
     sortDirection: 'asc' | 'desc'
 }
 
-export type RefreshTokenMetaType = {
-    token: string
-}
-
 export type TokensPair = {
     accessToken: string
     refreshToken: string

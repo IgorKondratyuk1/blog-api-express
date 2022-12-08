@@ -14,8 +14,12 @@ export const emailManager = {
         return await emailAdapter.sendEmail(user.accountData.email, subject, message);
     },
     async sendPasswordRecoveryMessage(user: UserAccountType) {
-        const subject = "password recovery";
-        const message: string = `PR`;
+        const subject = "Password recovery";
+        const message: string = `
+           <h1>Password recovery</h1>
+           <p>To finish password recovery please follow the link below:
+              <a href='https://somesite.com/password-recovery?recoveryCode=${user.passwordRecovery.recoveryCode}'>recovery password</a>
+          </p>`;
         return await emailAdapter.sendEmail(user.accountData.email, subject, message);
     }
 }

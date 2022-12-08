@@ -4,23 +4,22 @@ import {blogsService} from "../domain/blogsService";
 import {postsService} from "../domain/postsService";
 import {usersService} from "../domain/usersService";
 import {commentsService} from "../domain/commentsService";
-import {usersActionsRepository} from "../repositories/userActions/usersActionsRepository";
 import {SETTINGS} from "../config";
 
-export const testingRouter = Router();
+export const deleteAllRouter = Router();
 
-testingRouter.delete("/all-data", async (req: Request, res: Response) => {
+deleteAllRouter.delete("/all-data", async (req: Request, res: Response) => {
     await blogsService.deleteAllBlogs();
     await postsService.deleteAllPosts();
     await usersService.deleteAllUsers();
     await commentsService.deleteAllComments();
-    await usersActionsRepository.deleteAllActions();
+    //await usersActionsRepository.deleteAllActions();
     //await authService.deleteAllRefreshTokens();
     //await securityRepository.deleteAllDevices();
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 
-testingRouter.get('/cookie', async (req: Request, res: Response) => {
+deleteAllRouter.get('/cookie', async (req: Request, res: Response) => {
     //console.log('Cookies: ', req.cookies);
     console.log(new Date());
     res.clearCookie('name1');
@@ -33,6 +32,6 @@ testingRouter.get('/cookie', async (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-testingRouter.get('/envs', async (req: Request, res: Response) => {
+deleteAllRouter.get('/envs', async (req: Request, res: Response) => {
     res.json(SETTINGS);
 });

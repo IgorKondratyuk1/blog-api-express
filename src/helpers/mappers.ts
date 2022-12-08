@@ -129,3 +129,12 @@ export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbTyp
         resource: dbAction.resource
     }
 }
+
+export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType): UserAccountType => {
+    return {
+        id: dbUser.id,
+        accountData: {...dbUser.accountData},
+        emailConfirmation: {...dbUser.emailConfirmation},
+        passwordRecovery: {...dbUser.passwordRecovery}
+    }
+}
