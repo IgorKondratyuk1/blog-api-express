@@ -18,7 +18,7 @@ export const usersRepository = {
         if (!dbUser) return null;
         return mapUserAccountDBTypeToUserAccountType(dbUser);
     },
-    async findUserByPasswordConfirmationCode(code: string) {
+    async findUserByPasswordConfirmationCode(code: string): Promise<UserAccountType | null> {
         const dbUser: UserAccountDbType | null = await usersCollection.findOne({'passwordRecovery.recoveryCode': code});
         if (!dbUser) return null;
         return mapUserAccountDBTypeToUserAccountType(dbUser);

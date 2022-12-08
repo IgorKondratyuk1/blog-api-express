@@ -21,6 +21,7 @@ import {newPasswordValidationSchema} from "../schemas/auth/newPasswordSchema";
 import {PasswordRecoveryModel} from "../models/auth/registration/passwordRecoveryModel";
 import {NewPasswordModel} from "../models/auth/registration/newPasswordModel";
 import {RegistrationConfirmationCodeModel} from "../models/auth/registration/regisrationConfirmationCodeModel";
+import {usersRepository} from "../repositories/users/usersRepository";
 
 export const authRouter = Router({});
 
