@@ -1,14 +1,15 @@
 import express, {Response} from "express";
 import {Paginator, RequestWithBody, RequestWithParams, RequestWithQuery} from "../types/types";
 import {usersQueryRepository} from "../repositories/users/queryUsersRepository";
-import {QueryUserModel, UserAccountType} from "../types/userTypes";
+import {QueryUserModel} from "../types/userTypes";
 import {ViewUserModel} from "../models/user/viewUserModel";
 import {usersService} from "../domain/usersService";
 import {CreateUserModel} from "../models/user/createUserModel";
-import {basicAuthMiddleware} from "../middlewares/basicAuthMiddleware";
-import {userRegistrationValidationSchema} from "../schemas/auth/userRegistration";
+import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
+import {userRegistrationValidationSchema} from "../middlewares/validation/auth/userRegistration";
 import {mapUserAccountTypeToViewUserModel} from "../helpers/mappers";
 import {UriParamsUserModel} from "../models/user/uriParamsUserModel";
+import {UserAccountType} from "../repositories/users/userSchema";
 
 export const usersRouter = express.Router();
 

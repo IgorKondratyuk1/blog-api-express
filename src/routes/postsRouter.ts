@@ -2,19 +2,20 @@ import {Response, Router} from "express";
 import {
     Paginator,
     RequestWithBody,
+    RequestWithParams,
     RequestWithParamsAndBody,
-    RequestWithParams, RequestWithQuery, RequestWithParamsAndQuery
+    RequestWithParamsAndQuery,
+    RequestWithQuery
 } from "../types/types";
-import {queryValidationSchema} from "../schemas/query/queryValidationSchema";
+import {queryValidationSchema} from "../middlewares/validation/query/queryValidationSchema";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {postsQueryRepository} from "../repositories/posts/queryPostRepository";
 import {QueryPostModel} from "../models/post/queryPostModel";
-import {PostType} from "../types/postTypes";
 import {HTTP_STATUSES} from "../index";
 import {UriParamsPostModel} from "../models/post/uriParamsPostModel";
-import {mapPostTypeToPostViewModel} from "../helpers/mappers";
-import {basicAuthMiddleware} from "../middlewares/basicAuthMiddleware";
-import {postValidationSchema} from "../schemas/postValidationSchema";
+import {mapCommentDbTypeToViewCommentModel, mapPostTypeToPostViewModel} from "../helpers/mappers";
+import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
+import {postValidationSchema} from "../middlewares/validation/postValidationSchema";
 import {CreatePostModel} from "../models/post/createPostModel";
 import {postsService} from "../domain/postsService";
 import {UpdatePostModel} from "../models/post/updatePostModel";
@@ -23,11 +24,12 @@ import {ViewCommentModel} from "../models/comment/viewCommentModel";
 import {postsRepository} from "../repositories/posts/postsRepository";
 import {UriParamsCommentModel} from "../models/comment/uriParamsCommentModel";
 import {CreateCommentModel} from "../models/comment/createCommentModel";
-import {jwtAuthMiddleware} from "../middlewares/jwtAuthMiddlewsre";
+import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {commentsQueryRepository} from "../repositories/comments/queryCommentsRepository";
-import {commentValidationSchema} from "../schemas/commentValidationSchema";
-import {commentsService} from "../domain/commentsService";
-
+import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
+import {CommentError, commentsService} from "../domain/commentsService";
+import {PostType} from "../repositories/posts/postSchema";
+import {CommentType} from "../repositories/comments/commentSchema";
 
 export const postsRouter = Router();
 
@@ -35,7 +37,7 @@ postsRouter.get("/",
     queryValidationSchema,
     async (req: RequestWithQuery<QueryPostModel>, res: Response<Paginator<ViewPostModel>>) => {
 
-    const foundedPosts: Paginator<PostType> = await postsQueryRepository.findPosts(req.query);
+    const foundedPosts: Paginator<ViewPostModel> = await postsQueryRepository.findPosts(req.query);
     res.json(foundedPosts);
 });
 
@@ -53,7 +55,9 @@ postsRouter.post("/",
     basicAuthMiddleware,
     postValidationSchema,
     async (req: RequestWithBody<CreatePostModel>, res: Response<ViewPostModel>) => {
-    const createdPost = await postsService.createPost(req.body.blogId, req.body);
+    const createdPost: PostType | null = await postsService.createPost(req.body.blogId, req.body);
+
+    if (!createdPost) {res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return;}
 
     res.status(HTTP_STATUSES.CREATED_201)
         .json(mapPostTypeToPostViewModel((createdPost)));
@@ -101,15 +105,16 @@ postsRouter.post("/:id/comments",
     commentValidationSchema,
     async (req: RequestWithParamsAndBody<UriParamsCommentModel, CreateCommentModel>, res: Response<ViewCommentModel>) => {
 
-    const foundedPost: PostType | null = await postsRepository.findPostById(req.params.id);
+        const foundedPost: PostType | null = await postsRepository.findPostById(req.params.id);
+        if (!foundedPost) {res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return; }
 
-    if (!foundedPost) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-        return;
-    }
+        const result: CommentType | CommentError = await commentsService.createComment(req.params.id, req.user!.id, req.body);
+        switch (result) {
+            case CommentError.Success: return;
+            case CommentError.WrongUserError: res.sendStatus(HTTP_STATUSES.FORBIDDEN_403); return;
+            case CommentError.NotFoundError: res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return;
+        }
 
-    const createdCommentsOfPost: ViewCommentModel = await commentsService.createComment(req.params.id, req.user!.id, req.body);
-
-    res.status(HTTP_STATUSES.CREATED_201)
-        .json(createdCommentsOfPost);
+        res.status(HTTP_STATUSES.CREATED_201)
+            .json(mapCommentDbTypeToViewCommentModel(result));
 });

@@ -6,8 +6,7 @@ import {CreateUserModel} from "../../models/user/createUserModel";
 import {LoginInputModel} from "../../models/auth/login/loginInputModel";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 
-
-jest.setTimeout(21000); //Tests timeout 30s
+jest.setTimeout(21000); //Tests timeout 21s
 
 // Testing: Login
 describe("/login", () => {
@@ -77,14 +76,14 @@ describe("/login", () => {
         });
     });
 
-    it("GET: user shouldn`t get his info after 20 seconds (when access token is expire)", async () => {
-       await later(10100);
-
-        await request(app)
-            .get("/api/auth/me")
-            .set("Authorization", `Bearer ${accessToken}`)
-            .expect(401);
-    });
+    // it("GET: user shouldn`t get his info after 20 seconds (when access token is expire)", async () => {
+    //    await later(20100);
+    //
+    //     await request(app)
+    //         .get("/api/auth/me")
+    //         .set("Authorization", `Bearer ${accessToken}`)
+    //         .expect(401);
+    // });
 
     // Login
     it("POST: user should login", async () => {
@@ -149,7 +148,6 @@ describe("/login", () => {
             .expect(401);
     });
 
-
     // Check logout
     it("POST: user should login", async () => {
         const data: LoginInputModel = {
@@ -183,10 +181,9 @@ describe("/login", () => {
             .expect(401);
     });
 
-
     // Check 429 "Too many requests"
     it("POST: should success login 5 times", async () => {
-        await later(10010);
+        await later(11000);
 
         const data: LoginInputModel = {
             loginOrEmail: firstUser.login,
@@ -199,6 +196,9 @@ describe("/login", () => {
                 .send(data)
                 .expect(200);
 
+            console.log(`Request ${i} result:`);
+            console.log(result.status);
+            console.log(result.body);
             expect(result.body).toEqual({accessToken: expect.any(String)});
         }
     });

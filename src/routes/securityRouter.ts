@@ -1,10 +1,10 @@
 import {Request, Response, Router} from "express";
-import {securityError, securityService} from "../domain/securityService";
+import {SecurityError, securityService} from "../domain/securityService";
 import {DeviceViewModel} from "../models/auth/device/deviceViewModel";
 import {HTTP_STATUSES} from "../index";
 import {RequestWithParams} from "../types/types";
 import {UriParamsDeviceModel} from "../models/auth/device/uriParamsDeviceModel";
-import {checkRefreshTokenMiddleware} from "../middlewares/checkRefreshTokenMiddleware";
+import {checkRefreshTokenMiddleware} from "../middlewares/auth/checkRefreshTokenMiddleware";
 
 export const securityRouter = Router({});
 
@@ -31,15 +31,15 @@ securityRouter.delete("/",
 securityRouter.delete("/:id",
     checkRefreshTokenMiddleware,
     async (req: RequestWithParams<UriParamsDeviceModel>, res: Response) => {
-        const result: securityError = await securityService.deleteDeviceSession(req.user!.id, req.params.id);
+        const result: SecurityError = await securityService.deleteDeviceSession(req.user!.id, req.params.id);
         switch (result) {
-            case securityError.Success:
+            case SecurityError.Success:
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
                 return;
-            case securityError.NotFoundError:
+            case SecurityError.NotFoundError:
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
                 return;
-            case securityError.WrongUserError:
+            case SecurityError.WrongUserError:
                 res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
                 return;
             default:

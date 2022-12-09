@@ -1,15 +1,15 @@
-import {UserAccountDbType, UserAccountType} from "../types/userTypes";
 import {ViewUserModel} from "../models/user/viewUserModel";
-import {DeviceDBType, DeviceType} from "../types/deviceTypes";
 import {DeviceViewModel} from "../models/auth/device/deviceViewModel";
-import {BlogDbType, BlogType} from "../types/blogTypes";
 import {ViewBlogModel} from "../models/blog/viewBlogModel";
-import {PostDbType, PostType} from "../types/postTypes";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {ViewMeModel} from "../models/auth/viewMeModel";
-import {CommentDbType, CommentType} from "../types/commentTypes";
 import {ViewCommentModel} from "../models/comment/viewCommentModel";
-import {UserActionsDbType, UserActionsType} from "../types/userActionTypes";
+import {BlogDbType, BlogType} from "../repositories/blogs/blogSchema";
+import {CommentDbType, CommentType} from "../repositories/comments/commentSchema";
+import {PostDbType, PostType} from "../repositories/posts/postSchema";
+import {UserAccountDbType, UserAccountType} from "../repositories/users/userSchema";
+import {DeviceDBType, DeviceType} from "../repositories/security/securitySchema";
+import {UserActionsDbType, UserActionsType} from "../repositories/userActions/userActionSchema";
 
 export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType): ViewUserModel => {
     return {
@@ -46,7 +46,7 @@ export const mapBlogTypeToBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
         id: dbBlog.id,
         name: dbBlog.name,
         websiteUrl: dbBlog.websiteUrl,
-        createdAt: dbBlog.createdAt,
+        createdAt: new Date(dbBlog.createdAt).toISOString(),
         description: dbBlog.description
     }
 }
@@ -59,7 +59,7 @@ export const mapPostTypeToPostViewModel = (dbPost: PostType): ViewPostModel => {
         content: dbPost.content,
         blogId:	dbPost.blogId,
         blogName: dbPost.blogName,
-        createdAt: dbPost.createdAt
+        createdAt: new Date(dbPost.createdAt).toISOString()
     }
 }
 
@@ -71,11 +71,11 @@ export const mapUserAccountTypeToMeViewModel = (user: UserAccountType | UserAcco
     }
 }
 
-export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType): ViewCommentModel => {
+export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | CommentType): ViewCommentModel => {
     return {
         id: dbComment.id,
         content: dbComment.content,
-        createdAt: dbComment.createdAt,
+        createdAt: new Date(dbComment.createdAt).toISOString(),
         userId: dbComment.userId,
         userLogin: dbComment.userLogin
     }
@@ -86,6 +86,7 @@ export const mapCommentDbTypeToCommentType = (dbComment: CommentDbType): Comment
         id: dbComment.id,
         content: dbComment.content,
         createdAt: dbComment.createdAt,
+        updatedAt: dbComment.updatedAt,
         userId: dbComment.userId,
         userLogin: dbComment.userLogin
     }
@@ -97,6 +98,7 @@ export const mapBlogDBTypeToBlogType = (dbBlog: BlogDbType): BlogType => {
         name: dbBlog.name,
         websiteUrl: dbBlog.websiteUrl,
         createdAt: dbBlog.createdAt,
+        updatedAt: dbBlog.updatedAt,
         description: dbBlog.description
     }
 }
@@ -107,6 +109,7 @@ export const mapPostDbTypeToPostType = (dbPost: PostDbType): PostType => {
         blogId: dbPost.blogId,
         content: dbPost.content,
         createdAt: dbPost.createdAt,
+        updatedAt: dbPost.updatedAt,
         shortDescription: dbPost.shortDescription,
         title: dbPost.title,
         blogName: dbPost.blogName
@@ -133,8 +136,23 @@ export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbTyp
 export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType): UserAccountType => {
     return {
         id: dbUser.id,
-        accountData: {...dbUser.accountData},
-        emailConfirmation: {...dbUser.emailConfirmation},
-        passwordRecovery: {...dbUser.passwordRecovery}
+        accountData: {
+            login: dbUser.accountData.login,
+            email: dbUser.accountData.email,
+            createdAt: dbUser.accountData.createdAt,
+            passwordHash: dbUser.accountData.passwordHash
+        },
+        emailConfirmation: {
+            confirmationCode: dbUser.emailConfirmation.confirmationCode,
+            isConfirmed: dbUser.emailConfirmation.isConfirmed,
+            expirationDate: dbUser.emailConfirmation.expirationDate
+        },
+        passwordRecovery: {
+            expirationDate: dbUser.passwordRecovery.expirationDate,
+            isUsed: dbUser.passwordRecovery.isUsed,
+            recoveryCode: dbUser.passwordRecovery.recoveryCode
+        },
+        createdAt: dbUser.createdAt,
+        updatedAt: dbUser.updatedAt
     }
 }

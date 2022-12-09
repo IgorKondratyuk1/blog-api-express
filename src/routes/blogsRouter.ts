@@ -6,15 +6,14 @@ import {
     RequestWithParams, RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../types/types";
-import {queryValidationSchema} from "../schemas/query/queryValidationSchema";
+import {queryValidationSchema} from "../middlewares/validation/query/queryValidationSchema";
 import {BlogQueryModel} from "../models/blog/blogQueryModel";
-import {BlogType} from "../types/blogTypes";
 import {ViewBlogModel} from "../models/blog/viewBlogModel";
 import {blogsQueryRepository} from "../repositories/blogs/queryBlogRepository";
 import {UriParamsBlogModel} from "../models/blog/uriParamsBlogModel";
 import {HTTP_STATUSES} from "../index";
-import {basicAuthMiddleware} from "../middlewares/basicAuthMiddleware";
-import {blogValidationSchema} from "../schemas/blogValidationSchema";
+import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
+import {blogValidationSchema} from "../middlewares/validation/blogValidationSchema";
 import {mapBlogTypeToBlogViewModel, mapPostTypeToPostViewModel} from "../helpers/mappers";
 import {CreateBlogModel} from "../models/blog/createBlogModel";
 import {blogsService} from "../domain/blogsService";
@@ -23,16 +22,17 @@ import {QueryPostModel} from "../models/post/queryPostModel";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {CreatePostOfBlogModel} from "../models/post/createPostOfBlog";
 import {postsService} from "../domain/postsService";
-import {PostType} from "../types/postTypes";
-import {postOfBlogValidationSchema} from "../schemas/postOfBlogValidationSchema";
+import {postOfBlogValidationSchema} from "../middlewares/validation/postOfBlogValidationSchema";
 import {postsQueryRepository} from "../repositories/posts/queryPostRepository";
+import {BlogType} from "../repositories/blogs/blogSchema";
+import {PostType} from "../repositories/posts/postSchema";
 
 export const blogsRouter = Router();
 
 blogsRouter.get("/",
     queryValidationSchema,
     async (req: RequestWithQuery<BlogQueryModel>, res: Response<Paginator<ViewBlogModel>>) => {
-        const foundedBlogs: Paginator<BlogType> = await blogsQueryRepository.findBlogs(req.query);
+        const foundedBlogs: Paginator<ViewBlogModel> = await blogsQueryRepository.findBlogs(req.query);
         res.json(foundedBlogs);
     });
 
@@ -102,13 +102,11 @@ blogsRouter.post("/:id/posts",
     postOfBlogValidationSchema,
     async (req: RequestWithParamsAndBody<UriParamsBlogModel, CreatePostOfBlogModel>, res: Response<ViewPostModel>) => {
         const foundedBlog: BlogType | null = await blogsQueryRepository.findBlogById(req.params.id);
+        if (!foundedBlog) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return;}
 
-        if (!foundedBlog) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
+        const createdPostOfBlog: PostType | null = await postsService.createPost(foundedBlog.id, req.body);
+        if (!createdPostOfBlog) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return;}
 
-        const createdPostOfBlog: PostType = await postsService.createPost(req.params.id, req.body);
         res.status(HTTP_STATUSES.CREATED_201)
             .json(mapPostTypeToPostViewModel(createdPostOfBlog));
     }

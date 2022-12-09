@@ -1,22 +1,41 @@
-import {userActionsCollection} from "../db";
-import {UserActionsDbType, UserActionsType} from "../../types/userActionTypes";
 import {mapUserActionsDbTypeToUserActionsType} from "../../helpers/mappers";
 import {SETTINGS} from "../../config";
 import {DeleteResult} from "mongodb";
+import {CreateUserActionsDbType, UserActionModel, UserActionsDbType, UserActionsType} from "./userActionSchema";
 
 export const usersActionsRepository = {
-    async createUserAction(action: UserActionsDbType): Promise<UserActionsType> {
-        const result = await userActionsCollection.insertOne(action);
-        return mapUserActionsDbTypeToUserActionsType(action);
+    async createUserAction(newAction: CreateUserActionsDbType): Promise<UserActionsType | null> {
+        try {
+            const action = new UserActionModel(newAction);
+            const createdAction: UserActionsDbType = await action.save();
+            return mapUserActionsDbTypeToUserActionsType(createdAction);
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
     },
-    async getUserActionsCount(ip: string, resource: string): Promise<number> {
-        return await userActionsCollection.countDocuments({ip, resource});
+    async getUserActionsCount(ip: string, resource: string): Promise<number | null> {
+        try {
+            return await UserActionModel.countDocuments({ip, resource});
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
     },
-    async deleteExpiredActions(): Promise<DeleteResult> {
-        const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 100)));
-        return userActionsCollection.deleteMany({lastActiveDate: {$lte: deleteDate}});
+    async deleteExpiredActions(): Promise<DeleteResult | null> {
+        try {
+            const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 100)));
+            return UserActionModel.deleteMany({lastActiveDate: {$lte: deleteDate}});
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
     },
     async deleteAllActions() {
-        return userActionsCollection.deleteMany({});
+        try {
+            return UserActionModel.deleteMany({});
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

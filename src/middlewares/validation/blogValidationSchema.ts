@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {inputValidationMiddleware} from "../middlewares/inputValidationMiddleware";
+import {inputValidationMiddleware} from "../inputValidationMiddleware";
 
 export const blogValidationSchema = [
     body("name")

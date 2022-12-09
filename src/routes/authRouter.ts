@@ -1,27 +1,26 @@
 import {Request, Response, Router} from "express";
 import {RequestWithBody, TokensPair} from "../types/types";
-import {UserAccountType} from "../types/userTypes";
 import {HTTP_STATUSES} from "../index";
 import {CreateUserModel} from "../models/user/createUserModel";
-import {userRegistrationValidationSchema} from "../schemas/auth/userRegistration";
-import {registrationConfirmationValidationSchema} from "../schemas/auth/registrationConfirmationSchema";
+import {userRegistrationValidationSchema} from "../middlewares/validation/auth/userRegistration";
+import {registrationConfirmationValidationSchema} from "../middlewares/validation/auth/registrationConfirmationSchema";
 import {LoginInputModel} from "../models/auth/login/loginInputModel";
-import {userLoginValidationSchema} from "../schemas/auth/loginSchema";
+import {userLoginValidationSchema} from "../middlewares/validation/auth/loginSchema";
 import {RegistrationEmailResendingModel} from "../models/auth/registration/registrationEmailResendingModel";
-import {registrationEmailResendingValidationSchema} from "../schemas/auth/registrationEmailResending";
+import {registrationEmailResendingValidationSchema} from "../middlewares/validation/auth/registrationEmailResending";
 import {authError, authService} from "../domain/authService";
 import {cookiesSettings} from "../helpers/helpers";
-import {checkRefreshTokenMiddleware} from "../middlewares/checkRefreshTokenMiddleware";
-import {jwtAuthMiddleware} from "../middlewares/jwtAuthMiddlewsre";
+import {checkRefreshTokenMiddleware} from "../middlewares/auth/checkRefreshTokenMiddleware";
+import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {usersService} from "../domain/usersService";
 import {mapUserAccountTypeToMeViewModel} from "../helpers/mappers";
 import {requestsLimiterMiddleware} from "../middlewares/requestsLimiterMiddleware";
-import {passwordRecoveryValidationSchema} from "../schemas/auth/passwordRecoverySchema";
-import {newPasswordValidationSchema} from "../schemas/auth/newPasswordSchema";
+import {passwordRecoveryValidationSchema} from "../middlewares/validation/auth/passwordRecoverySchema";
+import {newPasswordValidationSchema} from "../middlewares/validation/auth/newPasswordSchema";
 import {PasswordRecoveryModel} from "../models/auth/registration/passwordRecoveryModel";
 import {NewPasswordModel} from "../models/auth/registration/newPasswordModel";
 import {RegistrationConfirmationCodeModel} from "../models/auth/registration/regisrationConfirmationCodeModel";
-import {usersRepository} from "../repositories/users/usersRepository";
+import {UserAccountType} from "../repositories/users/userSchema";
 
 export const authRouter = Router({});
 
@@ -35,19 +34,13 @@ authRouter.post("/login",
 
         switch (result) {
             case authError.BadRequestError:
+            case authError.CreationError:
+            case authError.TokenError:
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
                 return;
             case authError.WrongUserError:
-                res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                return;
             case authError.NotFoundError:
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                return;
-            case authError.CreationError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                return;
-            case authError.TokenError:
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
                 return;
         }
 
@@ -105,40 +98,39 @@ authRouter.post("/refresh-token",
     checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
         if (!req.user?.id) res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        try {
-            const result: TokensPair | authError = await authService.refreshTokens({
-                userId: req.user.id,
-                deviceId: req.deviceId,
-                issuedAt: req.issuedAt
-            });
 
-            switch (result) {
-                case authError.BadRequestError:
-                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                    return;
-                case authError.WrongUserError:
-                    res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-                    return;
-                case authError.NotFoundError:
-                    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-                    return;
-                case authError.CreationError:
-                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                    return;
-                case authError.TokenError:
-                    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-                    return;
-            }
+        const result: TokensPair | authError = await authService.refreshTokens({
+            userId: req.user.id,
+            deviceId: req.deviceId,
+            issuedAt: req.issuedAt
+        });
 
-            if (result) {
-                res.cookie('refreshToken', result.refreshToken, cookiesSettings());
-                res.json({
-                    accessToken: result.accessToken
-                });
-            } else {
+        switch (result) {
+            case authError.BadRequestError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+            case authError.WrongUserError:
                 res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-            }
-        }catch(e){console.log(e)}
+                return;
+            case authError.NotFoundError:
+                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+                return;
+            case authError.CreationError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+            case authError.TokenError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+        }
+
+        if (result) {
+            res.cookie('refreshToken', result.refreshToken, cookiesSettings());
+            res.json({
+                accessToken: result.accessToken
+            });
+        } else {
+            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        }
     });
 
 authRouter.post("/password-recovery",

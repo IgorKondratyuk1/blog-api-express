@@ -1,51 +1,52 @@
 import {v4 as uuidv4} from "uuid";
-import {ObjectId} from "mongodb";
 import {CreateCommentModel} from "../models/comment/createCommentModel";
-import {CommentDbType, CommentType} from "../types/commentTypes";
-import {PostType} from "../types/postTypes";
-import {UserAccountType} from "../types/userTypes";
 import {postsRepository} from "../repositories/posts/postsRepository";
 import {commentsRepository} from "../repositories/comments/commentsRepository";
 import {UpdateCommentModel} from "../models/comment/updateCommentModel";
 import {usersRepository} from "../repositories/users/usersRepository";
+import {CommentType, CreateCommentDbType} from "../repositories/comments/commentSchema";
+import {PostType} from "../repositories/posts/postSchema";
+import {UserAccountType} from "../repositories/users/userSchema";
+
+export enum CommentError {
+    Success,
+    WrongUserError,
+    NotFoundError
+}
 
 export const commentsService = {
-    async createComment(postId: string, userId: string, comment: CreateCommentModel): Promise<CommentType> {
+    async createComment(postId: string, userId: string, comment: CreateCommentModel): Promise<CommentType | CommentError> {
         const foundedPost: PostType | null  = await postsRepository.findPostById(postId);
         const foundedUser: UserAccountType | null = await usersRepository.findUserById(userId)
-        console.log(foundedUser);
-        if (!foundedPost) throw new Error("'PostId' is incorrect");
-        if (!foundedUser) throw new Error("'UserLogin' is incorrect");
+        if (!foundedPost || !foundedUser) return CommentError.NotFoundError;
 
-        const newComment: CommentDbType = {
-            _id: new ObjectId(),
+        const newComment: CreateCommentDbType = {
             id: uuidv4(),
             postId: foundedPost.id,
             content: comment.content,
             userId: foundedUser.id,
-            userLogin: foundedUser.accountData.login,
-            createdAt: (new Date()).toISOString()
+            userLogin: foundedUser.accountData.login
         }
 
-        return commentsRepository.createComment(newComment);
+        return await commentsRepository.createComment(newComment);
     },
-    async updateComment(id: string, userId: string, comment: UpdateCommentModel): Promise<boolean> {
+    async updateComment(id: string, userId: string, comment: UpdateCommentModel): Promise<CommentError> {
         const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
+        if (foundedComment && foundedComment.userId !== userId) return CommentError.WrongUserError;
 
-        if (foundedComment && foundedComment.userId !== userId) {
-            throw Error('Change comment of other user is forbidden');
-        }
+        const result: boolean = await commentsRepository.updateComment(id, comment);
+        if (!result) return CommentError.NotFoundError;
 
-        return await commentsRepository.updateComment(id, comment);
+        return CommentError.Success;
     },
-    async deleteComment(id: string, userId: string): Promise<boolean> {
+    async deleteComment(id: string, userId: string): Promise<CommentError> {
         const foundedComment: CommentType | null = await commentsRepository.findCommentById(id);
+        if (foundedComment && foundedComment.userId !== userId) return CommentError.WrongUserError;
 
-        if (foundedComment && foundedComment.userId !== userId) {
-            throw Error('Delete comment of other user is forbidden');
-        }
+        const result: boolean = await commentsRepository.deleteComment(id);
+        if (!result) return CommentError.NotFoundError;
 
-        return commentsRepository.deleteComment(id);
+        return CommentError.Success;
     },
     async deleteAllComments() {
         return commentsRepository.deleteAllComments();

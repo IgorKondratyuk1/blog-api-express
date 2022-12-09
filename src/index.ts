@@ -6,9 +6,10 @@ import {usersRouter} from "./routes/usersRouter";
 import {blogsRouter} from "./routes/blogsRouter";
 import {postsRouter} from "./routes/postsRouter";
 import {commentsRouter} from "./routes/commentsRouter";
-import {connectToDB} from "./repositories/db";
+import {mongooseConnectToDB} from "./repositories/db";
 import {securityRouter} from "./routes/securityRouter";
 import {deleteAllRouter} from "./routes/deleteAllRouter";
+import {cookiesLogs} from "./helpers/testLogs";
 
 enum URL_ROUTES {
     auth = "/api/auth",
@@ -29,7 +30,9 @@ export enum HTTP_STATUSES {
     UNAUTHORIZED_401 = 401,
     FORBIDDEN_403 = 403,
     NOT_FOUND_404 = 404,
-    TOO_MANY_REQUESTS_429 = 429
+    TOO_MANY_REQUESTS_429 = 429,
+
+    INTERNAL_SERVER_ERROR_500 = 500
 }
 
 const port = process.env.PORT || 3000;
@@ -42,18 +45,7 @@ app.use(cookieParser());
 
 
 //--- Show cookies ------
-if (SETTINGS.EXTENDED_LOGS) {
-    console.log(`Is local version: ` + SETTINGS.IS_LOCAL_VERSION);
-
-    app.use('/', (req: Request, res: Response, next: NextFunction) => {
-        console.log('\n>>>\tCookies from main');
-        //console.log(req.cookies);
-        console.log(req.path); // +
-        console.log(req.url);
-        console.log('>>>\tEnd\n');
-        next();
-    });
-}
+cookiesLogs(SETTINGS.EXTENDED_LOGS);
 
 app.use(URL_ROUTES.auth, authRouter);
 app.use(URL_ROUTES.security, securityRouter);
@@ -66,7 +58,7 @@ app.use(URL_ROUTES.testing, deleteAllRouter);
 
 
 const startApp = async () => {
-    await connectToDB();
+    await mongooseConnectToDB();
 
     app.listen(port, () => {
         console.log(`Server is running on ${port}`);
@@ -74,5 +66,3 @@ const startApp = async () => {
 }
 
 startApp().catch(error => {console.log(error)});
-
-//globalCatch();

@@ -1,17 +1,15 @@
-import {
-    UserAccountType
-} from "../types/userTypes";
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from 'uuid';
 import {TokensPair} from "../types/types";
-import {DeviceType} from "../types/deviceTypes";
-import {securityError, securityService} from "./securityService";
+import {SecurityError, securityService} from "./securityService";
 import {usersRepository} from "../repositories/users/usersRepository";
 import {createTokensPair} from "../helpers/createTokensPair";
 import {securityRepository} from "../repositories/security/securityRepository";
 import {JWTDataType} from "../application/jwtService";
 import {usersService} from "./usersService";
 import {emailManager} from "../manager/emailManagers";
+import {UserAccountType} from "../repositories/users/userSchema";
+import {DeviceType} from "../repositories/security/securitySchema";
 
 export enum authError {
     Success,
@@ -43,7 +41,7 @@ export const authService = {
     async login(ip: string, title: string, password: string, userLoginOrEmail: string): Promise<TokensPair | authError> {
         // 1. Get user
         const user: UserAccountType | null = await usersRepository.findUserByLoginOrEmail(userLoginOrEmail);
-        console.log(user);
+
         if (!user) return authError.NotFoundError;
         if (!user.emailConfirmation.isConfirmed) return authError.BadRequestError;
 
@@ -53,13 +51,13 @@ export const authService = {
 
         // 3. Create device session
         const createdSession: DeviceType | null = await securityService.createDeviceSession(user.id, ip, title);
-        if (!createdSession) return authError.BadRequestError;
+        if (!createdSession) return authError.CreationError;
 
         const tokensPair = createTokensPair(createdSession);
         return tokensPair;
     },
-    async logout(userId: string, deviceId: string): Promise<securityError> {
-        const result: securityError = await securityService.deleteDeviceSession(userId, deviceId);
+    async logout(userId: string, deviceId: string): Promise<SecurityError> {
+        const result: SecurityError = await securityService.deleteDeviceSession(userId, deviceId);
         return result;
     },
     async refreshTokens(tokenPayload: JWTDataType): Promise<TokensPair | authError> {

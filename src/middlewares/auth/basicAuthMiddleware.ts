@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {HTTP_STATUSES} from "../index";
+import {HTTP_STATUSES} from "../../index";
 
 export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authData = "admin:qwerty";

@@ -1,10 +1,10 @@
 import {NextFunction, Request, Response} from "express";
-import {HTTP_STATUSES} from "../index";
-import {SETTINGS} from "../config";
-import {securityService} from "../domain/securityService";
-import {DeviceType} from "../types/deviceTypes";
-import {JWTDataType, jwtService} from "../application/jwtService";
-import {usersService} from "../domain/usersService";
+import {HTTP_STATUSES} from "../../index";
+import {SETTINGS} from "../../config";
+import {securityService} from "../../domain/securityService";
+import {JWTDataType, jwtService} from "../../application/jwtService";
+import {usersService} from "../../domain/usersService";
+import {DeviceType} from "../../repositories/security/securitySchema";
 
 const logData = (refreshTokenData: any) => {
     if(SETTINGS.EXTENDED_LOGS){

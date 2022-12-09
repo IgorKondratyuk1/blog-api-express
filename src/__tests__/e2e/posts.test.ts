@@ -1,8 +1,6 @@
 // @ts-ignore
 import request from "supertest";
 import {app} from "../../index";
-import {BlogType} from "../../types/blogTypes";
-import {PostType} from "../../types/postTypes";
 import {basicAuthValue, clearDB} from "./helpers/helpers";
 import {CreateBlogModel} from "../../models/blog/createBlogModel";
 import {ViewBlogModel} from "../../models/blog/viewBlogModel";
@@ -11,6 +9,8 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreatePostModel} from "../../models/post/createPostModel";
 import {Paginator} from "../../types/types";
 import {UpdatePostModel} from "../../models/post/updatePostModel";
+import {BlogType} from "../../repositories/blogs/blogSchema";
+import {PostType} from "../../repositories/posts/postSchema";
 
 // 1. Testing: Posts of blog Route
 describe("/blogs/:blogId/posts", () => {

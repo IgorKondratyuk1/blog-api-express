@@ -1,9 +1,9 @@
 import {Paginator} from "../../types/types";
 import {getPagesCount, getSkipValue, getSortValue, getUserFilters} from "../../helpers/helpers";
-import {usersCollection} from "../db";
-import {QueryUserModel, UserAccountDbType, UserFilterType} from "../../types/userTypes";
+import {QueryUserModel, UserFilterType} from "../../types/userTypes";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 import {mapUserAccountDbTypeToViewUserModel} from "../../helpers/mappers";
+import {UserAccountDbType, UserModel} from "./userSchema";
 
 export const usersQueryRepository = {
     async findUsers(queryObj: QueryUserModel): Promise<Paginator<ViewUserModel>> {
@@ -13,14 +13,14 @@ export const usersQueryRepository = {
         const searchLoginTermValue = filters.searchLoginTerm || "";
         const searchEmailTermValue = filters.searchEmailTerm || "";
 
-        const foundedUsers: UserAccountDbType[] = await usersCollection
+        const foundedUsers: UserAccountDbType[] = await UserModel
             .find({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
-            .limit(filters.pageSize).toArray();
+            .limit(filters.pageSize).lean();
 
         const usersViewModels: ViewUserModel[] = foundedUsers.map(mapUserAccountDbTypeToViewUserModel); // Get View models of Blogs
-        const totalCount: number = await usersCollection.countDocuments({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]});
+        const totalCount: number = await UserModel.countDocuments({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]});
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
@@ -32,7 +32,7 @@ export const usersQueryRepository = {
         };
     },
     async findUserById(id: string): Promise<ViewUserModel | null> {
-        const dbUser = await usersCollection.findOne({id: id});
+        const dbUser = await UserModel.findOne({id});
         if (!dbUser) return null;
 
         return mapUserAccountDbTypeToViewUserModel(dbUser);

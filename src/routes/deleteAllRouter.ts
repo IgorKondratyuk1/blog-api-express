@@ -5,6 +5,8 @@ import {postsService} from "../domain/postsService";
 import {usersService} from "../domain/usersService";
 import {commentsService} from "../domain/commentsService";
 import {SETTINGS} from "../config";
+import {usersActionsRepository} from "../repositories/userActions/usersActionsRepository";
+import {securityRepository} from "../repositories/security/securityRepository";
 
 export const deleteAllRouter = Router();
 
@@ -13,9 +15,8 @@ deleteAllRouter.delete("/all-data", async (req: Request, res: Response) => {
     await postsService.deleteAllPosts();
     await usersService.deleteAllUsers();
     await commentsService.deleteAllComments();
-    //await usersActionsRepository.deleteAllActions();
-    //await authService.deleteAllRefreshTokens();
-    //await securityRepository.deleteAllDevices();
+    await usersActionsRepository.deleteAllActions();
+    await securityRepository.deleteAllDevices();
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 

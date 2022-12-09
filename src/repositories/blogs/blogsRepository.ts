@@ -1,26 +1,32 @@
-import {blogsCollection} from "../db";
-import {BlogDbType, BlogType} from "../../types/blogTypes";
 import {mapBlogDBTypeToBlogType} from "../../helpers/mappers";
+import {BlogDbType, BlogModel, BlogType, CreateBlogDbType} from "./blogSchema";
 
 export const blogsRepository = {
     async findBlogById(id: string): Promise<BlogType | null> {
-        const dbBlog: BlogDbType | null = await blogsCollection.findOne({id: id});
+        const dbBlog: BlogDbType | null = await BlogModel.findOne({id});
         if (!dbBlog) return null;
         return mapBlogDBTypeToBlogType(dbBlog);
     },
-    async createBlog(newBlog: BlogDbType): Promise<BlogType> {
-        await blogsCollection.insertOne(newBlog);
-        return mapBlogDBTypeToBlogType(newBlog);
+    async createBlog(newBlog: CreateBlogDbType): Promise<BlogType> {
+        const blog = new BlogModel(newBlog);
+        const createdBlog: BlogDbType = await blog.save();
+        return mapBlogDBTypeToBlogType(createdBlog);
     },
     async updateBlog(id: string, name: string, websiteUrl: string): Promise<boolean> {
-        let result = await blogsCollection.updateOne({id: id}, { $set: { name, websiteUrl }});
-        return result.matchedCount === 1;
+        const blog = await BlogModel.findOne({id});
+        if (!blog) return false;
+
+        blog.name = name;
+        blog.websiteUrl = websiteUrl;
+        await blog.save();
+
+        return true;
     },
     async deleteBlog(id: string): Promise<boolean> {
-        let result = await blogsCollection.deleteOne({id: id});
+        let result = await BlogModel.deleteOne({id});
         return result.deletedCount === 1;
     },
     async deleteAllBlogs() {
-        return blogsCollection.deleteMany({});
+        return BlogModel.deleteMany({});
     }
 }

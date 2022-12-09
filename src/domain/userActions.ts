@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import {usersActionsRepository} from "../repositories/userActions/usersActionsRepository";
-import {UserActionsDbType, UserActionsType} from "../types/userActionTypes";
+import {CreateUserActionsDbType} from "../repositories/userActions/userActionSchema";
 
 export const UserActionsService = {
-    async createAndGetCount(ip: string, resource: string): Promise<number> {
-        const newUserAction: UserActionsDbType = {
+    async createAndGetCount(ip: string, resource: string): Promise<number | null> {
+        const newUserAction: CreateUserActionsDbType = {
             id: uuidv4(),
             lastActiveDate: new Date(),
             ip,
@@ -17,7 +17,6 @@ export const UserActionsService = {
         await usersActionsRepository.deleteExpiredActions();
 
         // Get actions count of current user(ip)
-        const actionsCount: number = await usersActionsRepository.getUserActionsCount(ip, resource);
-        return actionsCount;
+        return await usersActionsRepository.getUserActionsCount(ip, resource);
     }
 }

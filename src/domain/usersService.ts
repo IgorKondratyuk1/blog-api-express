@@ -1,9 +1,12 @@
 import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
-import {ObjectId} from "mongodb";
 import {add} from "date-fns";
-import {PasswordRecoveryType, UserAccountDbType, UserAccountType} from "../types/userTypes";
 import {usersRepository} from "../repositories/users/usersRepository";
+import {
+    CreateUserAccountDbType,
+    PasswordRecoveryType,
+    UserAccountType
+} from "../repositories/users/userSchema";
 
 export const usersService = {
     async findUserById(id: string): Promise<UserAccountType | null> {
@@ -11,8 +14,7 @@ export const usersService = {
     },
     async createUser(login: string, email: string, password: string, isConfirmed: boolean = false): Promise<UserAccountType | null> {
         const passwordHash: string = await this._generateHash(password);
-        const newUser: UserAccountDbType = {
-            _id: new ObjectId(),
+        const newUser: CreateUserAccountDbType = {
             id: uuidv4(),
             accountData: {
                 login,
@@ -31,8 +33,7 @@ export const usersService = {
             passwordRecovery: {}
         }
 
-        const createdUser: UserAccountType | null = await usersRepository.createUser(newUser);
-        return createdUser;
+        return await usersRepository.createUser(newUser);
     },
     async updateRecoveryCode(id: string): Promise<UserAccountType | null> {
         const recoveryData: PasswordRecoveryType = {
