@@ -1,5 +1,6 @@
 import {ObjectId, WithId} from "mongodb";
 import mongoose from "mongoose";
+import {SETTINGS} from "../../config";
 
 export type PostType = {
     id:	string

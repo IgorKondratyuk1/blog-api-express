@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import {WithId} from 'mongodb';
+import {SETTINGS} from "../../config";
 
 export type BlogType = {
     id: string
