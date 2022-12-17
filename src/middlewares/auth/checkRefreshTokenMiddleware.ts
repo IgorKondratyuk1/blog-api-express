@@ -1,10 +1,13 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
 import {SETTINGS} from "../../config";
-import {securityService} from "../../domain/securityService";
 import {JWTDataType, jwtService} from "../../application/jwtService";
-import {usersService} from "../../domain/usersService";
 import {DeviceType} from "../../repositories/security/securitySchema";
+import {SecurityService} from "../../domain/securityService";
+import {UsersService} from "../../domain/usersService";
+
+const securityService = new SecurityService();
+const usersService = new UsersService();
 
 const logData = (refreshTokenData: any) => {
     if(SETTINGS.EXTENDED_LOGS){

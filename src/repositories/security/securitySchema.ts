@@ -1,6 +1,5 @@
 import {WithId} from "mongodb";
 import mongoose from "mongoose";
-import {SETTINGS} from "../../config";
 
 export type DeviceType = {
     ip: string

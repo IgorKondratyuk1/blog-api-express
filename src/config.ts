@@ -12,5 +12,6 @@ export const SETTINGS = {
     ACCESS_TOKEN_EXPIRATION: process.env.ACCESS_TOKEN_EXPIRATION, // seconds
     REFRESH_TOKEN_EXPIRATION: process.env.REFRESH_TOKEN_EXPIRATION, // seconds
     EXTENDED_LOGS: process.env.EXTENDED_LOGS === "true",
-    DEBOUNCE_TIME: Number(process.env.DEBOUNCE_TIME)
+    DEBOUNCE_TIME: Number(process.env.DEBOUNCE_TIME),
+    EXPIRED_DEVICE_SESSION_DAYS: Number(process.env.EXPIRED_DEVICE_SESSION_DAYS)
 }

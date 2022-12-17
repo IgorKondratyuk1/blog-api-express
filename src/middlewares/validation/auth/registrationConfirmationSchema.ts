@@ -1,6 +1,8 @@
 import {body, CustomValidator} from "express-validator";
-import {usersRepository} from "../../../repositories/users/usersRepository";
 import {inputValidationMiddleware} from "../../inputValidationMiddleware";
+import {UsersRepository} from "../../../repositories/users/usersRepository";
+
+const usersRepository = new UsersRepository();
 
 const isConfirmationCodeExists: CustomValidator = async (value, meta) => {
     const user = await usersRepository.findUserByEmailConfirmationCode(value)

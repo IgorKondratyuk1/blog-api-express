@@ -5,7 +5,7 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {mapPostTypeToPostViewModel} from "../../helpers/mappers";
 import {PostModel, PostType} from "./postSchema";
 
-export const postsQueryRepository = {
+export class PostsQueryRepository {
     async findPosts(queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
         const filters: FilterType = getFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
@@ -27,10 +27,10 @@ export const postsQueryRepository = {
             totalCount: totalCount,
             items: postsViewModels
         };
-    },
+    }
     async findPostById(id: string): Promise<PostType | null> {
         return PostModel.findOne({id});
-    },
+    }
     async findPostsOfBlog(blogId: string, queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
         const filters: FilterType = getFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);

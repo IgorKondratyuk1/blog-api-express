@@ -1,17 +1,23 @@
 import bcrypt from 'bcrypt';
 import {v4 as uuidv4} from 'uuid';
 import {add} from "date-fns";
-import {usersRepository} from "../repositories/users/usersRepository";
 import {
     CreateUserAccountDbType,
     PasswordRecoveryType,
     UserAccountType
 } from "../repositories/users/userSchema";
+import {UsersRepository} from "../repositories/users/usersRepository";
 
-export const usersService = {
+export class UsersService {
+    private usersRepository: UsersRepository
+
+    constructor() {
+        this.usersRepository = new UsersRepository()
+    }
+
     async findUserById(id: string): Promise<UserAccountType | null> {
-        return await usersRepository.findUserById(id);
-    },
+        return await this.usersRepository.findUserById(id);
+    }
     async createUser(login: string, email: string, password: string, isConfirmed: boolean = false): Promise<UserAccountType | null> {
         const passwordHash: string = await this._generateHash(password);
         const newUser: CreateUserAccountDbType = {
@@ -33,8 +39,8 @@ export const usersService = {
             passwordRecovery: {}
         }
 
-        return await usersRepository.createUser(newUser);
-    },
+        return await this.usersRepository.createUser(newUser);
+    }
     async updateRecoveryCode(id: string): Promise<UserAccountType | null> {
         const recoveryData: PasswordRecoveryType = {
             recoveryCode: uuidv4(),
@@ -44,18 +50,18 @@ export const usersService = {
             }).toISOString(),
             isUsed: false
         };
-        return await usersRepository.updatePasswordRecoveryCode(id, recoveryData);
-    },
+        return await this.usersRepository.updatePasswordRecoveryCode(id, recoveryData);
+    }
     async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
         const newPasswordHash: string = await this._generateHash(newPassword);
-        return await usersRepository.updateUserPassword(id, newPasswordHash);
-    },
+        return await this.usersRepository.updateUserPassword(id, newPasswordHash);
+    }
     async deleteUser(id: string): Promise<boolean> {
-        return await usersRepository.deleteUser(id);
-    },
+        return await this.usersRepository.deleteUser(id);
+    }
     async deleteAllUsers() {
-        return usersRepository.deleteAllUsers();
-    },
+        return this.usersRepository.deleteAllUsers();
+    }
     async _generateHash(password: string): Promise<string> {
         const passwordSalt: string = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, passwordSalt);

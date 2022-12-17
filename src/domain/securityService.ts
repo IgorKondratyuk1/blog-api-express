@@ -1,9 +1,10 @@
-import {securityRepository} from "../repositories/security/securityRepository";
 import {DeviceViewModel} from "../models/auth/device/deviceViewModel";
 import { v4 as uuidv4 } from 'uuid';
 import {add} from "date-fns";
 import {mapDeviceDBTypeToDeviceViewModel} from "../helpers/mappers";
-import {CreateDeviceDBType, DeviceDBType, DeviceType} from "../repositories/security/securitySchema";
+import {CreateDeviceDBType, DeviceType} from "../repositories/security/securitySchema";
+import {SETTINGS} from "../config";
+import {SecurityRepository} from "../repositories/security/securityRepository";
 
 export enum SecurityError {
     Success,
@@ -11,18 +12,29 @@ export enum SecurityError {
     NotFoundError
 }
 
-export const securityService = {
+// type Result<T> = {
+//     status: SecurityError,
+//     data: T | null
+// }
+
+export class SecurityService {
+    private securityRepository: SecurityRepository
+
+    constructor() {
+        this.securityRepository = new SecurityRepository();
+    }
+
     async getAllDevices(userId: string): Promise<DeviceViewModel[] | null> {
-        const result: DeviceType[] | null = await securityRepository.findUserDeviceSessions(userId);
+        const result: DeviceType[] | null = await this.securityRepository.findUserDeviceSessions(userId);
         if (!result) return null;
         return result.map(mapDeviceDBTypeToDeviceViewModel);
-    },
+    }
     async findDeviceSession(deviceId: string): Promise<DeviceType | null> {
-        const result: DeviceType | null = await securityRepository.findDeviceSession(deviceId);
+        const result: DeviceType | null = await this.securityRepository.findDeviceSession(deviceId);
         return result;
-    },
+    }
     async createDeviceSession(userId: string, ip: string, title: string): Promise<DeviceType | null> {
-        const expiredAt = add(new Date,{days: 1}).toISOString();
+        const expiredAt = add(new Date,{days: SETTINGS.EXPIRED_DEVICE_SESSION_DAYS}).toISOString();
         const issuedAt = (new Date()).toISOString();
 
         const newDeviceSession: CreateDeviceDBType = {
@@ -36,18 +48,18 @@ export const securityService = {
             isValid: true
         }
 
-        return securityRepository.createDeviceSession(newDeviceSession);
-    },
+        return this.securityRepository.createDeviceSession(newDeviceSession);
+    }
     async deleteOtherSessions(userId: string, currentSessionId: string): Promise<boolean> {
-        return await securityRepository.deleteOtherSessions(userId, currentSessionId);
-    },
+        return await this.securityRepository.deleteOtherSessions(userId, currentSessionId);
+    }
     async deleteDeviceSession(currentUserId: string, deviceId: string): Promise<SecurityError> {
-        const deviceSession = await securityRepository.findDeviceSession(deviceId);
+        const deviceSession = await this.securityRepository.findDeviceSession(deviceId);
 
         if (!deviceSession) return SecurityError.NotFoundError;
         if (currentUserId !== deviceSession.userId) return SecurityError.WrongUserError;
 
-        const deleteSession = await securityRepository.deleteDeviceSession(deviceId);
+        const deleteSession = await this.securityRepository.deleteDeviceSession(deviceId);
         return deleteSession ? SecurityError.Success : SecurityError.NotFoundError;
     }
 }

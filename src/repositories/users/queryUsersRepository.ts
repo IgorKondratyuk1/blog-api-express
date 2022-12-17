@@ -5,7 +5,7 @@ import {ViewUserModel} from "../../models/user/viewUserModel";
 import {mapUserAccountDbTypeToViewUserModel} from "../../helpers/mappers";
 import {UserAccountDbType, UserModel} from "./userSchema";
 
-export const usersQueryRepository = {
+export class UsersQueryRepository {
     async findUsers(queryObj: QueryUserModel): Promise<Paginator<ViewUserModel>> {
         const filters: UserFilterType = getUserFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
@@ -30,7 +30,7 @@ export const usersQueryRepository = {
             totalCount: totalCount,
             items: usersViewModels
         };
-    },
+    }
     async findUserById(id: string): Promise<ViewUserModel | null> {
         const dbUser = await UserModel.findOne({id});
         if (!dbUser) return null;

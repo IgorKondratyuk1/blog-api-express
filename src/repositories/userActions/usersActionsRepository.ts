@@ -3,7 +3,7 @@ import {SETTINGS} from "../../config";
 import {DeleteResult} from "mongodb";
 import {CreateUserActionsDbType, UserActionModel, UserActionsDbType, UserActionsType} from "./userActionSchema";
 
-export const usersActionsRepository = {
+export class UsersActionsRepository {
     async createUserAction(newAction: CreateUserActionsDbType): Promise<UserActionsType | null> {
         try {
             const action = new UserActionModel(newAction);
@@ -13,7 +13,7 @@ export const usersActionsRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async getUserActionsCount(ip: string, resource: string): Promise<number | null> {
         try {
             return await UserActionModel.countDocuments({ip, resource});
@@ -21,7 +21,7 @@ export const usersActionsRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async deleteExpiredActions(): Promise<DeleteResult | null> {
         try {
             const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 100)));
@@ -30,7 +30,7 @@ export const usersActionsRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async deleteAllActions() {
         try {
             return UserActionModel.deleteMany({});

@@ -8,7 +8,7 @@ import {
 } from "./userSchema";
 import {DeleteResult} from "mongodb";
 
-export const usersRepository = {
+export class UsersRepository {
     async findUserById(id: string): Promise<UserAccountType | null> {
         try{
             const dbUser: UserAccountDbType | null = await UserModel.findOne({id});
@@ -18,7 +18,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountType | null> {
         try{
             const dbUser: UserAccountDbType | null = await UserModel.findOne({$or: [{'accountData.login': loginOrEmail}, {'accountData.email': loginOrEmail}]}).exec();
@@ -29,7 +29,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async findUserByEmailConfirmationCode(code: string) {
         try {
             const dbUser: UserAccountDbType | null = await UserModel.findOne({'emailConfirmation.confirmationCode': code});
@@ -39,7 +39,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async findUserByPasswordConfirmationCode(code: string): Promise<UserAccountType | null> {
         try {
             const dbUser: UserAccountDbType | null = await UserModel.findOne({'passwordRecovery.recoveryCode': code});
@@ -49,7 +49,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async createUser(newUser: CreateUserAccountDbType): Promise<UserAccountType | null> {
         try {
             const user = new UserModel(newUser);
@@ -59,7 +59,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async updatePasswordRecoveryCode(id: string, recoveryData: PasswordRecoveryType): Promise<UserAccountType | null> {
         try {
             const result = await UserModel.findOneAndUpdate({id}, {$set:{passwordRecovery: recoveryData}}, {returnDocument: "after"});
@@ -69,7 +69,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async updateUserConfirmCode(id: string, code: string): Promise<UserAccountType | null> {
         try {
             const result = await UserModel.findOneAndUpdate({id}, {$set: {'emailConfirmation.confirmationCode': code}}, {returnDocument: "after"});
@@ -79,7 +79,7 @@ export const usersRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async updateUserPassword(id: string, newPasswordHash: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({id});
@@ -92,7 +92,7 @@ export const usersRepository = {
             console.log(error);
             return false;
         }
-    },
+    }
     async confirmUserEmail(id: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({id});
@@ -105,7 +105,7 @@ export const usersRepository = {
             console.log(error);
             return false;
         }
-    },
+    }
     async deleteUser(id: string): Promise<boolean> {
         try {
             const result: DeleteResult = await UserModel.deleteOne({id});
@@ -114,7 +114,7 @@ export const usersRepository = {
             console.log(error);
             return false;
         }
-    },
+    }
     async deleteAllUsers() {
         return UserModel.deleteMany({});
     }

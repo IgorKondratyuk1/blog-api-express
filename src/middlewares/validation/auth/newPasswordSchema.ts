@@ -1,6 +1,8 @@
 import {body, CustomValidator} from "express-validator";
 import {inputValidationMiddleware} from "../../inputValidationMiddleware";
-import {usersRepository} from "../../../repositories/users/usersRepository";
+import {UsersRepository} from "../../../repositories/users/usersRepository";
+
+const usersRepository = new UsersRepository();
 
 const isPasswordRecoveryCodeExists: CustomValidator = async (value, meta) => {
     const user = await usersRepository.findUserByPasswordConfirmationCode(value)

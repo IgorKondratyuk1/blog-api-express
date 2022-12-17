@@ -5,7 +5,7 @@ import {ViewBlogModel} from "../../models/blog/viewBlogModel";
 import {mapBlogTypeToBlogViewModel} from "../../helpers/mappers";
 import {BlogDbType, BlogModel} from "./blogSchema";
 
-export const blogsQueryRepository = {
+export class BlogsQueryRepository {
     async findBlogs(queryObj: BlogQueryModel): Promise<Paginator<ViewBlogModel>> {
         const filters: FilterType = getFilters(queryObj);
         const skipValue: number = getSkipValue(filters.pageNumber, filters.pageSize);
@@ -29,8 +29,12 @@ export const blogsQueryRepository = {
             totalCount: totalCount,
             items: blogsViewModels
         };
-    },
+    }
     async findBlogById(id: string): Promise<BlogDbType | null> {
+        // const  blog =  BlogModel.findOne({id});
+        // if(!blog){
+        //   throw ForbiddenError()
+        // }
         return BlogModel.findOne({id});
     }
 }

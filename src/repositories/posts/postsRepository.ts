@@ -2,7 +2,7 @@ import {UpdatePostModel} from "../../models/post/updatePostModel";
 import {mapPostDbTypeToPostType} from "../../helpers/mappers";
 import {CreatePostDbType, PostDbType, PostModel, PostType} from "./postSchema";
 
-export const postsRepository = {
+export class PostsRepository {
     async findPostById(id: string): Promise<PostType | null> {
         try {
             const dbPost: PostDbType | null = await PostModel.findOne({id});
@@ -12,7 +12,7 @@ export const postsRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async createPost(newPost: CreatePostDbType): Promise<PostType | null> {
         try {
             const post = new PostModel(newPost);
@@ -22,7 +22,7 @@ export const postsRepository = {
             console.log(error);
             return null;
         }
-    },
+    }
     async updatePost(id: string, data: UpdatePostModel): Promise<boolean> {
         try {
             const post = await PostModel.findOne({id});
@@ -38,7 +38,7 @@ export const postsRepository = {
             console.log(error);
             return false;
         }
-    },
+    }
     async deletePost(id: string): Promise<boolean> {
         try {
             const result = await PostModel.deleteOne({ id: id });
@@ -47,7 +47,7 @@ export const postsRepository = {
             console.log(error);
             return false;
         }
-    },
+    }
     async deleteAllPosts() {
         return PostModel.deleteMany({});
     }
