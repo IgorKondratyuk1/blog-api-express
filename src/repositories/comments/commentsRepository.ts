@@ -9,11 +9,13 @@ export class CommentsRepository {
         if (!dbComment) return null;
         return mapCommentDbTypeToCommentType(dbComment);
     }
+
     async createComment(newComment: CreateCommentDbType): Promise<CommentType> {
         const comment = new CommentModel(newComment);
         const createdComment: CommentDbType = await comment.save();
         return mapCommentDbTypeToCommentType(createdComment);
     }
+
     async updateComment(id: string, newComment: UpdateCommentModel): Promise<boolean> {
         try {
             const comment = await CommentModel.findOne({id});
@@ -27,12 +29,43 @@ export class CommentsRepository {
             console.log(error);
             return false;
         }
-
     }
+
+    async updateLikesCount(id: string, newCount: number): Promise<boolean> {
+        try {
+            const comment = await CommentModel.findOne({id});
+            if (!comment) return false;
+
+            comment.likesInfo.likesCount = newCount;
+            await comment.save();
+
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+
+    async updateDislikesCount(id: string, newCount: number): Promise<boolean> {
+        try {
+            const comment = await CommentModel.findOne({id});
+            if (!comment) return false;
+
+            comment.likesInfo.dislikesCount = newCount;
+            await comment.save();
+
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+
     async deleteComment(id: string): Promise<boolean> {
-        const result: DeleteResult = await CommentModel.deleteOne({ id});
+        const result: DeleteResult = await CommentModel.deleteOne({id});
         return result.deletedCount === 1;
     }
+
     async deleteAllComments() {
         return CommentModel.deleteMany({});
     }

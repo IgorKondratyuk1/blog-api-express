@@ -3,10 +3,7 @@ import {BlogType, CreateBlogDbType} from "../repositories/blogs/blogSchema";
 import {BlogsRepository} from "../repositories/blogs/blogsRepository";
 
 export class BlogsService {
-    blogsRepository: BlogsRepository
-    constructor() {
-        this.blogsRepository = new BlogsRepository();
-    }
+    constructor(protected blogsRepository: BlogsRepository) {}
 
     async createBlog(name: string, websiteUrl: string, description: string): Promise<BlogType | null> {
         const newBlog: CreateBlogDbType = {

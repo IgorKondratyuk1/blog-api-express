@@ -9,11 +9,7 @@ import {
 import {UsersRepository} from "../repositories/users/usersRepository";
 
 export class UsersService {
-    private usersRepository: UsersRepository
-
-    constructor() {
-        this.usersRepository = new UsersRepository()
-    }
+    constructor(protected usersRepository: UsersRepository) {}
 
     async findUserById(id: string): Promise<UserAccountType | null> {
         return await this.usersRepository.findUserById(id);

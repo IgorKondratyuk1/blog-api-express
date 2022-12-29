@@ -10,6 +10,7 @@ import {PostDbType, PostType} from "../repositories/posts/postSchema";
 import {UserAccountDbType, UserAccountType} from "../repositories/users/userSchema";
 import {DeviceDBType, DeviceType} from "../repositories/security/securitySchema";
 import {UserActionsDbType, UserActionsType} from "../repositories/userActions/userActionSchema";
+import {LikeDbType, LikeStatusType, LikeType} from "../repositories/likes/likeSchema";
 
 export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType): ViewUserModel => {
     return {
@@ -71,13 +72,18 @@ export const mapUserAccountTypeToMeViewModel = (user: UserAccountType | UserAcco
     }
 }
 
-export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | CommentType): ViewCommentModel => {
+export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | CommentType, likeStatus: LikeStatusType): ViewCommentModel => {
     return {
         id: dbComment.id,
         content: dbComment.content,
         createdAt: new Date(dbComment.createdAt).toISOString(),
         userId: dbComment.userId,
-        userLogin: dbComment.userLogin
+        userLogin: dbComment.userLogin,
+        likesInfo: {
+            likesCount: dbComment.likesInfo.likesCount,
+            dislikesCount: dbComment.likesInfo.dislikesCount,
+            myStatus: likeStatus
+        }
     }
 }
 
@@ -88,7 +94,11 @@ export const mapCommentDbTypeToCommentType = (dbComment: CommentDbType): Comment
         createdAt: dbComment.createdAt,
         updatedAt: dbComment.updatedAt,
         userId: dbComment.userId,
-        userLogin: dbComment.userLogin
+        userLogin: dbComment.userLogin,
+        likesInfo: {
+            likesCount: dbComment.likesInfo.likesCount,
+            dislikesCount: dbComment.likesInfo.dislikesCount
+        }
     }
 }
 
@@ -154,5 +164,16 @@ export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType)
         },
         createdAt: dbUser.createdAt,
         updatedAt: dbUser.updatedAt
+    }
+}
+
+export const mapLikeDbTypeToLikeType = (dbLike: LikeDbType): LikeType => {
+    return {
+        locationId: dbLike.locationId,
+        userId: dbLike.userId,
+        locationName: dbLike.locationName,
+        myStatus: dbLike.myStatus,
+        createdAt: dbLike.createdAt,
+        updatedAt: dbLike.updatedAt
     }
 }

@@ -3,11 +3,7 @@ import {CreateUserActionsDbType} from "../repositories/userActions/userActionSch
 import {UsersActionsRepository} from "../repositories/userActions/usersActionsRepository";
 
 export class UserActionsService {
-    private usersActionsRepository: UsersActionsRepository
-
-    constructor() {
-        this.usersActionsRepository = new UsersActionsRepository();
-    }
+    constructor(protected usersActionsRepository: UsersActionsRepository) {}
 
     async createAndGetCount(ip: string, resource: string): Promise<number | null> {
         const newUserAction: CreateUserActionsDbType = {

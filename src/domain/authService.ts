@@ -21,17 +21,12 @@ export enum authError {
 }
 
 export class AuthService {
-    private securityRepository: SecurityRepository
-    private usersRepository: UsersRepository
-    private usersService: UsersService
-    private securityService: SecurityService
-
-    constructor() {
-        this.securityRepository = new SecurityRepository();
-        this.usersRepository = new UsersRepository();
-        this.usersService = new UsersService();
-        this.securityService = new SecurityService();
-    }
+    constructor(
+        protected securityRepository: SecurityRepository,
+        protected usersRepository: UsersRepository,
+        protected usersService: UsersService,
+        protected securityService: SecurityService
+    ) {}
 
     async register(login: string, email: string, password: string): Promise<authError> {
         // 1. Create new user
@@ -153,5 +148,3 @@ export class AuthService {
        return await bcrypt.compare(password, passwordHash);
     }
 }
-
-export const authService = new AuthService();

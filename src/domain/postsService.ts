@@ -11,13 +11,10 @@ export enum PostError {
 }
 
 export class PostsService {
-    private blogsRepository: BlogsRepository
-    private postsRepository: PostsRepository
-
-    constructor() {
-        this.blogsRepository = new BlogsRepository();
-        this.postsRepository = new PostsRepository();
-    }
+    constructor(
+        protected blogsRepository: BlogsRepository,
+        protected postsRepository: PostsRepository
+    ) {}
 
     async createPost(blogId: string, post: CreatePostModel | CreatePostOfBlogModel): Promise<PostType | null> {
         const foundedBlog = await this.blogsRepository .findBlogById(blogId);

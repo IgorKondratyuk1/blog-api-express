@@ -18,11 +18,7 @@ export enum SecurityError {
 // }
 
 export class SecurityService {
-    private securityRepository: SecurityRepository
-
-    constructor() {
-        this.securityRepository = new SecurityRepository();
-    }
+    constructor(protected securityRepository: SecurityRepository) {}
 
     async getAllDevices(userId: string): Promise<DeviceViewModel[] | null> {
         const result: DeviceType[] | null = await this.securityRepository.findUserDeviceSessions(userId);
