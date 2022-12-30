@@ -5,7 +5,7 @@ import {QueryCommentModel} from "../../models/comment/queryCommentModel";
 import {mapCommentDbTypeToViewCommentModel} from "../../helpers/mappers";
 import {CommentDbType, CommentModel} from "./commentSchema";
 import {LikesRepository} from "../likes/likesRepository";
-import {LikeLocation, LikeStatusType, LikeType} from "../likes/likeSchema";
+import {LikeLocation, LikeStatus, LikeStatusType, LikeType} from "../likes/likeSchema";
 
 export class CommentsWithLikesQueryRepository {
     constructor(
@@ -16,7 +16,12 @@ export class CommentsWithLikesQueryRepository {
         const dbComment: CommentDbType | null = await CommentModel.findOne({id: commentId});
         if (!dbComment) return null;
 
-        const likeStatus: LikeStatusType = await this.likesRepository.getUserLikeStatus(userId, commentId, LikeLocation.Comment);
+        let likeStatus: LikeStatusType;
+        if (userId) {
+            likeStatus = await this.likesRepository.getUserLikeStatus(userId, commentId, LikeLocation.Comment);
+        } else {
+            likeStatus = LikeStatus.None;
+        }
 
         return mapCommentDbTypeToViewCommentModel(dbComment, likeStatus);
     }
@@ -33,7 +38,12 @@ export class CommentsWithLikesQueryRepository {
             .limit(filters.pageSize).lean();
 
         const commentsViewModels: ViewCommentModel[] = await Promise.all(foundedComments.map(async (comment: CommentDbType) => {
-            const likeStatus: LikeStatusType = await this.likesRepository.getUserLikeStatus(currentUserId, comment.id, LikeLocation.Comment);
+            let likeStatus: LikeStatusType;
+            if (currentUserId) {
+                likeStatus = await this.likesRepository.getUserLikeStatus(currentUserId, comment.id, LikeLocation.Comment);
+            } else {
+                likeStatus = LikeStatus.None;
+            }
             return mapCommentDbTypeToViewCommentModel(comment, likeStatus);
         }));
 

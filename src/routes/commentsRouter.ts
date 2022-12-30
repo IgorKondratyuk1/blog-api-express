@@ -3,11 +3,12 @@ import {commentValidationSchema} from "../middlewares/validation/commentValidati
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {commentsController} from "../compositionRoot";
 import {likeValidationSchema} from "../middlewares/validation/likeValidationSchema";
+import {userIdentification} from "../middlewares/userIdentificationMiddleware";
 
 export const commentsRouter = express.Router();
 
 commentsRouter.get("/:id",
-    jwtAuthMiddleware,
+    userIdentification,
     commentsController.getComment.bind(commentsController)
 );
 

@@ -6,6 +6,7 @@ import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
 import {PostsController} from "./controllers/postsController";
 import {postsController} from "../compositionRoot";
+import {userIdentification} from "../middlewares/userIdentificationMiddleware";
 
 export const postsRouter = Router();
 
@@ -36,7 +37,7 @@ postsRouter.delete("/:id",
 );
 
 postsRouter.get("/:id/comments",
-    jwtAuthMiddleware,
+    userIdentification,
     postsController.getCommentsOfPost.bind(postsController)
 );
 
