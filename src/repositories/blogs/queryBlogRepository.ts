@@ -4,7 +4,9 @@ import {BlogQueryModel} from "../../models/blog/blogQueryModel";
 import {ViewBlogModel} from "../../models/blog/viewBlogModel";
 import {mapBlogTypeToBlogViewModel} from "../../helpers/mappers";
 import {BlogDbType, BlogModel} from "./blogSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsQueryRepository {
     async findBlogs(queryObj: BlogQueryModel): Promise<Paginator<ViewBlogModel>> {
         const filters: FilterType = getFilters(queryObj);

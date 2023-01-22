@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import {BlogType, CreateBlogDbType} from "../repositories/blogs/blogSchema";
 import {BlogsRepository} from "../repositories/blogs/blogsRepository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsService {
-    constructor(protected blogsRepository: BlogsRepository) {}
+    constructor(
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository
+    ) {}
 
     async createBlog(name: string, websiteUrl: string, description: string): Promise<BlogType | null> {
         const newBlog: CreateBlogDbType = {

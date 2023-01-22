@@ -1,8 +1,10 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
 import {jwtService} from "../../application/jwtService";
+import {container} from "../../compositionRoot";
 import {UsersService} from "../../domain/usersService";
-import {usersService} from "../../compositionRoot";
+
+const usersService = container.resolve(UsersService);
 
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const clientAuthHeader = req.header("authorization");

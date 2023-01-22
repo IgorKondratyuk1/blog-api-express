@@ -8,13 +8,14 @@ import {CreateUserModel} from "../../models/user/createUserModel";
 import {UserAccountType} from "../../repositories/users/userSchema";
 import {mapUserAccountTypeToViewUserModel} from "../../helpers/mappers";
 import {UriParamsUserModel} from "../../models/user/uriParamsUserModel";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersController {
     constructor(
-        protected usersQueryRepository: UsersQueryRepository,
-        protected usersService: UsersService
-    ) {
-    }
+        @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+        @inject(UsersService) protected usersService: UsersService
+    ) {}
 
     async getUsers(req: RequestWithQuery<QueryUserModel>, res: Response<Paginator<ViewUserModel>>) {
         const users = await this.usersQueryRepository.findUsers(req.query);

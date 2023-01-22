@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import {CreateUserActionsDbType} from "../repositories/userActions/userActionSchema";
 import {UsersActionsRepository} from "../repositories/userActions/usersActionsRepository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UserActionsService {
-    constructor(protected usersActionsRepository: UsersActionsRepository) {}
+    constructor(
+        @inject(UsersActionsRepository) protected usersActionsRepository: UsersActionsRepository
+    ) {}
 
     async createAndGetCount(ip: string, resource: string): Promise<number | null> {
         const newUserAction: CreateUserActionsDbType = {

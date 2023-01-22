@@ -1,4 +1,3 @@
-// @ts-ignore
 import request from "supertest";
 import {app} from "../../index";
 import {basicAuthValue, clearDB} from "./helpers/helpers";

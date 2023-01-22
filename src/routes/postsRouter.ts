@@ -4,9 +4,11 @@ import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
 import {postValidationSchema} from "../middlewares/validation/postValidationSchema";
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
-import {PostsController} from "./controllers/postsController";
-import {postsController} from "../compositionRoot";
 import {userIdentification} from "../middlewares/userIdentificationMiddleware";
+import {container} from "../compositionRoot";
+import {PostsController} from "./controllers/postsController";
+
+const postsController = container.resolve(PostsController);
 
 export const postsRouter = Router();
 

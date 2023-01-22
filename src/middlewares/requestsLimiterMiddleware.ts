@@ -1,7 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../index";
+import {container} from "../compositionRoot";
 import {UserActionsService} from "../domain/userActions";
-import {userActionsService} from "../compositionRoot";
+
+const userActionsService = container.resolve(UserActionsService);
 
 export const requestsLimiterMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const resource = `${req.method}:${req.path}`;

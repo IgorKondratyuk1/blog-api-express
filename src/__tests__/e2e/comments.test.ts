@@ -1,4 +1,3 @@
-// @ts-ignore
 import request from "supertest";
 import {CreateUserModel} from "../../models/user/createUserModel";
 import {app} from "../../index";
@@ -12,6 +11,7 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
+import {LikeStatus} from "../../repositories/likes/likeSchema";
 
 // Testing: Comments Route
 describe("/comments", () => {
@@ -191,7 +191,12 @@ describe("/comments", () => {
             userId: firstUserId,
             content: data.content,
             createdAt: expect.any(String),
-            userLogin: firstUser.login
+            userLogin: firstUser.login,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None
+            }
         };
         expect(firstComment).toEqual(expectedObj);
     });
@@ -273,7 +278,12 @@ describe("/comments", () => {
             content: data.content,
             userId: firstUserId,
             userLogin: firstUser.login,
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None
+            }
         };
         expect(updatedComment.body).toEqual(expectedObj);
     });

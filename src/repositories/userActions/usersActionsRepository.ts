@@ -2,7 +2,9 @@ import {mapUserActionsDbTypeToUserActionsType} from "../../helpers/mappers";
 import {SETTINGS} from "../../config";
 import {DeleteResult} from "mongodb";
 import {CreateUserActionsDbType, UserActionModel, UserActionsDbType, UserActionsType} from "./userActionSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersActionsRepository {
     async createUserAction(newAction: CreateUserActionsDbType): Promise<UserActionsType | null> {
         try {

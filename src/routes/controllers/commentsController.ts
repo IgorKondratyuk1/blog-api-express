@@ -10,14 +10,15 @@ import {LikeError, LikeService} from "../../domain/likeService";
 import {LikeLocation} from "../../repositories/likes/likeSchema";
 import {CommentType} from "../../repositories/comments/commentSchema";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsController {
     constructor(
-        protected commentsQueryRepository: CommentsWithLikesQueryRepository,
-        protected commentsService: CommentsService,
-        protected likeService: LikeService
-    ) {
-    }
+        @inject(CommentsWithLikesQueryRepository) protected commentsQueryRepository: CommentsWithLikesQueryRepository,
+        @inject(CommentsService) protected commentsService: CommentsService,
+        @inject(LikeService) protected likeService: LikeService
+    ) {}
 
     async getComment(req: RequestWithParams<UriParamsCommentModel>, res: Response<ViewCommentModel>) {
         const foundedComment: ViewCommentModel | null = await this.commentsQueryRepository.findCommentById(req.params.id, req.user!.id);

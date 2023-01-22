@@ -1,5 +1,4 @@
 import {app} from "../../index";
-// @ts-ignore
 import request from 'supertest';
 import {CreateUserModel} from "../../models/user/createUserModel";
 import {ViewUserModel} from "../../models/user/viewUserModel";

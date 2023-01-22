@@ -8,7 +8,10 @@ import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {requestsLimiterMiddleware} from "../middlewares/requestsLimiterMiddleware";
 import {passwordRecoveryValidationSchema} from "../middlewares/validation/auth/passwordRecoverySchema";
 import {newPasswordValidationSchema} from "../middlewares/validation/auth/newPasswordSchema";
-import {authController} from "../compositionRoot";
+import {container} from "../compositionRoot";
+import {AuthController} from "./controllers/authController";
+
+const authController = container.resolve(AuthController);
 
 export const authRouter = Router({});
 

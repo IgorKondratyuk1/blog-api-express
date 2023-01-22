@@ -1,6 +1,9 @@
 import {Request, Response, Router} from "express";
 import {SETTINGS} from "../config";
-import {deleteAllController} from "../compositionRoot";
+import {container} from "../compositionRoot";
+import {DeleteAllController} from "./controllers/deleteAllController";
+
+const deleteAllController = container.resolve(DeleteAllController);
 
 export const deleteAllRouter = Router();
 

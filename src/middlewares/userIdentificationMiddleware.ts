@@ -1,7 +1,10 @@
 import {NextFunction, Request, Response} from "express";
-import {usersService} from "../compositionRoot";
+import {container} from "../compositionRoot";
 import {jwtService} from "../application/jwtService";
 import {UserAccountType} from "../repositories/users/userSchema";
+import {UsersService} from "../domain/usersService";
+
+const usersService = container.resolve(UsersService);
 
 const unknownUser = {
     id: null

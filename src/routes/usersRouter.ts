@@ -1,8 +1,10 @@
 import express from "express";
 import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
 import {userRegistrationValidationSchema} from "../middlewares/validation/auth/userRegistration";
+import {container} from "../compositionRoot";
 import {UsersController} from "./controllers/usersController";
-import {usersController} from "../compositionRoot";
+
+const usersController = container.resolve(UsersController);
 
 export const usersRouter = express.Router();
 

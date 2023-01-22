@@ -5,6 +5,7 @@ import {mapDeviceDBTypeToDeviceViewModel} from "../helpers/mappers";
 import {CreateDeviceDBType, DeviceType} from "../repositories/security/securitySchema";
 import {SETTINGS} from "../config";
 import {SecurityRepository} from "../repositories/security/securityRepository";
+import {inject, injectable} from "inversify";
 
 export enum SecurityError {
     Success,
@@ -17,8 +18,11 @@ export enum SecurityError {
 //     data: T | null
 // }
 
+@injectable()
 export class SecurityService {
-    constructor(protected securityRepository: SecurityRepository) {}
+    constructor(
+        @inject(SecurityRepository) protected securityRepository: SecurityRepository
+    ) {}
 
     async getAllDevices(userId: string): Promise<DeviceViewModel[] | null> {
         const result: DeviceType[] | null = await this.securityRepository.findUserDeviceSessions(userId);

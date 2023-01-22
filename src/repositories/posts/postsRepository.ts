@@ -1,7 +1,9 @@
 import {UpdatePostModel} from "../../models/post/updatePostModel";
 import {mapPostDbTypeToPostType} from "../../helpers/mappers";
 import {CreatePostDbType, PostDbType, PostModel, PostType} from "./postSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsRepository {
     async findPostById(id: string): Promise<PostType | null> {
         try {

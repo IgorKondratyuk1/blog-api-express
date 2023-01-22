@@ -10,6 +10,7 @@ import {UsersRepository} from "../repositories/users/usersRepository";
 import {LikesRepository} from "../repositories/likes/likesRepository";
 import {LikeLocation, LikeStatus, LikeStatusType} from "../repositories/likes/likeSchema";
 import {LikeError, LikeService} from "./likeService";
+import {inject, injectable} from "inversify";
 
 export enum CommentError {
     Success,
@@ -18,13 +19,14 @@ export enum CommentError {
     CreationError
 }
 
+@injectable()
 export class CommentsService {
     constructor(
-        protected postsRepository: PostsRepository,
-        protected commentsRepository: CommentsRepository,
-        protected usersRepository: UsersRepository,
-        protected likesRepository: LikesRepository,
-        protected likeService: LikeService
+        @inject(PostsRepository) protected postsRepository: PostsRepository,
+        @inject(CommentsRepository) protected commentsRepository: CommentsRepository,
+        @inject(UsersRepository) protected usersRepository: UsersRepository,
+        @inject(LikesRepository) protected likesRepository: LikesRepository,
+        @inject(LikeService) protected likeService: LikeService
     ) {}
 
     async findComment(id: string): Promise<CommentType | null> {

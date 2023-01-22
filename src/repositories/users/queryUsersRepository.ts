@@ -4,7 +4,9 @@ import {QueryUserModel, UserFilterType} from "../../types/userTypes";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 import {mapUserAccountDbTypeToViewUserModel} from "../../helpers/mappers";
 import {UserAccountDbType, UserModel} from "./userSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersQueryRepository {
     async findUsers(queryObj: QueryUserModel): Promise<Paginator<ViewUserModel>> {
         const filters: UserFilterType = getUserFilters(queryObj);

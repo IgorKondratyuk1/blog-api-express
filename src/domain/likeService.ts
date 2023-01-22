@@ -5,6 +5,7 @@ import {
     LikeStatusType,
 } from "../repositories/likes/likeSchema";
 import {v4 as uuidv4} from "uuid";
+import {inject, injectable} from "inversify";
 
 export enum LikeError {
     Success,
@@ -12,8 +13,11 @@ export enum LikeError {
     NotFoundError
 }
 
+@injectable()
 export class LikeService {
-    constructor(protected likesRepository: LikesRepository) {}
+    constructor(
+        @inject(LikesRepository) protected likesRepository: LikesRepository
+    ) {}
 
     async like(userId: string, locationName: LikeLocationsType, locationId: string, status: LikeStatusType): Promise<LikeError> {
         switch (status) {

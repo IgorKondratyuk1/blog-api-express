@@ -7,9 +7,13 @@ import {
     UserAccountType
 } from "../repositories/users/userSchema";
 import {UsersRepository} from "../repositories/users/usersRepository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository) {}
+    constructor(
+        @inject(UsersRepository) protected usersRepository: UsersRepository
+    ) {}
 
     async findUserById(id: string): Promise<UserAccountType | null> {
         return await this.usersRepository.findUserById(id);

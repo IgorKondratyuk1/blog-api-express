@@ -25,16 +25,17 @@ import {UriParamsCommentModel} from "../../models/comment/uriParamsCommentModel"
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {CommentType} from "../../repositories/comments/commentSchema";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsController {
     constructor(
-        protected postsQueryRepository: PostsQueryRepository,
-        protected postsService: PostsService,
-        protected postsRepository: PostsRepository,
-        protected commentsQueryRepository: CommentsWithLikesQueryRepository,
-        protected commentsService: CommentsService
-    ) {
-    }
+        @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
+        @inject(PostsService) protected postsService: PostsService,
+        @inject(PostsRepository) protected postsRepository: PostsRepository,
+        @inject(CommentsWithLikesQueryRepository) protected commentsQueryRepository: CommentsWithLikesQueryRepository,
+        @inject(CommentsService) protected commentsService: CommentsService
+    ) {}
 
     async getPosts(req: RequestWithQuery<QueryPostModel>, res: Response<Paginator<ViewPostModel>>) {
         const foundedPosts: Paginator<ViewPostModel> = await this.postsQueryRepository.findPosts(req.query);

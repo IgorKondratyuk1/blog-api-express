@@ -3,7 +3,12 @@ import {HTTP_STATUSES} from "../../index";
 import {SETTINGS} from "../../config";
 import {JWTDataType, jwtService} from "../../application/jwtService";
 import {DeviceType} from "../../repositories/security/securitySchema";
-import {securityService, usersService} from "../../compositionRoot";
+import {container} from "../../compositionRoot";
+import {SecurityService} from "../../domain/securityService";
+import {UsersService} from "../../domain/usersService";
+
+const securityService = container.resolve(SecurityService);
+const usersService = container.resolve(UsersService);
 
 const logData = (refreshTokenData: any) => {
     if(SETTINGS.EXTENDED_LOGS){

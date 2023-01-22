@@ -6,10 +6,12 @@ import {mapCommentDbTypeToViewCommentModel} from "../../helpers/mappers";
 import {CommentDbType, CommentModel} from "./commentSchema";
 import {LikesRepository} from "../likes/likesRepository";
 import {LikeLocation, LikeStatus, LikeStatusType, LikeType} from "../likes/likeSchema";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsWithLikesQueryRepository {
     constructor(
-        protected likesRepository: LikesRepository
+        @inject(LikesRepository) protected likesRepository: LikesRepository
     ) {}
 
     async findCommentById(commentId: string, userId: string): Promise<ViewCommentModel | null> {

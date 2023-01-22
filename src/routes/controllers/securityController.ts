@@ -4,9 +4,12 @@ import {DeviceViewModel} from "../../models/auth/device/deviceViewModel";
 import {HTTP_STATUSES} from "../../index";
 import {RequestWithParams} from "../../types/types";
 import {UriParamsDeviceModel} from "../../models/auth/device/uriParamsDeviceModel";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SecurityController {
-    constructor(private securityService: SecurityService) {
+    constructor(
+        @inject(SecurityService) protected securityService: SecurityService) {
     }
 
     async getSessions(req: Request, res: Response) {

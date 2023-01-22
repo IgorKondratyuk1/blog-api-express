@@ -1,4 +1,5 @@
-import express, {Request, Response, NextFunction} from 'express';
+import 'reflect-metadata';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import {SETTINGS} from "./config";
 import {authRouter} from "./routes/authRouter";

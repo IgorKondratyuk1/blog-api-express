@@ -7,7 +7,9 @@ import {
     UserModel
 } from "./userSchema";
 import {DeleteResult} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersRepository {
     async findUserById(id: string): Promise<UserAccountType | null> {
         try{

@@ -3,7 +3,10 @@ import {queryValidationSchema} from "../middlewares/validation/query/queryValida
 import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
 import {blogValidationSchema} from "../middlewares/validation/blogValidationSchema";
 import {postOfBlogValidationSchema} from "../middlewares/validation/postOfBlogValidationSchema";
-import {blogsController} from "../compositionRoot";
+import {container} from "../compositionRoot";
+import {BlogsController} from "./controllers/blogsController";
+
+const blogsController = container.resolve(BlogsController);
 
 export const blogsRouter = Router();
 

@@ -1,7 +1,9 @@
 import {mapDeviceDBTypeToDeviceType} from "../../helpers/mappers";
 import {CreateDeviceDBType, DeviceDBType, DeviceModel, DeviceType} from "./securitySchema";
 import {DeleteResult} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityRepository {
     async findUserDeviceSessions(userId: string): Promise<DeviceType[] | null> {
         try {

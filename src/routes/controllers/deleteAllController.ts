@@ -6,17 +6,18 @@ import {UsersActionsRepository} from "../../repositories/userActions/usersAction
 import {SecurityRepository} from "../../repositories/security/securityRepository";
 import {Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class DeleteAllController {
     constructor(
-        protected blogsService: BlogsService,
-        protected postsService: PostsService,
-        protected usersService: UsersService,
-        protected commentsService: CommentsService,
-        protected usersActionsRepository: UsersActionsRepository,
-        protected securityRepository: SecurityRepository
-    ) {
-    }
+        @inject(BlogsService) protected blogsService: BlogsService,
+        @inject(PostsService) protected postsService: PostsService,
+        @inject(UsersService) protected usersService: UsersService,
+        @inject(CommentsService) protected commentsService: CommentsService,
+        @inject(UsersActionsRepository) protected usersActionsRepository: UsersActionsRepository,
+        @inject(SecurityRepository) protected securityRepository: SecurityRepository
+    ) {}
 
     async delete(req: Request, res: Response) {
         await this.blogsService.deleteAllBlogs();

@@ -1,9 +1,12 @@
 import express from "express";
 import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
-import {commentsController} from "../compositionRoot";
 import {likeValidationSchema} from "../middlewares/validation/likeValidationSchema";
 import {userIdentification} from "../middlewares/userIdentificationMiddleware";
+import {container} from "../compositionRoot";
+import {CommentsController} from "./controllers/commentsController";
+
+const commentsController = container.resolve(CommentsController);
 
 export const commentsRouter = express.Router();
 

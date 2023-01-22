@@ -12,13 +12,14 @@ import {PasswordRecoveryModel} from "../../models/auth/registration/passwordReco
 import {NewPasswordModel} from "../../models/auth/registration/newPasswordModel";
 import {UserAccountType} from "../../repositories/users/userSchema";
 import {mapUserAccountTypeToMeViewModel} from "../../helpers/mappers";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
     constructor(
-        protected authService: AuthService,
-        protected usersService: UsersService
-    ) {
-    }
+        @inject(AuthService) protected authService: AuthService,
+        @inject(UsersService) protected usersService: UsersService
+    ) {}
 
     async login(req: RequestWithBody<LoginInputModel>, res: Response) {
         const ip: string = req.ip || "";

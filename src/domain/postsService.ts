@@ -5,15 +5,17 @@ import {UpdatePostModel} from "../models/post/updatePostModel";
 import {CreatePostDbType, PostType} from "../repositories/posts/postSchema";
 import {BlogsRepository} from "../repositories/blogs/blogsRepository";
 import {PostsRepository} from "../repositories/posts/postsRepository";
+import {inject, injectable} from "inversify";
 
 export enum PostError {
     NotFoundError,
 }
 
+@injectable()
 export class PostsService {
     constructor(
-        protected blogsRepository: BlogsRepository,
-        protected postsRepository: PostsRepository
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository,
+        @inject(PostsRepository) protected postsRepository: PostsRepository
     ) {}
 
     async createPost(blogId: string, post: CreatePostModel | CreatePostOfBlogModel): Promise<PostType | null> {

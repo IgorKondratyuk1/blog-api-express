@@ -4,7 +4,9 @@ import {QueryPostModel} from "../../models/post/queryPostModel";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {mapPostTypeToPostViewModel} from "../../helpers/mappers";
 import {PostModel, PostType} from "./postSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsQueryRepository {
     async findPosts(queryObj: QueryPostModel): Promise<Paginator<ViewPostModel>> {
         const filters: FilterType = getFilters(queryObj);

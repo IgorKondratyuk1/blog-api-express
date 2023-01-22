@@ -1,6 +1,8 @@
 import {CreateLikeDbType, LikeDbType, LikeModel, LikeStatus, LikeStatusType} from "./likeSchema";
 import {DeleteResult} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class LikesRepository {
     async getUserLikeStatus(userId: string, locationId: string, locationName: string): Promise<LikeStatusType> {
         const dbLike: LikeDbType | null = await LikeModel.findOne({userId, locationId, locationName});

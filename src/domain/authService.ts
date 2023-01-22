@@ -10,6 +10,7 @@ import {UserAccountType} from "../repositories/users/userSchema";
 import {DeviceType} from "../repositories/security/securitySchema";
 import {SecurityRepository} from "../repositories/security/securityRepository";
 import {UsersService} from "./usersService";
+import {inject, injectable} from "inversify";
 
 export enum authError {
     Success,
@@ -20,12 +21,13 @@ export enum authError {
     BadRequestError
 }
 
+@injectable()
 export class AuthService {
     constructor(
-        protected securityRepository: SecurityRepository,
-        protected usersRepository: UsersRepository,
-        protected usersService: UsersService,
-        protected securityService: SecurityService
+        @inject(SecurityRepository) protected securityRepository: SecurityRepository,
+        @inject(UsersRepository) protected usersRepository: UsersRepository,
+        @inject(UsersService) protected usersService: UsersService,
+        @inject(SecurityService) protected securityService: SecurityService
     ) {}
 
     async register(login: string, email: string, password: string): Promise<authError> {

@@ -1,6 +1,8 @@
 import {mapBlogDBTypeToBlogType} from "../../helpers/mappers";
 import {BlogDbType, BlogModel, BlogType, CreateBlogDbType} from "./blogSchema";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsRepository {
     async findBlogById(id: string): Promise<BlogType | null> {
         try {

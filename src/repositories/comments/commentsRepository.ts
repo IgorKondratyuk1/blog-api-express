@@ -2,7 +2,9 @@ import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
 import {mapCommentDbTypeToCommentType} from "../../helpers/mappers";
 import {CommentModel, CommentDbType, CommentType, CreateCommentDbType} from "./commentSchema";
 import {DeleteResult} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsRepository {
     async findCommentById(id: string): Promise<CommentType | null> {
         const dbComment: CommentDbType | null = await CommentModel.findOne({id});
