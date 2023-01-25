@@ -1,43 +1,24 @@
-import {mapUserActionsDbTypeToUserActionsType} from "../../helpers/mappers";
-import {SETTINGS} from "../../config";
-import {DeleteResult} from "mongodb";
-import {CreateUserActionsDbType, UserActionModel, UserActionsDbType, UserActionsType} from "./userActionSchema";
 import {injectable} from "inversify";
+import {UserAction} from "../../01_domain/UserAction/userActionSchema";
+import {DeleteResult} from "mongodb";
+import {SETTINGS} from "../../config";
 
 @injectable()
 export class UsersActionsRepository {
-    async createUserAction(newAction: CreateUserActionsDbType): Promise<UserActionsType | null> {
+    async deleteAllActions() {
         try {
-            const action = new UserActionModel(newAction);
-            const createdAction: UserActionsDbType = await action.save();
-            return mapUserActionsDbTypeToUserActionsType(createdAction);
+            return UserAction.deleteMany({});
         } catch (error) {
             console.log(error);
-            return null;
-        }
-    }
-    async getUserActionsCount(ip: string, resource: string): Promise<number | null> {
-        try {
-            return await UserActionModel.countDocuments({ip, resource});
-        } catch (error) {
-            console.log(error);
-            return null;
         }
     }
     async deleteExpiredActions(): Promise<DeleteResult | null> {
         try {
             const deleteDate: Date = (new Date(Date.now() - (SETTINGS.DEBOUNCE_TIME * 100)));
-            return UserActionModel.deleteMany({lastActiveDate: {$lte: deleteDate}});
+            return UserAction.deleteMany({lastActiveDate: {$lte: deleteDate}});
         } catch (error) {
             console.log(error);
             return null;
-        }
-    }
-    async deleteAllActions() {
-        try {
-            return UserActionModel.deleteMany({});
-        } catch (error) {
-            console.log(error);
         }
     }
 }

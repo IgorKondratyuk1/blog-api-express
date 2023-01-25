@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 let mongoURL: string = SETTINGS.MONGO_URL;
 if (SETTINGS.IS_LOCAL_VERSION) { mongoURL += SETTINGS.MONGO_DB_NAME }
 
-console.log("mongoURL: " + mongoURL);
+console.log("MongoDB is running on: " + mongoURL);
 
 export async function mongooseConnectToDB() {
     try{

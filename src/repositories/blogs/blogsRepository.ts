@@ -1,47 +1,24 @@
-import {mapBlogDBTypeToBlogType} from "../../helpers/mappers";
-import {BlogDbType, BlogModel, BlogType, CreateBlogDbType} from "./blogSchema";
+import {Blog} from "../../01_domain/Blog/blogSchema";
 import {injectable} from "inversify";
+import {HydratedBlog} from "../../01_domain/Blog/blogTypes";
 
 @injectable()
 export class BlogsRepository {
-    async findBlogById(id: string): Promise<BlogType | null> {
+    async save(blog: HydratedBlog) {
+        await blog.save();
+    }
+    async findBlogById(id: string): Promise<HydratedBlog | null> {
         try {
-            const dbBlog: BlogDbType | null = await BlogModel.findOne({id});
-            if (!dbBlog) return null;
-            return mapBlogDBTypeToBlogType(dbBlog);
+            const blog: HydratedBlog | null = await Blog.findOne({id});
+            return blog;
         } catch (error) {
             console.log(error);
             return null;
-        }
-    }
-    async createBlog(newBlog: CreateBlogDbType): Promise<BlogType | null> {
-        try {
-            const blog = new BlogModel(newBlog);
-            const createdBlog: BlogDbType = await blog.save();
-            return mapBlogDBTypeToBlogType(createdBlog);
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
-    }
-    async updateBlog(id: string, name: string, websiteUrl: string): Promise<boolean> {
-        try {
-            const blog = await BlogModel.findOne({id});
-            if (!blog) return false;
-
-            blog.name = name;
-            blog.websiteUrl = websiteUrl;
-            await blog.save();
-
-            return true;
-        } catch (error) {
-            console.log(error);
-            return false;
         }
     }
     async deleteBlog(id: string): Promise<boolean> {
         try {
-            let result = await BlogModel.deleteOne({id});
+            let result = await Blog.deleteOne({id});
             return result.deletedCount === 1;
         } catch (error) {
             console.log(error);
@@ -50,7 +27,7 @@ export class BlogsRepository {
     }
     async deleteAllBlogs() {
         try {
-            return BlogModel.deleteMany({});
+            return Blog.deleteMany({});
         } catch (error) {
             console.log(error);
         }

@@ -1,15 +1,15 @@
 import {Router} from "express";
-import {userRegistrationValidationSchema} from "../middlewares/validation/auth/userRegistration";
-import {registrationConfirmationValidationSchema} from "../middlewares/validation/auth/registrationConfirmationSchema";
-import {userLoginValidationSchema} from "../middlewares/validation/auth/loginSchema";
-import {registrationEmailResendingValidationSchema} from "../middlewares/validation/auth/registrationEmailResending";
 import {checkRefreshTokenMiddleware} from "../middlewares/auth/checkRefreshTokenMiddleware";
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
 import {requestsLimiterMiddleware} from "../middlewares/requestsLimiterMiddleware";
-import {passwordRecoveryValidationSchema} from "../middlewares/validation/auth/passwordRecoverySchema";
-import {newPasswordValidationSchema} from "../middlewares/validation/auth/newPasswordSchema";
 import {container} from "../compositionRoot";
 import {AuthController} from "./controllers/authController";
+import {registrationConfirmationValidation} from "../middlewares/validation/auth/registrationConfirmationValidation";
+import {registrationEmailResendingValidation} from "../middlewares/validation/auth/registrationEmailResendingValidation";
+import {passwordRecoveryValidation} from "../middlewares/validation/auth/passwordRecoveryValidation";
+import {newPasswordValidation} from "../middlewares/validation/auth/newPasswordValidation";
+import {userRegistrationValidation} from "../middlewares/validation/auth/userRegistrationValidation";
+import {userLoginValidation} from "../middlewares/validation/auth/loginValidation";
 
 const authController = container.resolve(AuthController);
 
@@ -17,25 +17,25 @@ export const authRouter = Router({});
 
 authRouter.post("/login",
     requestsLimiterMiddleware,
-    userLoginValidationSchema,
+    userLoginValidation,
     authController.login.bind(authController)
 );
 
 authRouter.post("/registration",
     requestsLimiterMiddleware,
-    userRegistrationValidationSchema,
+    userRegistrationValidation,
     authController.registration.bind(authController)
 );
 
 authRouter.post("/registration-confirmation",
     requestsLimiterMiddleware,
-    registrationConfirmationValidationSchema,
+    registrationConfirmationValidation,
     authController.registrationConfirmation.bind(authController)
 );
 
 authRouter.post("/registration-email-resending",
     requestsLimiterMiddleware,
-    registrationEmailResendingValidationSchema,
+    registrationEmailResendingValidation,
     authController.registrationEmailResending.bind(authController)
 );
 
@@ -46,13 +46,13 @@ authRouter.post("/refresh-token",
 
 authRouter.post("/password-recovery",
     requestsLimiterMiddleware,
-    passwordRecoveryValidationSchema,
+    passwordRecoveryValidation,
     authController.passwordRecovery.bind(authController)
 );
 
 authRouter.post("/new-password",
     requestsLimiterMiddleware,
-    newPasswordValidationSchema,
+    newPasswordValidation,
     authController.newPassword.bind(authController)
 );
 

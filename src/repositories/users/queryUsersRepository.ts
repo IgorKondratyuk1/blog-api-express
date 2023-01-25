@@ -3,8 +3,9 @@ import {getPagesCount, getSkipValue, getSortValue, getUserFilters} from "../../h
 import {QueryUserModel, UserFilterType} from "../../types/userTypes";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 import {mapUserAccountDbTypeToViewUserModel} from "../../helpers/mappers";
-import {UserAccountDbType, UserModel} from "./userSchema";
 import {injectable} from "inversify";
+import {User} from "../../01_domain/User/UserScheme";
+import {UserAccountDbType} from "../../01_domain/User/UserTypes";
 
 @injectable()
 export class UsersQueryRepository {
@@ -15,14 +16,14 @@ export class UsersQueryRepository {
         const searchLoginTermValue = filters.searchLoginTerm || "";
         const searchEmailTermValue = filters.searchEmailTerm || "";
 
-        const foundedUsers: UserAccountDbType[] = await UserModel
+        const foundedUsers: UserAccountDbType[] = await User
             .find({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
             .limit(filters.pageSize).lean();
 
         const usersViewModels: ViewUserModel[] = foundedUsers.map(mapUserAccountDbTypeToViewUserModel); // Get View models of Blogs
-        const totalCount: number = await UserModel.countDocuments({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]});
+        const totalCount: number = await User.countDocuments({$or: [{'accountData.login': {$regex: searchLoginTermValue, $options: "i"}}, {'accountData.email': {$regex: searchEmailTermValue, $options: "i"}}]});
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
@@ -34,7 +35,7 @@ export class UsersQueryRepository {
         };
     }
     async findUserById(id: string): Promise<ViewUserModel | null> {
-        const dbUser = await UserModel.findOne({id});
+        const dbUser = await User.findOne({id});
         if (!dbUser) return null;
 
         return mapUserAccountDbTypeToViewUserModel(dbUser);

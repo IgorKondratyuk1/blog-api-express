@@ -1,14 +1,14 @@
 import {NextFunction, Request, Response} from "express";
 import {container} from "../compositionRoot";
-import {jwtService} from "../application/jwtService";
-import {UserAccountType} from "../repositories/users/userSchema";
-import {UsersService} from "../domain/usersService";
+import {jwtService} from "../02_application/jwtService";
+import {GuestUserType, HydratedUser, UserAccountType} from "../01_domain/User/UserTypes";
+import {UsersRepository} from "../repositories/users/usersRepository";
 
-const usersService = container.resolve(UsersService);
+const usersRepository = container.resolve(UsersRepository);
 
-const unknownUser = {
-    id: null
-}
+// const unknownUser: GuestUserType = {
+//     id: null
+// }
 
 export const userIdentification = async (req: Request, res: Response, next: NextFunction) => {
     const clientAuthHeader = req.header("authorization");
@@ -18,7 +18,7 @@ export const userIdentification = async (req: Request, res: Response, next: Next
     console.log(clientAuthHeader);
 
     if (!clientAuthHeader || !token || authType?.toLowerCase() !== "bearer") {
-        req.user = unknownUser;
+        req.userId = "";
         next();
         return;
     }
@@ -26,16 +26,16 @@ export const userIdentification = async (req: Request, res: Response, next: Next
     const userId = await jwtService.getUserIdByToken(token);
     console.log("userId: " + userId);
 
-    if (userId) {
-        const foundedUser: UserAccountType | null = await usersService.findUserById(userId);
-        console.log("foundedUser: " + foundedUser);
-
-        if (!foundedUser) { req.user = unknownUser; return; }
-
-        req.user = foundedUser;
-    } else {
-        req.user = unknownUser;
+    if (!userId) {
+        req.userId = "";
+        next();
+        return;
     }
+
+    const foundedUser: HydratedUser | null = await usersRepository.findUserById(userId);
+    console.log("foundedUser: " + foundedUser);
+    if (!foundedUser) { req.userId = ""; return; }
+    req.userId = foundedUser.id;
     
     next();
 }

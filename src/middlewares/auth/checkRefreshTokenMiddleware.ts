@@ -1,14 +1,16 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
 import {SETTINGS} from "../../config";
-import {JWTDataType, jwtService} from "../../application/jwtService";
-import {DeviceType} from "../../repositories/security/securitySchema";
+import {JWTDataType, jwtService} from "../../02_application/jwtService";
 import {container} from "../../compositionRoot";
-import {SecurityService} from "../../domain/securityService";
-import {UsersService} from "../../domain/usersService";
+import {SecurityService} from "../../02_application/securityService";
+import {HydratedDevice} from "../../01_domain/Security/securityTypes";
+import {UsersRepository} from "../../repositories/users/usersRepository";
+import {HydratedUser} from "../../01_domain/User/UserTypes";
+
 
 const securityService = container.resolve(SecurityService);
-const usersService = container.resolve(UsersService);
+const usersRepository = container.resolve(UsersRepository);
 
 const logData = (refreshTokenData: any) => {
     if(SETTINGS.EXTENDED_LOGS){
@@ -60,7 +62,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     // }
 
     // 3. Get device session
-    const deviceSession: DeviceType | null = await securityService.findDeviceSession(deviceId);
+    const deviceSession: HydratedDevice | null = await securityService.findDeviceSession(deviceId);
     if (!deviceSession) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return;
@@ -72,14 +74,12 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         return;
     }
 
-    const foundedUser = await usersService.findUserById(userId);
-    if (!foundedUser) {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        return;
-    }
+    const foundedUser: HydratedUser | null = await usersRepository.findUserById(userId);
+    if (!foundedUser) { res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401); return; }
 
     // 5. Set refresh token data
-    req.user = foundedUser;
+    req.userId = foundedUser.id;
+    req.userLogin = foundedUser.accountData.login;
     req.deviceId = deviceId;
     req.issuedAt = issuedAt;
 

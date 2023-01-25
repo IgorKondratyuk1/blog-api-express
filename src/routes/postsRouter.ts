@@ -1,35 +1,38 @@
 import {Router} from "express";
-import {queryValidationSchema} from "../middlewares/validation/query/queryValidationSchema";
 import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
-import {postValidationSchema} from "../middlewares/validation/postValidationSchema";
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
-import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
 import {userIdentification} from "../middlewares/userIdentificationMiddleware";
 import {container} from "../compositionRoot";
 import {PostsController} from "./controllers/postsController";
+import {queryValidation} from "../middlewares/validation/query/queryValidation";
+import {postValidation} from "../middlewares/validation/postValidation";
+import {commentValidation} from "../middlewares/validation/commentValidation";
+import {likeValidation} from "../middlewares/validation/likeValidation";
 
 const postsController = container.resolve(PostsController);
 
 export const postsRouter = Router();
 
 postsRouter.get("/",
-    queryValidationSchema,
+    userIdentification,
+    queryValidation,
     postsController.getPosts.bind(postsController)
 );
 
 postsRouter.get("/:id",
+    userIdentification,
     postsController.getPost.bind(postsController)
 );
 
 postsRouter.post("/",
     basicAuthMiddleware,
-    postValidationSchema,
+    postValidation,
     postsController.createPost.bind(postsController)
 );
 
 postsRouter.put("/:id",
     basicAuthMiddleware,
-    postValidationSchema,
+    postValidation,
     postsController.updatePost.bind(postsController)
 );
 
@@ -45,6 +48,12 @@ postsRouter.get("/:id/comments",
 
 postsRouter.post("/:id/comments",
     jwtAuthMiddleware,
-    commentValidationSchema,
+    commentValidation,
     postsController.createCommentOfPost.bind(postsController)
+);
+
+postsRouter.put("/:id/like-status",
+    jwtAuthMiddleware,
+    likeValidation,
+    postsController.likePost.bind(postsController)
 );

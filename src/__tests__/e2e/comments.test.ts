@@ -11,7 +11,7 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
-import {LikeStatus} from "../../repositories/likes/likeSchema";
+import {LikeStatus} from "../../01_domain/Like/likeTypes";
 
 // Testing: Comments Route
 describe("/comments", () => {

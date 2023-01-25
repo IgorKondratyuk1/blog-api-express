@@ -1,7 +1,7 @@
-import {BlogsService} from "../../domain/blogsService";
-import {PostsService} from "../../domain/postsService";
-import {UsersService} from "../../domain/usersService";
-import {CommentsService} from "../../domain/commentsService";
+import {BlogsService} from "../../02_application/blogsService";
+import {PostsService} from "../../02_application/postsService";
+import {UsersService} from "../../02_application/usersService";
+import {CommentsService} from "../../02_application/commentsService";
 import {UsersActionsRepository} from "../../repositories/userActions/usersActionsRepository";
 import {SecurityRepository} from "../../repositories/security/securityRepository";
 import {Request, Response} from "express";
@@ -25,7 +25,7 @@ export class DeleteAllController {
         await this.usersService.deleteAllUsers();
         await this.commentsService.deleteAllComments();
         await this.usersActionsRepository.deleteAllActions();
-        await this.securityRepository.deleteAllDevices();
+        await this.securityRepository.deleteAllSessions();
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     }
 }

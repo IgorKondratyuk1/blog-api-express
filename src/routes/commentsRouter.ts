@@ -1,10 +1,10 @@
 import express from "express";
-import {commentValidationSchema} from "../middlewares/validation/commentValidationSchema";
 import {jwtAuthMiddleware} from "../middlewares/auth/jwtAuthMiddlewsre";
-import {likeValidationSchema} from "../middlewares/validation/likeValidationSchema";
 import {userIdentification} from "../middlewares/userIdentificationMiddleware";
 import {container} from "../compositionRoot";
 import {CommentsController} from "./controllers/commentsController";
+import {commentValidation} from "../middlewares/validation/commentValidation";
+import {likeValidation} from "../middlewares/validation/likeValidation";
 
 const commentsController = container.resolve(CommentsController);
 
@@ -17,7 +17,7 @@ commentsRouter.get("/:id",
 
 commentsRouter.put("/:id",
     jwtAuthMiddleware,
-    commentValidationSchema,
+    commentValidation,
     commentsController.updateComment.bind(commentsController)
 );
 
@@ -28,6 +28,6 @@ commentsRouter.delete("/:id",
 
 commentsRouter.put("/:id/like-status",
     jwtAuthMiddleware,
-    likeValidationSchema,
+    likeValidation,
     commentsController.likeComment.bind(commentsController)
 );

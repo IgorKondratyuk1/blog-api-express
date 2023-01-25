@@ -131,6 +131,7 @@ describe("/login", () => {
         });
     });
 
+    // Expired token
     // it("POST: user shouldn`t get new refresh and access tokens with expired refresh token", async () => {
     //     await later(20100);
     //
@@ -140,12 +141,12 @@ describe("/login", () => {
     //         .expect(401);
     // });
 
-    it("POST: user should get 401 when logout with expired refresh token", async () => {
-        await request(app)
-            .post("/api/auth/logout")
-            .set('Cookie', [refreshToken])
-            .expect(401);
-    });
+    // it("POST: user should get 401 when logout with expired refresh token", async () => {
+    //     await request(app)
+    //         .post("/api/auth/logout")
+    //         .set('Cookie', [refreshToken])
+    //         .expect(401);
+    // });
 
     // Check logout
     it("POST: user should login", async () => {

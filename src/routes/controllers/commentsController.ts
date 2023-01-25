@@ -1,4 +1,4 @@
-import {CommentError, CommentsService} from "../../domain/commentsService";
+import {CommentError, CommentsService} from "../../02_application/commentsService";
 import {RequestWithParams, RequestWithParamsAndBody} from "../../types/types";
 import {UriParamsCommentModel} from "../../models/comment/uriParamsCommentModel";
 import {Response} from "express";
@@ -6,9 +6,7 @@ import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {HTTP_STATUSES} from "../../index";
 import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
 import {UpdateLikeModel} from "../../models/like/updateLikeModel";
-import {LikeError, LikeService} from "../../domain/likeService";
-import {LikeLocation} from "../../repositories/likes/likeSchema";
-import {CommentType} from "../../repositories/comments/commentSchema";
+import {LikeError, LikeService} from "../../02_application/likeService";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
 import {inject, injectable} from "inversify";
 
@@ -21,7 +19,7 @@ export class CommentsController {
     ) {}
 
     async getComment(req: RequestWithParams<UriParamsCommentModel>, res: Response<ViewCommentModel>) {
-        const foundedComment: ViewCommentModel | null = await this.commentsQueryRepository.findCommentById(req.params.id, req.user!.id);
+        const foundedComment: ViewCommentModel | null = await this.commentsQueryRepository.findCommentById(req.params.id, req.userId);
         if (!foundedComment) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
@@ -31,7 +29,7 @@ export class CommentsController {
     }
 
     async updateComment(req: RequestWithParamsAndBody<UriParamsCommentModel, UpdateCommentModel>, res: Response) {
-        const result: CommentError = await this.commentsService.updateComment(req.params.id, req.user!.id, req.body);
+        const result: CommentError = await this.commentsService.updateComment(req.params.id, req.userId, req.body);
 
         switch (result) {
             case CommentError.WrongUserError:
@@ -47,7 +45,7 @@ export class CommentsController {
     }
 
     async deleteComment(req: RequestWithParams<UriParamsCommentModel>, res: Response<ViewCommentModel>) {
-        const result: CommentError = await this.commentsService.deleteComment(req.params.id, req.user!.id);
+        const result: CommentError = await this.commentsService.deleteComment(req.params.id, req.userId);
         switch (result) {
             case CommentError.WrongUserError:
                 res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
@@ -60,16 +58,16 @@ export class CommentsController {
     }
 
     async likeComment(req: RequestWithParamsAndBody<UriParamsCommentModel, UpdateLikeModel>, res: Response) {
-        const result: LikeError = await this.commentsService.likeComment(req.params.id, req.user!.id, req.body.likeStatus);
+        const result: CommentError = await this.commentsService.likeComment(req.params.id, req.userId, req.userLogin, req.body.likeStatus);
 
         switch (result) {
-            case LikeError.UpdateError:
+            case CommentError.CreationError:
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
                 return;
-            case LikeError.NotFoundError:
+            case CommentError.NotFoundError:
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
                 return;
-            case LikeError.Success:
+            case CommentError.Success:
                 break;
         }
 

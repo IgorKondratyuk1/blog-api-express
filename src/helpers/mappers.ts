@@ -4,15 +4,16 @@ import {ViewBlogModel} from "../models/blog/viewBlogModel";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {ViewMeModel} from "../models/auth/viewMeModel";
 import {ViewCommentModel} from "../models/comment/viewCommentModel";
-import {BlogDbType, BlogType} from "../repositories/blogs/blogSchema";
-import {CommentDbType, CommentType} from "../repositories/comments/commentSchema";
-import {PostDbType, PostType} from "../repositories/posts/postSchema";
-import {UserAccountDbType, UserAccountType} from "../repositories/users/userSchema";
-import {DeviceDBType, DeviceType} from "../repositories/security/securitySchema";
-import {UserActionsDbType, UserActionsType} from "../repositories/userActions/userActionSchema";
-import {LikeDbType, LikeStatusType, LikeType} from "../repositories/likes/likeSchema";
+import {HydratedLike, LikeDbType, LikeStatusType, LikeType} from "../01_domain/Like/likeTypes";
+import {CommentDbType, CommentType, HydratedComment} from "../01_domain/Comment/commentTypes";
+import {BlogDbType, BlogType, HydratedBlog} from "../01_domain/Blog/blogTypes";
+import {HydratedPost, PostDbType, PostType} from "../01_domain/Post/postTypes";
+import {HydratedUser, UserAccountDbType, UserAccountType} from "../01_domain/User/UserTypes";
+import {DeviceDbType, DeviceType, HydratedDevice} from "../01_domain/Security/securityTypes";
+import {HydrateUserAction, UserActionsDbType, UserActionsType} from "../01_domain/UserAction/userActionTypes";
+import {ViewLikeDetailsModel} from "../models/like/viewLikeDetailsModel";
 
-export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType): ViewUserModel => {
+export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType | HydratedUser): ViewUserModel => {
     return {
         id: dbUser.id,
         login: dbUser.accountData.login,
@@ -21,7 +22,7 @@ export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | User
     }
 }
 
-export const mapDeviceDBTypeToDeviceViewModel = (dbDevice: DeviceDBType | DeviceType): DeviceViewModel => {
+export const mapDeviceDBTypeToDeviceViewModel = (dbDevice: DeviceDbType | DeviceType | HydratedDevice): DeviceViewModel => {
     return {
         ip: dbDevice.ip,
         deviceId: dbDevice.deviceId,
@@ -30,7 +31,7 @@ export const mapDeviceDBTypeToDeviceViewModel = (dbDevice: DeviceDBType | Device
     }
 }
 
-export const mapDeviceDBTypeToDeviceType = (dbDevice: DeviceDBType): DeviceType => {
+export const mapDeviceDBTypeToDeviceType = (dbDevice: DeviceDbType | HydratedDevice): DeviceType => {
     return {
         expiredAt: dbDevice.expiredAt,
         userId: dbDevice.userId,
@@ -42,7 +43,7 @@ export const mapDeviceDBTypeToDeviceType = (dbDevice: DeviceDBType): DeviceType 
     }
 }
 
-export const mapBlogTypeToBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
+export const mapBlogTypeToBlogViewModel = (dbBlog: BlogType | HydratedBlog): ViewBlogModel => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
@@ -52,19 +53,19 @@ export const mapBlogTypeToBlogViewModel = (dbBlog: BlogType): ViewBlogModel => {
     }
 }
 
-export const mapPostTypeToPostViewModel = (dbPost: PostType): ViewPostModel => {
-    return {
-        id:	dbPost.id,
-        title: dbPost.title,
-        shortDescription: dbPost.shortDescription,
-        content: dbPost.content,
-        blogId:	dbPost.blogId,
-        blogName: dbPost.blogName,
-        createdAt: new Date(dbPost.createdAt).toISOString()
-    }
-}
+// export const mapPostTypeToPostViewModel = (dbPost: PostType | HydratedPost): ViewPostModel => {
+//     return {
+//         id:	dbPost.id,
+//         title: dbPost.title,
+//         shortDescription: dbPost.shortDescription,
+//         content: dbPost.content,
+//         blogId:	dbPost.blogId,
+//         blogName: dbPost.blogName,
+//         createdAt: new Date(dbPost.createdAt).toISOString()
+//     }
+// }
 
-export const mapUserAccountTypeToMeViewModel = (user: UserAccountType | UserAccountDbType): ViewMeModel => {
+export const mapUserAccountTypeToMeViewModel = (user: UserAccountType | UserAccountDbType | HydratedUser): ViewMeModel => {
     return {
         email: user.accountData.email,
         login: user.accountData.login,
@@ -72,7 +73,7 @@ export const mapUserAccountTypeToMeViewModel = (user: UserAccountType | UserAcco
     }
 }
 
-export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | CommentType, likeStatus: LikeStatusType): ViewCommentModel => {
+export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | CommentType | HydratedComment, likeStatus: LikeStatusType): ViewCommentModel => {
     return {
         id: dbComment.id,
         content: dbComment.content,
@@ -87,7 +88,7 @@ export const mapCommentDbTypeToViewCommentModel = (dbComment: CommentDbType | Co
     }
 }
 
-export const mapCommentDbTypeToCommentType = (dbComment: CommentDbType): CommentType => {
+export const mapCommentDbTypeToCommentType = (dbComment: CommentDbType | HydratedComment): CommentType => {
     return {
         id: dbComment.id,
         content: dbComment.content,
@@ -102,7 +103,7 @@ export const mapCommentDbTypeToCommentType = (dbComment: CommentDbType): Comment
     }
 }
 
-export const mapBlogDBTypeToBlogType = (dbBlog: BlogDbType): BlogType => {
+export const mapBlogDBTypeToBlogType = (dbBlog: BlogDbType | HydratedBlog): BlogType => {
     return {
         id: dbBlog.id,
         name: dbBlog.name,
@@ -113,18 +114,18 @@ export const mapBlogDBTypeToBlogType = (dbBlog: BlogDbType): BlogType => {
     }
 }
 
-export const mapPostDbTypeToPostType = (dbPost: PostDbType): PostType => {
-    return {
-        id: dbPost.id,
-        blogId: dbPost.blogId,
-        content: dbPost.content,
-        createdAt: dbPost.createdAt,
-        updatedAt: dbPost.updatedAt,
-        shortDescription: dbPost.shortDescription,
-        title: dbPost.title,
-        blogName: dbPost.blogName
-    }
-}
+// export const mapPostDbTypeToPostType = (dbPost: PostDbType | HydratedPost): PostType => {
+//     return {
+//         id: dbPost.id,
+//         blogId: dbPost.blogId,
+//         content: dbPost.content,
+//         createdAt: dbPost.createdAt,
+//         updatedAt: dbPost.updatedAt,
+//         shortDescription: dbPost.shortDescription,
+//         title: dbPost.title,
+//         blogName: dbPost.blogName
+//     }
+// }
 
 export const mapUserAccountDbTypeToViewUserModel = (dbUser: UserAccountDbType): ViewUserModel => {
     return {
@@ -135,7 +136,7 @@ export const mapUserAccountDbTypeToViewUserModel = (dbUser: UserAccountDbType): 
     }
 }
 
-export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbType): UserActionsType => {
+export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbType | HydrateUserAction): UserActionsType => {
     return {
         ip: dbAction.ip,
         lastActiveDate: dbAction.lastActiveDate,
@@ -143,7 +144,7 @@ export const mapUserActionsDbTypeToUserActionsType = (dbAction: UserActionsDbTyp
     }
 }
 
-export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType): UserAccountType => {
+export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType | HydratedUser): UserAccountType => {
     return {
         id: dbUser.id,
         accountData: {
@@ -167,13 +168,48 @@ export const mapUserAccountDBTypeToUserAccountType = (dbUser: UserAccountDbType)
     }
 }
 
-export const mapLikeDbTypeToLikeType = (dbLike: LikeDbType): LikeType => {
+export const mapLikeDbTypeToLikeType = (dbLike: LikeDbType | HydratedLike): LikeType => {
     return {
         locationId: dbLike.locationId,
         userId: dbLike.userId,
         locationName: dbLike.locationName,
         myStatus: dbLike.myStatus,
         createdAt: dbLike.createdAt,
-        updatedAt: dbLike.updatedAt
+        updatedAt: dbLike.updatedAt,
+        userLogin: dbLike.userLogin
+    }
+}
+
+
+
+export const mapPostTypeToPostViewModel = (dbPost: PostDbType | PostType | HydratedPost, likeStatus: LikeStatusType, lastLikes: LikeDbType[] | null): ViewPostModel => {
+    let newestLikes: ViewLikeDetailsModel[] = [];
+
+    if (lastLikes) {
+        for (let i = 0; i < lastLikes.length; i++) {
+            let newestLike: ViewLikeDetailsModel = {
+                login: lastLikes[i].userLogin,
+                userId: lastLikes[i].userId,
+                addedAt: new Date(lastLikes[i].updatedAt).toISOString()
+            };
+
+            newestLikes.push(newestLike);
+        }
+    }
+
+    return {
+        id: dbPost.id,
+        blogId: dbPost.blogId,
+        content: dbPost.content,
+        createdAt: new Date(dbPost.createdAt).toISOString(),
+        blogName: dbPost.blogName,
+        title: dbPost.title,
+        shortDescription: dbPost.shortDescription,
+        extendedLikesInfo: {
+            likesCount: dbPost.extendedLikesInfo.likesCount,
+            dislikesCount: dbPost.extendedLikesInfo.dislikesCount,
+            myStatus: likeStatus,
+            newestLikes: newestLikes
+        }
     }
 }

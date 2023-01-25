@@ -1,5 +1,5 @@
-import {authError, AuthService} from "../../domain/authService";
-import {UsersService} from "../../domain/usersService";
+import {authError, AuthService} from "../../02_application/authService";
+import {UsersService} from "../../02_application/usersService";
 import {RequestWithBody, TokensPair} from "../../types/types";
 import {LoginInputModel} from "../../models/auth/login/loginInputModel";
 import {Request, Response} from "express";
@@ -10,15 +10,17 @@ import {RegistrationConfirmationCodeModel} from "../../models/auth/registration/
 import {RegistrationEmailResendingModel} from "../../models/auth/registration/registrationEmailResendingModel";
 import {PasswordRecoveryModel} from "../../models/auth/registration/passwordRecoveryModel";
 import {NewPasswordModel} from "../../models/auth/registration/newPasswordModel";
-import {UserAccountType} from "../../repositories/users/userSchema";
 import {mapUserAccountTypeToMeViewModel} from "../../helpers/mappers";
 import {inject, injectable} from "inversify";
+import {UserAccountType} from "../../01_domain/User/UserTypes";
+import {UsersRepository} from "../../repositories/users/usersRepository";
 
 @injectable()
 export class AuthController {
     constructor(
         @inject(AuthService) protected authService: AuthService,
-        @inject(UsersService) protected usersService: UsersService
+        @inject(UsersService) protected usersService: UsersService,
+        @inject(UsersRepository) protected usersRepository: UsersRepository
     ) {}
 
     async login(req: RequestWithBody<LoginInputModel>, res: Response) {
@@ -80,10 +82,8 @@ export class AuthController {
     }
 
     async refreshToken(req: Request, res: Response) {
-        if (!req.user?.id) res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-
-        const result: TokensPair | authError = await this.authService.refreshTokens({
-            userId: req.user.id,
+        const result: TokensPair | authError = await this.authService.getRefreshAccessTokens({
+            userId: req.userId,
             deviceId: req.deviceId,
             issuedAt: req.issuedAt
         });
@@ -135,19 +135,14 @@ export class AuthController {
         console.log('Logout');
         console.log(req.cookies);
 
-        await this.authService.logout(req.user.id, req.deviceId); // Refresh token not valid
+        await this.authService.logout(req.userId, req.deviceId); // Refresh token not valid
         res.clearCookie('refreshToken');
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     }
 
     async me(req: Request, res: Response) {
-
-        const user: UserAccountType | null = await this.usersService.findUserById(req.user!.id);
-
-        if (!user) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
+        const user: UserAccountType | null = await this.usersRepository.findUserById(req.userId);
+        if (!user) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return; }
 
         res.json(mapUserAccountTypeToMeViewModel(user));
     }

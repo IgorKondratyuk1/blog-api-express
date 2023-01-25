@@ -11,6 +11,7 @@ import {mongooseConnectToDB} from "./repositories/db";
 import {securityRouter} from "./routes/securityRouter";
 import {deleteAllRouter} from "./routes/deleteAllRouter";
 import {cookiesLogs} from "./helpers/testLogs";
+import {Like} from "./01_domain/Like/likeSchema";
 
 enum URL_ROUTES {
     auth = "/api/auth",
@@ -56,7 +57,6 @@ app.use(URL_ROUTES.posts, postsRouter);
 app.use(URL_ROUTES.comments, commentsRouter);
 app.use(URL_ROUTES.testing, deleteAllRouter);
 //app.use(errorsHandlingMiddleware); // Error handling
-
 
 const startApp = async () => {
     await mongooseConnectToDB();

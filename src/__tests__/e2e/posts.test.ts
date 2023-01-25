@@ -8,8 +8,8 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreatePostModel} from "../../models/post/createPostModel";
 import {Paginator} from "../../types/types";
 import {UpdatePostModel} from "../../models/post/updatePostModel";
-import {BlogType} from "../../repositories/blogs/blogSchema";
-import {PostType} from "../../repositories/posts/postSchema";
+import {BlogType} from "../../01_domain/Blog/blogTypes";
+import {PostType} from "../../01_domain/Post/postTypes";
 
 // 1. Testing: Posts of blog Route
 describe("/blogs/:blogId/posts", () => {

@@ -1,7 +1,7 @@
 import {BlogsQueryRepository} from "../../repositories/blogs/queryBlogRepository";
 import {PostsQueryRepository} from "../../repositories/posts/queryPostRepository";
-import {PostsService} from "../../domain/postsService";
-import {BlogsService} from "../../domain/blogsService";
+import {PostsService} from "../../02_application/postsService";
+import {BlogsService} from "../../02_application/blogsService";
 import {
     Paginator,
     RequestWithBody,
@@ -14,7 +14,6 @@ import {BlogQueryModel} from "../../models/blog/blogQueryModel";
 import {Response} from "express";
 import {ViewBlogModel} from "../../models/blog/viewBlogModel";
 import {UriParamsBlogModel} from "../../models/blog/uriParamsBlogModel";
-import {BlogType} from "../../repositories/blogs/blogSchema";
 import {mapBlogTypeToBlogViewModel, mapPostTypeToPostViewModel} from "../../helpers/mappers";
 import {HTTP_STATUSES} from "../../index";
 import {CreateBlogModel} from "../../models/blog/createBlogModel";
@@ -22,8 +21,9 @@ import {UpdateBlogModel} from "../../models/blog/updateBlogModel";
 import {QueryPostModel} from "../../models/post/queryPostModel";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreatePostOfBlogModel} from "../../models/post/createPostOfBlog";
-import {PostType} from "../../repositories/posts/postSchema";
 import {inject, injectable} from "inversify";
+import {BlogType} from "../../01_domain/Blog/blogTypes";
+import {HydratedPost} from "../../01_domain/Post/postTypes";
 
 @injectable()
 export class BlogsController {
@@ -82,12 +82,6 @@ export class BlogsController {
     }
 
     async getPostsOfBlog(req: RequestWithParamsAndQuery<UriParamsBlogModel, QueryPostModel>, res: Response<Paginator<ViewPostModel>>) {
-        // TODO
-        // try {
-        //     //
-        // } catch (e) {
-        //
-        // }
         const foundedBlog: BlogType | null = await this.blogsQueryRepository.findBlogById(req.params.id);
 
         if (!foundedBlog) {
@@ -95,7 +89,7 @@ export class BlogsController {
             return;
         }
 
-        const foundedPostsOfBlog: Paginator<ViewPostModel> = await this.postsQueryRepository.findPostsOfBlog(req.params.id, req.query);
+        const foundedPostsOfBlog: Paginator<ViewPostModel> = await this.postsQueryRepository.findPostsOfBlog(req.params.id, req.userId, req.query);
         res.json(foundedPostsOfBlog);
     }
 
@@ -106,13 +100,10 @@ export class BlogsController {
             return;
         }
 
-        const createdPostOfBlog: PostType | null = await this.postsService.createPost(foundedBlog.id, req.body);
-        if (!createdPostOfBlog) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
+        const createdPostOfBlog: ViewPostModel | null = await this.postsService.createPost(req.userId, foundedBlog.id, req.body);
+        if (!createdPostOfBlog) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return; }
 
         res.status(HTTP_STATUSES.CREATED_201)
-            .json(mapPostTypeToPostViewModel(createdPostOfBlog));
+            .json(createdPostOfBlog);
     }
 }

@@ -1,17 +1,17 @@
 import {Router} from "express";
-import {queryValidationSchema} from "../middlewares/validation/query/queryValidationSchema";
-import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
-import {blogValidationSchema} from "../middlewares/validation/blogValidationSchema";
-import {postOfBlogValidationSchema} from "../middlewares/validation/postOfBlogValidationSchema";
 import {container} from "../compositionRoot";
 import {BlogsController} from "./controllers/blogsController";
+import {queryValidation} from "../middlewares/validation/query/queryValidation";
+import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
+import {blogValidation} from "../middlewares/validation/blogValidation";
+import {postOfBlogValidation} from "../middlewares/validation/postOfBlogValidation";
 
 const blogsController = container.resolve(BlogsController);
 
 export const blogsRouter = Router();
 
 blogsRouter.get("/",
-    queryValidationSchema,
+    queryValidation,
     blogsController.getBlogs.bind(blogsController)
 );
 
@@ -21,13 +21,13 @@ blogsRouter.get("/:id",
 
 blogsRouter.post("/",
     basicAuthMiddleware,
-    blogValidationSchema,
+    blogValidation,
     blogsController.createBlog.bind(blogsController)
 );
 
 blogsRouter.put("/:id",
     basicAuthMiddleware,
-    blogValidationSchema,
+    blogValidation,
     blogsController.updateBlog.bind(blogsController)
 );
 
@@ -37,12 +37,12 @@ blogsRouter.delete("/:id",
 );
 
 blogsRouter.get("/:id/posts",
-    queryValidationSchema,
+    queryValidation,
     blogsController.getPostsOfBlog.bind(blogsController)
 );
 
 blogsRouter.post("/:id/posts",
     basicAuthMiddleware,
-    postOfBlogValidationSchema,
+    postOfBlogValidation,
     blogsController.createPostOfBlog.bind(blogsController)
 );

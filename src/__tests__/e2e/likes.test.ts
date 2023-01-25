@@ -10,8 +10,8 @@ import {CreatePostModel} from "../../models/post/createPostModel";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
-import {LikeStatus} from "../../repositories/likes/likeSchema";
 import {UpdateLikeModel} from "../../models/like/updateLikeModel";
+import {LikeStatus} from "../../01_domain/Like/likeTypes";
 
 // Testing: Comments Likes
 describe("/comments/like-status", () => {
@@ -386,7 +386,6 @@ describe("/comments/like-status", () => {
         console.log("First user last action");
         console.log(result.body);
     });
-
 
     // Second user actions with like
     it("POST: should login using second User", async () => {

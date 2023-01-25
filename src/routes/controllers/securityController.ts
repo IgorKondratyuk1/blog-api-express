@@ -1,4 +1,4 @@
-import {SecurityError, SecurityService} from "../../domain/securityService";
+import {SecurityError, SecurityService} from "../../02_application/securityService";
 import {Request, Response} from "express";
 import {DeviceViewModel} from "../../models/auth/device/deviceViewModel";
 import {HTTP_STATUSES} from "../../index";
@@ -13,12 +13,12 @@ export class SecurityController {
     }
 
     async getSessions(req: Request, res: Response) {
-        const devices: DeviceViewModel[] | null = await this.securityService.getAllDevices(req.user!.id);
+        const devices: DeviceViewModel[] | null = await this.securityService.getAllDevices(req.userId);
         res.json(devices);
     }
 
     async deleteAllSessions(req: Request, res: Response) {
-        const result: boolean = await this.securityService.deleteOtherSessions(req.user!.id, req!.deviceId);
+        const result: boolean = await this.securityService.deleteOtherSessions(req.userId, req!.deviceId);
 
         if (result) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
@@ -28,10 +28,8 @@ export class SecurityController {
     }
 
     async deleteSession(req: RequestWithParams<UriParamsDeviceModel>, res: Response) {
-        const result: SecurityError = await this.securityService.deleteDeviceSession(req.user!.id, req.params.id);
-
-        // const mappedResult = errorHandler(result)
-        // res.status(mappedResult.statusCode).json(mappedResult.message)
+        if (!req.userId) { res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401); return; }
+        const result: SecurityError = await this.securityService.deleteDeviceSession(req.userId, req.params.id);
 
         switch (result) {
             case SecurityError.Success:

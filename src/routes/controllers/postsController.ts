@@ -1,7 +1,7 @@
 import {PostsQueryRepository} from "../../repositories/posts/queryPostRepository";
-import {PostsService} from "../../domain/postsService";
+import {PostError, PostsService} from "../../02_application/postsService";
 import {PostsRepository} from "../../repositories/posts/postsRepository";
-import {CommentError, CommentsService} from "../../domain/commentsService";
+import {CommentError, CommentsService} from "../../02_application/commentsService";
 import {
     Paginator,
     RequestWithBody,
@@ -14,8 +14,7 @@ import {QueryPostModel} from "../../models/post/queryPostModel";
 import {Response} from "express";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {UriParamsPostModel} from "../../models/post/uriParamsPostModel";
-import {PostType} from "../../repositories/posts/postSchema";
-import {mapCommentDbTypeToViewCommentModel, mapPostTypeToPostViewModel} from "../../helpers/mappers";
+import {mapCommentDbTypeToViewCommentModel} from "../../helpers/mappers";
 import {HTTP_STATUSES} from "../../index";
 import {CreatePostModel} from "../../models/post/createPostModel";
 import {UpdatePostModel} from "../../models/post/updatePostModel";
@@ -23,9 +22,12 @@ import {QueryCommentModel} from "../../models/comment/queryCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {UriParamsCommentModel} from "../../models/comment/uriParamsCommentModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
-import {CommentType} from "../../repositories/comments/commentSchema";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
 import {inject, injectable} from "inversify";
+import {CommentType} from "../../01_domain/Comment/commentTypes";
+import {PostType} from "../../01_domain/Post/postTypes";
+import {UpdateLikeModel} from "../../models/like/updateLikeModel";
+import {LikeError} from "../../02_application/likeService";
 
 @injectable()
 export class PostsController {
@@ -38,30 +40,27 @@ export class PostsController {
     ) {}
 
     async getPosts(req: RequestWithQuery<QueryPostModel>, res: Response<Paginator<ViewPostModel>>) {
-        const foundedPosts: Paginator<ViewPostModel> = await this.postsQueryRepository.findPosts(req.query);
+        const foundedPosts: Paginator<ViewPostModel> = await this.postsQueryRepository.findPosts(req.userId, req.query);
         res.json(foundedPosts);
     }
 
     async getPost(req: RequestWithParams<UriParamsPostModel>, res: Response<ViewPostModel>) {
-        const foundedPost: PostType | null = await this.postsQueryRepository.findPostById(req.params.id);
+        const foundedPost: ViewPostModel | null = await this.postsQueryRepository.findPostById(req.params.id, req.userId);
 
         if (foundedPost) {
-            res.json(mapPostTypeToPostViewModel(foundedPost));
+            res.json(foundedPost);
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
         }
     }
 
     async createPost(req: RequestWithBody<CreatePostModel>, res: Response<ViewPostModel>) {
-        const createdPost: PostType | null = await this.postsService.createPost(req.body.blogId, req.body);
+        const createdPost: ViewPostModel | null = await this.postsService.createPost(req.userId, req.body.blogId, req.body);
 
-        if (!createdPost) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
+        if (!createdPost) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return; }
 
         res.status(HTTP_STATUSES.CREATED_201)
-            .json(mapPostTypeToPostViewModel((createdPost)));
+            .json(createdPost);
     }
 
     async updatePost(req: RequestWithParamsAndBody<UriParamsPostModel, UpdatePostModel>, res: Response) {
@@ -92,10 +91,9 @@ export class PostsController {
             return;
         }
 
-        const foundedCommentsOfPost: Paginator<ViewCommentModel> = await this.commentsQueryRepository.findCommentsOfPost(req.user!.id, req.params.id, req.query);
+        const foundedCommentsOfPost: Paginator<ViewCommentModel> = await this.commentsQueryRepository.findCommentsOfPost(req.userId, req.params.id, req.query);
         res.json(foundedCommentsOfPost);
     }
-
 
     async createCommentOfPost(req: RequestWithParamsAndBody<UriParamsCommentModel, CreateCommentModel>, res: Response<ViewCommentModel>) {
         const foundedPost: PostType | null = await this.postsRepository.findPostById(req.params.id);
@@ -105,7 +103,7 @@ export class PostsController {
         }
 
         // TODO Change result type from CommentType | CommentError. And refactor switch
-        const result: CommentType | CommentError = await this.commentsService.createComment(req.params.id, req.user!.id, req.body);
+        const result: CommentType | CommentError = await this.commentsService.createComment(req.params.id, req.userId, req.body);
         switch (result) {
             case CommentError.CreationError:
                 res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
@@ -123,5 +121,23 @@ export class PostsController {
         // TODO Change "None" status
         res.status(HTTP_STATUSES.CREATED_201)
             .json(mapCommentDbTypeToViewCommentModel(result, "None"));
+    }
+
+    async likePost(req: RequestWithParamsAndBody<UriParamsPostModel, UpdateLikeModel>, res: Response) {
+        const result: PostError = await this.postsService.likePost(req.params.id, req.userId, req.userLogin, req.body.likeStatus);
+
+        switch (result) {
+            case PostError.CreationError:
+                res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+                return;
+            case PostError.NotFoundError:
+                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+                return;
+            case PostError.Success:
+                break;
+        }
+
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        return;
     }
 }

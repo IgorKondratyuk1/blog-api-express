@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../index";
 import {container} from "../compositionRoot";
-import {UserActionsService} from "../domain/userActions";
+import {UserActionsService} from "../02_application/userActions";
 
 const userActionsService = container.resolve(UserActionsService);
 

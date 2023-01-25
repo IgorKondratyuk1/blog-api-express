@@ -1,14 +1,14 @@
 import {UsersQueryRepository} from "../../repositories/users/queryUsersRepository";
-import {UsersService} from "../../domain/usersService";
+import {UsersService} from "../../02_application/usersService";
 import {Paginator, RequestWithBody, RequestWithParams, RequestWithQuery} from "../../types/types";
 import {QueryUserModel} from "../../types/userTypes";
 import {Response} from "express";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 import {CreateUserModel} from "../../models/user/createUserModel";
-import {UserAccountType} from "../../repositories/users/userSchema";
 import {mapUserAccountTypeToViewUserModel} from "../../helpers/mappers";
 import {UriParamsUserModel} from "../../models/user/uriParamsUserModel";
 import {inject, injectable} from "inversify";
+import {HydratedUser} from "../../01_domain/User/UserTypes";
 
 @injectable()
 export class UsersController {
@@ -23,7 +23,7 @@ export class UsersController {
     }
 
     async createUser(req: RequestWithBody<CreateUserModel>, res: Response<ViewUserModel>) {
-        const createdUser: UserAccountType | null = await this.usersService.createUser(req.body.login, req.body.email, req.body.password, true); // Make confirmed users
+        const createdUser: HydratedUser | null = await this.usersService.createUser(req.body.login, req.body.email, req.body.password, true); // Make confirmed users
 
         if (!createdUser) {
             res.sendStatus(400);

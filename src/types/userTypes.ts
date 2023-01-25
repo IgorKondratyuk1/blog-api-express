@@ -1,5 +1,3 @@
-import {ObjectId} from "mongodb";
-
 export type QueryUserModel = {
     searchLoginTerm?: string
     searchEmailTerm?: string

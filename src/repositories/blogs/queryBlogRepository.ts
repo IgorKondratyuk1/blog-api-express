@@ -3,8 +3,9 @@ import {getFilters, getPagesCount, getSkipValue, getSortValue} from "../../helpe
 import {BlogQueryModel} from "../../models/blog/blogQueryModel";
 import {ViewBlogModel} from "../../models/blog/viewBlogModel";
 import {mapBlogTypeToBlogViewModel} from "../../helpers/mappers";
-import {BlogDbType, BlogModel} from "./blogSchema";
+import {Blog} from "../../01_domain/Blog/blogSchema";
 import {injectable} from "inversify";
+import {BlogDbType} from "../../01_domain/Blog/blogTypes";
 
 @injectable()
 export class BlogsQueryRepository {
@@ -14,14 +15,14 @@ export class BlogsQueryRepository {
         const sortValue: 1 | -1 = getSortValue(filters.sortDirection);
         const searchNameTermValue = filters.searchNameTerm || "";
 
-        const foundedBlogs: BlogDbType[] = await BlogModel
+        const foundedBlogs: BlogDbType[] = await Blog
             .find({name: {$regex: new RegExp(searchNameTermValue, 'i') }})
             .sort({[filters.sortBy]: sortValue})
             .skip(skipValue)
             .limit(filters.pageSize).lean();
 
         const blogsViewModels: ViewBlogModel[] = foundedBlogs.map(mapBlogTypeToBlogViewModel); // Get View models of Blogs
-        const totalCount: number = await BlogModel.countDocuments({name: {$regex: new RegExp(searchNameTermValue, 'i')}});
+        const totalCount: number = await Blog.countDocuments({name: {$regex: new RegExp(searchNameTermValue, 'i')}});
         const pagesCount = getPagesCount(totalCount, filters.pageSize);
 
         return {
@@ -33,10 +34,6 @@ export class BlogsQueryRepository {
         };
     }
     async findBlogById(id: string): Promise<BlogDbType | null> {
-        // const  blog =  BlogModel.findOne({id});
-        // if(!blog){
-        //   throw ForbiddenError()
-        // }
-        return BlogModel.findOne({id});
+        return Blog.findOne({id});
     }
 }

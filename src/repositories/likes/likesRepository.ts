@@ -1,59 +1,24 @@
-import {CreateLikeDbType, LikeDbType, LikeModel, LikeStatus, LikeStatusType} from "./likeSchema";
+import {Like} from "../../01_domain/Like/likeSchema";
 import {DeleteResult} from "mongodb";
 import {injectable} from "inversify";
+import {HydratedLike, LikeDbType} from "../../01_domain/Like/likeTypes";
 
 @injectable()
 export class LikesRepository {
-    async getUserLikeStatus(userId: string, locationId: string, locationName: string): Promise<LikeStatusType> {
-        const dbLike: LikeDbType | null = await LikeModel.findOne({userId, locationId, locationName});
-        if (!dbLike) return LikeStatus.None;
-        return dbLike.myStatus;
+    async save(like: HydratedLike) {
+        await like.save();
     }
-
-    async createLike(like: CreateLikeDbType): Promise<boolean> {
-        try {
-            const result: LikeDbType | null = await LikeModel.create(like);
-
-            console.log("Create like result:");
-            console.log(result);
-
-            if (!result) return false;
-
-            return true
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
+    async getUserLike(userId: string, locationId: string, locationName: string): Promise<HydratedLike | null> {
+        const dbLike: HydratedLike | null = await Like.findOne({userId, locationId, locationName});
+        return dbLike;
     }
-
-    async updateLike(locationId: string, locationName: string, userId: string, status: LikeStatusType): Promise<boolean> {
-        try {
-            const like = await LikeModel.findOne({userId, locationId, locationName});
-            if (!like) return false;
-
-            like.myStatus = status;
-            await like.save();
-
-            return true
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
+    async getLastLikesInfo(locationId: string, locationName: string, limitCount: number): Promise<LikeDbType[] | null> {
+        const dbLikes: LikeDbType[] | null = await Like.find({locationId, locationName}).limit(limitCount).lean();
+        return dbLikes;
     }
-
-    async getLikesDislikesCount(locationId: string, locationName: string, status: LikeStatusType): Promise<number | null> {
-        try {
-            const count: number = await LikeModel.countDocuments({locationId, locationName, myStatus: status});
-            return count;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
-    }
-
     async deleteLike(locationId: string, locationName: string, userId: string): Promise<boolean> {
         try {
-            const result: DeleteResult = await LikeModel.deleteOne({userId, locationId, locationName});
+            const result: DeleteResult = await Like.deleteOne({userId, locationId, locationName});
             if (!result) return false;
 
             return result.deletedCount === 1;
@@ -62,10 +27,9 @@ export class LikesRepository {
             return false;
         }
     }
-
     async deleteLikesOfLocation(locationId: string, locationName: string): Promise<boolean> {
         try {
-            const result: DeleteResult = await LikeModel.deleteMany({locationId, locationName});
+            const result: DeleteResult = await Like.deleteMany({locationId, locationName});
             if (!result) return false;
 
             return result.deletedCount >= 0;
@@ -74,10 +38,9 @@ export class LikesRepository {
             return false;
         }
     }
-
     async deleteAllLikes() {
         try {
-            return await LikeModel.deleteMany({});
+            return await Like.deleteMany({});
         } catch (error) {
             console.log(error);
         }

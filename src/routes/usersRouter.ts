@@ -1,8 +1,8 @@
 import express from "express";
 import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
-import {userRegistrationValidationSchema} from "../middlewares/validation/auth/userRegistration";
 import {container} from "../compositionRoot";
 import {UsersController} from "./controllers/usersController";
+import {userRegistrationValidation} from "../middlewares/validation/auth/userRegistrationValidation";
 
 const usersController = container.resolve(UsersController);
 
@@ -15,7 +15,7 @@ usersRouter.get("/",
 // Test creation of users
 usersRouter.post("/",
     basicAuthMiddleware,
-    userRegistrationValidationSchema,
+    userRegistrationValidation,
     usersController.createUser.bind(usersController)
 );
 
