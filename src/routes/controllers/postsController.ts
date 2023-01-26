@@ -86,10 +86,7 @@ export class PostsController {
     async getCommentsOfPost(req: RequestWithParamsAndQuery<UriParamsPostModel, QueryCommentModel>, res: Response<Paginator<ViewCommentModel>>) {
         const foundedPost: PostType | null = await this.postsRepository.findPostById(req.params.id);
 
-        if (!foundedPost) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
+        if (!foundedPost) { res.sendStatus(HTTP_STATUSES.NOT_FOUND_404); return; }
 
         const foundedCommentsOfPost: Paginator<ViewCommentModel> = await this.commentsQueryRepository.findCommentsOfPost(req.userId, req.params.id, req.query);
         res.json(foundedCommentsOfPost);

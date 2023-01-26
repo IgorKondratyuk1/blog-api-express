@@ -1,7 +1,6 @@
 import mongoose, {Model} from "mongoose";
 import {HydratedPost, PostDbMethodsType, PostDbType, PostType} from "./postTypes";
 import {v4 as uuidv4} from "uuid";
-import {CommentDbMethodsType, CommentDbType} from "../Comment/commentTypes";
 
 type PostModel = Model<PostDbType, {}, PostDbMethodsType> & {
     createInstance(postTitle: string, postShortDescription: string,

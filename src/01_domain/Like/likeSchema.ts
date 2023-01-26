@@ -27,7 +27,7 @@ export const likeSchema = new mongoose.Schema<LikeDbType, LikeModel, LikeDbMetho
 
 likeSchema.method("setStatus", function setStatus(status: LikeStatusType) {
     const like = this as LikeDbType & LikeDbMethodsType;
-    if (like.myStatus === status) throw new Error("Like status can not be changed to the same value");
+    //if (like.myStatus === status) throw new Error("Like status can not be changed to the same value");
     like.myStatus = status;
 });
 
