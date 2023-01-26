@@ -13,7 +13,7 @@ export class LikesRepository {
         return dbLike;
     }
     async getLastLikesInfo(locationId: string, locationName: string, limitCount: number): Promise<LikeDbType[] | null> {
-        const dbLikes: LikeDbType[] | null = await Like.find({locationId, locationName}).sort({updatedAt: -1}).limit(limitCount).lean();
+        const dbLikes: LikeDbType[] | null = await Like.find({locationId, locationName, myStatus: "Like"}).sort({updatedAt: -1}).limit(limitCount).lean();
         return dbLikes;
     }
     async deleteLike(locationId: string, locationName: string, userId: string): Promise<boolean> {
