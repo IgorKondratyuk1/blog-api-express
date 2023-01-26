@@ -5,6 +5,7 @@ import {queryValidation} from "../middlewares/validation/query/queryValidation";
 import {basicAuthMiddleware} from "../middlewares/auth/basicAuthMiddleware";
 import {blogValidation} from "../middlewares/validation/blogValidation";
 import {postOfBlogValidation} from "../middlewares/validation/postOfBlogValidation";
+import {userIdentification} from "../middlewares/userIdentificationMiddleware";
 
 const blogsController = container.resolve(BlogsController);
 
@@ -37,6 +38,7 @@ blogsRouter.delete("/:id",
 );
 
 blogsRouter.get("/:id/posts",
+    userIdentification,
     queryValidation,
     blogsController.getPostsOfBlog.bind(blogsController)
 );

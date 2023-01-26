@@ -11,7 +11,6 @@ import {mongooseConnectToDB} from "./repositories/db";
 import {securityRouter} from "./routes/securityRouter";
 import {deleteAllRouter} from "./routes/deleteAllRouter";
 import {cookiesLogs} from "./helpers/testLogs";
-import {Like} from "./01_domain/Like/likeSchema";
 
 enum URL_ROUTES {
     auth = "/api/auth",
