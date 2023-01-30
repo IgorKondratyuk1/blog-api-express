@@ -1,6 +1,6 @@
 import {injectable} from "inversify";
-import {HydratedPost, PostDbType, PostType} from "../../01_domain/Post/postTypes";
-import {Post} from "../../01_domain/Post/postSchema";
+import {HydratedPost, PostDbType, PostType} from "../../domain/Post/postTypes";
+import {Post} from "../../domain/Post/postSchema";
 
 @injectable()
 export class PostsRepository {

@@ -4,8 +4,8 @@ import {QueryUserModel, UserFilterType} from "../../types/userTypes";
 import {ViewUserModel} from "../../models/user/viewUserModel";
 import {mapUserAccountDbTypeToViewUserModel} from "../../helpers/mappers";
 import {injectable} from "inversify";
-import {User} from "../../01_domain/User/UserScheme";
-import {UserAccountDbType} from "../../01_domain/User/UserTypes";
+import {User} from "../../domain/User/UserScheme";
+import {UserAccountDbType} from "../../domain/User/UserTypes";
 
 @injectable()
 export class UsersQueryRepository {

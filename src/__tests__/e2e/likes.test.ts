@@ -11,7 +11,7 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {UpdateLikeModel} from "../../models/like/updateLikeModel";
-import {LikeStatus} from "../../01_domain/Like/likeTypes";
+import {LikeStatus} from "../../domain/Like/likeTypes";
 
 // Testing: Comments Likes
 describe("/comments/like-status", () => {
@@ -160,7 +160,8 @@ describe("/comments/like-status", () => {
             content: data.content,
             blogId: data.blogId,
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);
@@ -383,8 +384,6 @@ describe("/comments/like-status", () => {
             .expect(200);
 
         expect(result.body).toEqual(expectedCommentData);
-        console.log("First user last action");
-        console.log(result.body);
     });
 
     // Second user actions with like
@@ -583,6 +582,875 @@ describe("/comments/like-status", () => {
 
         await request(app)
             .put(`/api/comments/${firstComment.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(404);
+    });
+});
+
+// Testing: Comments Likes
+describe("/posts/like-status", () => {
+    let jwtToken: string = '';
+
+    let firstUser: any = null;
+    let secondUser: any = null;
+    let thirdUser: any = null;
+
+    let firstBlog: any = null;
+    let secondBlog: any = null;
+
+    let firstPostOfFirstBlog: any = null;
+    let firstPostOfSecondBlog: any = null;
+    let secondPostOfSecondBlog: any = null;
+    let thirdPostOfSecondBlog: any = null;
+
+    //Clear DB
+    beforeAll(async () => {
+        await clearDB();
+    });
+
+    // --------- Prepare Data ---------
+    // Create first User
+    it("POST: should create first user", async () => {
+        const data: CreateUserModel = {
+            email: "testUser1@gmail.com",
+            login: "test1",
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/users")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        firstUser = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewUserModel = {
+            id: expect.any(String),
+            login: data.login,
+            email: data.email,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Create second User
+    it("POST: should create second user", async () => {
+        const data: CreateUserModel = {
+            email: "testUser2@gmail.com",
+            login: "test2",
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/users")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        secondUser = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewUserModel = {
+            id: expect.any(String),
+            login: data.login,
+            email: data.email,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Create third User
+    it("POST: should create third user", async () => {
+        const data: CreateUserModel = {
+            email: "testUser3@gmail.com",
+            login: "test3",
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/users")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        thirdUser = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewUserModel = {
+            id: expect.any(String),
+            login: data.login,
+            email: data.email,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    it("POST: should login using first user", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: firstUser.login,
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .set("Authorization", basicAuthValue)
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            accessToken: expect.any(String)
+        });
+
+        jwtToken = result.body.accessToken;
+    });
+
+    // Create first Blog
+    it("POST: first user should create first blog", async () => {
+        const data: CreateBlogModel = {
+            name: "New Blog 1",
+            websiteUrl: "https://www.youtube.com",
+            description: "some description"
+        };
+
+        const result = await request(app)
+            .post("/api/blogs")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        firstBlog = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewBlogModel = {
+            id: expect.any(String),
+            name: data.name,
+            websiteUrl: data.websiteUrl,
+            description: data.description,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Create Post
+    it("POST: first user should create first post of first blog", async () => {
+        const data: CreatePostModel = {
+            title: "Correct title",
+            shortDescription: "descr",
+            content: "content",
+            blogId: firstBlog.id
+        };
+
+        const result = await request(app)
+            .post("/api/posts")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        firstPostOfFirstBlog = result.body;
+
+        const expectedObj: ViewPostModel = {
+            id: expect.any(String),
+            title: data.title,
+            shortDescription: data.shortDescription,
+            content: data.content,
+            blogId: data.blogId,
+            blogName: expect.any(String),
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
+        };
+        expect(result.status).toBe(201);
+        expect(firstPostOfFirstBlog).toEqual(expectedObj);
+        expect(firstPostOfFirstBlog.extendedLikesInfo).toEqual({
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: []
+        });
+    });
+
+    // Put "Like" to post
+    it("PUT: shouldn`t put 'Like' to post from unauthorized user", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
+            .send(data)
+            .expect(401);
+    });
+
+    it("GET: post must not have changed", async () => {
+        const result = await request(app)
+            .get(`/api/posts`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body.items.length).toBe(1);
+        expect(result.body.items[0]).toEqual(firstPostOfFirstBlog);
+    });
+
+    // Put "Like" to post
+    it("PUT: should put 'Like' to post", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    it("GET: post must have likes:1 and myStatus:'Like' and Newestlikes when author of like getting post", async () => {
+        const expectedObj: ViewCommentModel = {
+            ...firstPostOfFirstBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 1,
+                myStatus: LikeStatus.Like,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: firstUser.id,
+                    login: firstUser.login
+                }]
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Put "Like" to post second time
+    it("PUT: shouldn`t put 'Like' to post twice", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    it("GET: post must have likes:1 and myStatus:'Like' and Newestlikes without changes", async () => {
+        const expectedObj: ViewCommentModel = {
+            ...firstPostOfFirstBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 1,
+                myStatus: LikeStatus.Like,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: firstUser.id,
+                    login: firstUser.login
+                }]
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    it("GET: post must have likes:1 and myStatus:'None' and Newestlikes when unknown user getting post", async () => {
+        const expectedObj: ViewCommentModel = {
+            ...firstPostOfFirstBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 1,
+                myStatus: LikeStatus.None,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: firstUser.id,
+                    login: firstUser.login
+                }]
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .expect(200);
+
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Put "Dislike" to post
+    it("PUT: should put 'Dislike' to post", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Dislike
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    it("GET: post must have likes:1 and myStatus:'Dislike' and no Newestlikes when author of like getting post", async () => {
+        const expectedObj: ViewCommentModel = {
+            ...firstPostOfFirstBlog,
+            extendedLikesInfo: {
+                dislikesCount: 1,
+                likesCount: 0,
+                myStatus: LikeStatus.Dislike,
+                newestLikes: []
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+
+        expect(result.body.extendedLikesInfo.newestLikes.length).toBe(0);
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Put "None" to post
+    it("PUT: should put 'None' to post", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.None
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    it("GET: post must have likes:0 and myStatus:'None' and no Newestlikes when author of like getting post", async () => {
+        const expectedObj: ViewCommentModel = {
+            ...firstPostOfFirstBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 0,
+                myStatus: LikeStatus.None,
+                newestLikes: []
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body.extendedLikesInfo.newestLikes.length).toBe(0);
+        expect(result.body).toEqual(expectedObj);
+    });
+
+
+    // Create second Blog
+    it("POST: first user should create second blog", async () => {
+        const data: CreateBlogModel = {
+            name: "New Blog 2",
+            websiteUrl: "https://www.youtube.com",
+            description: "some description"
+        };
+
+        const result = await request(app)
+            .post("/api/blogs")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        secondBlog = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewBlogModel = {
+            id: expect.any(String),
+            name: data.name,
+            websiteUrl: data.websiteUrl,
+            description: data.description,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    // Create first Post
+    it("POST: first user should create first post of second blog", async () => {
+        const data: CreatePostModel = {
+            title: "First post of second blog",
+            shortDescription: "descr",
+            content: "content",
+            blogId: secondBlog.id
+        };
+
+        const result = await request(app)
+            .post("/api/posts")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        firstPostOfSecondBlog = result.body;
+
+        const expectedObj: ViewPostModel = {
+            id: expect.any(String),
+            title: data.title,
+            shortDescription: data.shortDescription,
+            content: data.content,
+            blogId: data.blogId,
+            blogName: expect.any(String),
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
+        };
+        expect(result.status).toBe(201);
+        expect(firstPostOfSecondBlog).toEqual(expectedObj);
+        expect(firstPostOfSecondBlog.extendedLikesInfo).toEqual({
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: []
+        });
+    });
+
+    // Create second Post
+    it("POST: first user should create second post of second blog", async () => {
+        const data: CreatePostModel = {
+            title: "Second post of second blog",
+            shortDescription: "descr",
+            content: "content",
+            blogId: secondBlog.id
+        };
+
+        const result = await request(app)
+            .post("/api/posts")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        secondPostOfSecondBlog = result.body;
+
+        const expectedObj: ViewPostModel = {
+            id: expect.any(String),
+            title: data.title,
+            shortDescription: data.shortDescription,
+            content: data.content,
+            blogId: data.blogId,
+            blogName: expect.any(String),
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
+        };
+        expect(result.status).toBe(201);
+        expect(secondPostOfSecondBlog).toEqual(expectedObj);
+        expect(secondPostOfSecondBlog.extendedLikesInfo).toEqual({
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: []
+        });
+    });
+
+    // Create third Post
+    it("POST: first user should create third post of second blog", async () => {
+        const data: CreatePostModel = {
+            title: "Third post of second blog",
+            shortDescription: "descr",
+            content: "content",
+            blogId: secondBlog.id
+        };
+
+        const result = await request(app)
+            .post("/api/posts")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        thirdPostOfSecondBlog = result.body;
+
+        const expectedObj: ViewPostModel = {
+            id: expect.any(String),
+            title: data.title,
+            shortDescription: data.shortDescription,
+            content: data.content,
+            blogId: data.blogId,
+            blogName: expect.any(String),
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
+        };
+        expect(result.status).toBe(201);
+        expect(thirdPostOfSecondBlog).toEqual(expectedObj);
+        expect(thirdPostOfSecondBlog.extendedLikesInfo).toEqual({
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: []
+        });
+    });
+
+    // Put "Like" to first post by first User
+    it("PUT: should put 'Like' to first post of second blog by first User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Dislike" to second post by first User
+    it("PUT: should put 'Dislike' to second post of second blog by first User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Dislike
+        };
+
+        await request(app)
+            .put(`/api/posts/${secondPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Like" to third post by first User
+    it("PUT: should put 'Like' to third post of second blog by first User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${thirdPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+
+    // Login by second User
+    it("POST: should login using second user", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: secondUser.login,
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .set("Authorization", basicAuthValue)
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            accessToken: expect.any(String)
+        });
+
+        jwtToken = result.body.accessToken;
+    });
+
+    // Put "Like" to first post by second User
+    it("PUT: should put 'Like' to first post of second blog by second User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Like" to second post by second User
+    it("PUT: should put 'Dislike' to second post of second blog by second User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${secondPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Dislike" to third post by second User
+    it("PUT: should put 'Dislike' to third post of second blog by second User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Dislike
+        };
+
+        await request(app)
+            .put(`/api/posts/${thirdPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+
+
+
+    // Login by third User
+    it("POST: should login using third user", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: thirdUser.login,
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .set("Authorization", basicAuthValue)
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            accessToken: expect.any(String)
+        });
+
+        jwtToken = result.body.accessToken;
+    });
+
+    // Put "Like" to first post by third User
+    it("PUT: should put 'Like' to first post of second blog by third User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Like" to second post by third User
+    it("PUT: should put 'Like' to second post of second blog by third User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${secondPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "None" to first post by third User
+    it("PUT: should put 'None' to second post of second blog by third User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.None
+        };
+
+        await request(app)
+            .put(`/api/posts/${secondPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+    // Put "Dislike" to third post by third User
+    it("PUT: should put 'Dislike' to third post of second blog by third User", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Dislike
+        };
+
+        await request(app)
+            .put(`/api/posts/${thirdPostOfSecondBlog.id}/like-status`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .send(data)
+            .expect(204);
+    });
+
+
+    //Check posts of blog
+    it("GET: posts of second blog received by third User must be correct", async () => {
+        const expectedFirstPost: ViewPostModel = {
+            ...firstPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 3,
+                myStatus: LikeStatus.Like,
+                newestLikes: [
+                    {
+                        addedAt: expect.any(String),
+                        userId: thirdUser.id,
+                        login: thirdUser.login
+                    },
+                    {
+                        addedAt: expect.any(String),
+                        userId: secondUser.id,
+                        login: secondUser.login
+                    },
+                    {
+                        addedAt: expect.any(String),
+                        userId: firstUser.id,
+                        login: firstUser.login
+                    }
+                ]
+            }
+        }
+
+        const expectedSecondPost: ViewPostModel = {
+            ...secondPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 1,
+                likesCount: 1,
+                myStatus: LikeStatus.None,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: secondUser.id,
+                    login: secondUser.login
+                }]
+            }
+        }
+
+        const expectedThirdPost: ViewPostModel = {
+            ...thirdPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 2,
+                likesCount: 1,
+                myStatus: LikeStatus.Dislike,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: firstUser.id,
+                    login: firstUser.login
+                }]
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/blogs/${secondBlog.id}/posts`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body.items.length).toBe(3);
+        expect(result.body.items[0]).toEqual(expectedThirdPost);
+        expect(result.body.items[1]).toEqual(expectedSecondPost);
+        expect(result.body.items[2]).toEqual(expectedFirstPost);
+    });
+
+
+    //Check posts for the same information by second user
+    // Login by second User
+    it("POST: should login using second user to check posts", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: secondUser.login,
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .set("Authorization", basicAuthValue)
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            accessToken: expect.any(String)
+        });
+
+        jwtToken = result.body.accessToken;
+    });
+
+
+    it("GET: posts received by second User must be correct", async () => {
+        const expectedFirstPost: ViewPostModel = {
+            ...firstPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 3,
+                myStatus: LikeStatus.Like,
+                newestLikes: [
+                    {
+                        addedAt: expect.any(String),
+                        userId: thirdUser.id,
+                        login: thirdUser.login
+                    },
+                    {
+                        addedAt: expect.any(String),
+                        userId: secondUser.id,
+                        login: secondUser.login
+                    },
+                    {
+                        addedAt: expect.any(String),
+                        userId: firstUser.id,
+                        login: firstUser.login
+                    }
+                ]
+            }
+        }
+
+        const expectedSecondPost: ViewPostModel = {
+            ...secondPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 1,
+                likesCount: 1,
+                myStatus: LikeStatus.Like,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: secondUser.id,
+                    login: secondUser.login
+                }]
+            }
+        }
+
+        const expectedThirdPost: ViewPostModel = {
+            ...thirdPostOfSecondBlog,
+            extendedLikesInfo: {
+                dislikesCount: 2,
+                likesCount: 1,
+                myStatus: LikeStatus.Dislike,
+                newestLikes: [{
+                    addedAt: expect.any(String),
+                    userId: firstUser.id,
+                    login: firstUser.login
+                }]
+            }
+        }
+
+        const result = await request(app)
+            .get(`/api/posts`)
+            .set("Authorization", `Bearer ${jwtToken}`)
+            .expect(200);
+
+        expect(result.body.items.length).toBe(4);
+        expect(result.body.items[0]).toEqual(expectedThirdPost);
+        expect(result.body.items[1]).toEqual(expectedSecondPost);
+        expect(result.body.items[2]).toEqual(expectedFirstPost);
+    });
+
+
+    // Delete post
+    it("POST: should login using first user to delete post", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: firstUser.login,
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .set("Authorization", basicAuthValue)
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            accessToken: expect.any(String)
+        });
+
+        jwtToken = result.body.accessToken;
+    });
+
+    it("DELETE: should delete post", async () => {
+        await request(app)
+            .delete(`/api/posts/${firstPostOfFirstBlog.id}`)
+            .set("Authorization", basicAuthValue)
+            .expect(204);
+    });
+
+
+    it("PUT: shouldn`t put 'Like' to deleted post", async () => {
+        const data: UpdateLikeModel = {
+            likeStatus: LikeStatus.Like
+        };
+
+        await request(app)
+            .put(`/api/posts/${firstPostOfFirstBlog.id}/like-status`)
             .set("Authorization", `Bearer ${jwtToken}`)
             .send(data)
             .expect(404);

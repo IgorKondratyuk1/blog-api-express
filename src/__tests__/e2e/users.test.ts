@@ -6,13 +6,13 @@ import {basicAuthValue, clearDB} from "./helpers/helpers";
 
 //Testing: Users Route
 describe("/users", () => {
+    let jwtToken: string = '';
+    let firstUser: any = null;
+
     //Clear DB
     beforeAll(async () => {
         await clearDB();
     });
-
-    let jwtToken: string = '';
-    let bearerAuth = `Bearer ${jwtToken}`;
 
     // GET
     it("GET: should return empty array of Users", async () => {
@@ -24,7 +24,6 @@ describe("/users", () => {
     });
 
     // Create User
-    let firstUser: any = null;
     it("POST: should create user", async () => {
         const data: CreateUserModel = {
             email: "aaaaa1@gmail.com",

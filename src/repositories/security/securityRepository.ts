@@ -1,8 +1,8 @@
 import {mapDeviceDBTypeToDeviceType} from "../../helpers/mappers";
 import {DeleteResult} from "mongodb";
 import {injectable} from "inversify";
-import {Device} from "../../01_domain/Security/securitySchema";
-import {DeviceDbType, DeviceType, HydratedDevice} from "../../01_domain/Security/securityTypes";
+import {Device} from "../../domain/Security/securitySchema";
+import {DeviceDbType, DeviceType, HydratedDevice} from "../../domain/Security/securityTypes";
 
 @injectable()
 export class SecurityRepository {

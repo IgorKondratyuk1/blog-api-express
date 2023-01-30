@@ -1,11 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
-import {jwtService} from "../../02_application/jwtService";
+import {JWTService} from "../../application/JWTService";
 import {container} from "../../compositionRoot";
 import {UsersRepository} from "../../repositories/users/usersRepository";
-import {HydratedUser} from "../../01_domain/User/UserTypes";
+import {HydratedUser} from "../../domain/User/UserTypes";
 
 const usersRepository = container.resolve(UsersRepository);
+const jwtService = container.resolve(JWTService);
 
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const clientAuthHeader = req.header("authorization");

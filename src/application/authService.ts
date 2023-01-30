@@ -3,13 +3,13 @@ import {TokensPair} from "../types/types";
 import {SecurityError, SecurityService} from "./securityService";
 import {UsersRepository} from "../repositories/users/usersRepository";
 import {createTokensPair} from "../helpers/createTokensPair";
-import {JWTDataType} from "./jwtService";
+import {JWTDataType} from "./JWTService";
 import {emailManager} from "../manager/emailManagers";
 import {SecurityRepository} from "../repositories/security/securityRepository";
 import {UsersService} from "./usersService";
 import {inject, injectable} from "inversify";
-import {HydratedUser} from "../01_domain/User/UserTypes";
-import {DeviceType, HydratedDevice} from "../01_domain/Security/securityTypes";
+import {HydratedUser} from "../domain/User/UserTypes";
+import {DeviceType, HydratedDevice} from "../domain/Security/securityTypes";
 
 export enum authError {
     Success,
@@ -66,7 +66,6 @@ export class AuthService {
         const result: SecurityError = await this.securityService.deleteDeviceSession(userId, deviceId);
         return result;
     }
-    // TODO refactor device session
     async getRefreshAccessTokens(tokenPayload: JWTDataType): Promise<TokensPair | authError> {
         const {deviceId, userId, issuedAt} = tokenPayload;
         if (!deviceId || !userId || !issuedAt) return authError.WrongUserError;
@@ -85,10 +84,6 @@ export class AuthService {
         // 4. Update refresh token issued Date
         await deviceSession.setIssuedDate((new Date()).toISOString())
         await this.securityRepository.save(deviceSession);
-
-        // 5. Get updated Device Session
-        // const updatedSession: HydratedDevice | null | undefined = await this.securityRepository.findDeviceSession(deviceId);
-        // if (!updatedSession) return authError.BadRequestError;
 
         const tokensPair: TokensPair = await createTokensPair(deviceSession);
         return tokensPair;

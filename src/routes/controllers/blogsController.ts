@@ -1,7 +1,7 @@
 import {BlogsQueryRepository} from "../../repositories/blogs/queryBlogRepository";
 import {PostsQueryRepository} from "../../repositories/posts/queryPostRepository";
-import {PostsService} from "../../02_application/postsService";
-import {BlogsService} from "../../02_application/blogsService";
+import {PostsService} from "../../application/postsService";
+import {BlogsService} from "../../application/blogsService";
 import {
     Paginator,
     RequestWithBody,
@@ -22,8 +22,8 @@ import {QueryPostModel} from "../../models/post/queryPostModel";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreatePostOfBlogModel} from "../../models/post/createPostOfBlog";
 import {inject, injectable} from "inversify";
-import {BlogType} from "../../01_domain/Blog/blogTypes";
-import {HydratedPost} from "../../01_domain/Post/postTypes";
+import {BlogType} from "../../domain/Blog/blogTypes";
+import {HydratedPost} from "../../domain/Post/postTypes";
 
 @injectable()
 export class BlogsController {

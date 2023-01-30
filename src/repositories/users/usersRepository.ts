@@ -1,7 +1,7 @@
 import {DeleteResult} from "mongodb";
 import {injectable} from "inversify";
-import {User} from "../../01_domain/User/UserScheme";
-import {HydratedUser} from "../../01_domain/User/UserTypes";
+import {User} from "../../domain/User/UserScheme";
+import {HydratedUser} from "../../domain/User/UserTypes";
 
 @injectable()
 export class UsersRepository {

@@ -8,8 +8,8 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreatePostModel} from "../../models/post/createPostModel";
 import {Paginator} from "../../types/types";
 import {UpdatePostModel} from "../../models/post/updatePostModel";
-import {BlogType} from "../../01_domain/Blog/blogTypes";
-import {PostType} from "../../01_domain/Post/postTypes";
+import {BlogType} from "../../domain/Blog/blogTypes";
+import {PostType} from "../../domain/Post/postTypes";
 
 // 1. Testing: Posts of blog Route
 describe("/blogs/:blogId/posts", () => {
@@ -72,7 +72,8 @@ describe("/blogs/:blogId/posts", () => {
                 content: arrOfPosts[i].content,
                 blogId: arrOfPosts[i].blogId,
                 blogName: expect.any(String),
-                createdAt: expect.any(String)
+                createdAt: expect.any(String),
+                extendedLikesInfo: expect.any(Object)
             };
             expect(result.status).toBe(201);
             expect(arrOfPosts[i]).toEqual(expectedObj);
@@ -273,7 +274,8 @@ describe("/posts", () => {
             content: data.content,
             blogId: data.blogId,
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);
@@ -371,7 +373,8 @@ describe("/posts", () => {
             content: data.content,
             blogId: data.blogId,
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
         };
         expect(updatedPost.body).toEqual(expectedObj);
     });

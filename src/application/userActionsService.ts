@@ -1,6 +1,6 @@
 import {UsersActionsRepository} from "../repositories/userActions/usersActionsRepository";
 import {inject, injectable} from "inversify";
-import {UserAction} from "../01_domain/UserAction/userActionSchema";
+import {UserAction} from "../domain/UserAction/userActionSchema";
 
 @injectable()
 export class UserActionsService {
@@ -13,8 +13,6 @@ export class UserActionsService {
         await UserAction.createInstance(ip, resource);
 
         // Delete expired actions
-        // TODO choice the variant of deleting
-        // await UserAction.deleteExpiredActions();
         await this.usersActionsRepository.deleteExpiredActions();
 
         // Get actions count of current user(ip)

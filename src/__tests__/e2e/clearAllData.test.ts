@@ -58,7 +58,8 @@ describe("/testing/delete", () => {
             content: data.content,
             blogId: data.blogId,
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);

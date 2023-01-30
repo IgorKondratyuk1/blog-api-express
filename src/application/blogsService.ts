@@ -1,7 +1,7 @@
-import {Blog} from "../01_domain/Blog/blogSchema";
+import {Blog} from "../domain/Blog/blogSchema";
 import {BlogsRepository} from "../repositories/blogs/blogsRepository";
 import {inject, injectable} from "inversify";
-import {HydratedBlog} from "../01_domain/Blog/blogTypes";
+import {HydratedBlog} from "../domain/Blog/blogTypes";
 
 @injectable()
 export class BlogsService {

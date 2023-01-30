@@ -1,5 +1,5 @@
 import {injectable} from "inversify";
-import {UserAction} from "../../01_domain/UserAction/userActionSchema";
+import {UserAction} from "../../domain/UserAction/userActionSchema";
 import {DeleteResult} from "mongodb";
 import {SETTINGS} from "../../config";
 

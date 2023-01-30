@@ -1,7 +1,7 @@
-import {BlogsService} from "../../02_application/blogsService";
-import {PostsService} from "../../02_application/postsService";
-import {UsersService} from "../../02_application/usersService";
-import {CommentsService} from "../../02_application/commentsService";
+import {BlogsService} from "../../application/blogsService";
+import {PostsService} from "../../application/postsService";
+import {UsersService} from "../../application/usersService";
+import {CommentsService} from "../../application/commentsService";
 import {UsersActionsRepository} from "../../repositories/userActions/usersActionsRepository";
 import {SecurityRepository} from "../../repositories/security/securityRepository";
 import {Request, Response} from "express";

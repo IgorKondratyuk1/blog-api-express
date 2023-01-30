@@ -4,13 +4,13 @@ import {ViewBlogModel} from "../models/blog/viewBlogModel";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {ViewMeModel} from "../models/auth/viewMeModel";
 import {ViewCommentModel} from "../models/comment/viewCommentModel";
-import {HydratedLike, LikeDbType, LikeStatusType, LikeType} from "../01_domain/Like/likeTypes";
-import {CommentDbType, CommentType, HydratedComment} from "../01_domain/Comment/commentTypes";
-import {BlogDbType, BlogType, HydratedBlog} from "../01_domain/Blog/blogTypes";
-import {HydratedPost, PostDbType, PostType} from "../01_domain/Post/postTypes";
-import {HydratedUser, UserAccountDbType, UserAccountType} from "../01_domain/User/UserTypes";
-import {DeviceDbType, DeviceType, HydratedDevice} from "../01_domain/Security/securityTypes";
-import {HydrateUserAction, UserActionsDbType, UserActionsType} from "../01_domain/UserAction/userActionTypes";
+import {HydratedLike, LikeDbType, LikeStatusType, LikeType} from "../domain/Like/likeTypes";
+import {CommentDbType, CommentType, HydratedComment} from "../domain/Comment/commentTypes";
+import {BlogDbType, BlogType, HydratedBlog} from "../domain/Blog/blogTypes";
+import {HydratedPost, PostDbType, PostType} from "../domain/Post/postTypes";
+import {HydratedUser, UserAccountDbType, UserAccountType} from "../domain/User/UserTypes";
+import {DeviceDbType, DeviceType, HydratedDevice} from "../domain/Security/securityTypes";
+import {HydrateUserAction, UserActionsDbType, UserActionsType} from "../domain/UserAction/userActionTypes";
 import {ViewLikeDetailsModel} from "../models/like/viewLikeDetailsModel";
 
 export const mapUserAccountTypeToViewUserModel = (dbUser: UserAccountType | UserAccountDbType | HydratedUser): ViewUserModel => {

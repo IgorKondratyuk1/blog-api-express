@@ -1,6 +1,6 @@
 import {body} from "express-validator";
 import {inputValidationMiddleware} from "../inputValidationMiddleware";
-import {LikeStatus, LikeStatusType} from "../../01_domain/Like/likeTypes";
+import {LikeStatus, LikeStatusType} from "../../domain/Like/likeTypes";
 
 const likesTypes: string[] = Object.keys(LikeStatus);
 

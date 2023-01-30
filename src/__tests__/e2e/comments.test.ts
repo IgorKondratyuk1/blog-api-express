@@ -11,7 +11,7 @@ import {ViewPostModel} from "../../models/post/viewPostModel";
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
-import {LikeStatus} from "../../01_domain/Like/likeTypes";
+import {LikeStatus} from "../../domain/Like/likeTypes";
 
 // Testing: Comments Route
 describe("/comments", () => {
@@ -164,7 +164,8 @@ describe("/comments", () => {
             content: data.content,
             blogId: data.blogId,
             blogName: expect.any(String),
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: expect.any(Object)
         };
         expect(result.status).toBe(201);
         expect(firstPost).toEqual(expectedObj);

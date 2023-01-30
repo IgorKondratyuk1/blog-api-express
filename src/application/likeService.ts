@@ -1,7 +1,7 @@
 import {LikesRepository} from "../repositories/likes/likesRepository";
 import {inject, injectable} from "inversify";
-import {HydratedLike, LikeLocationsType, LikeStatusType} from "../01_domain/Like/likeTypes";
-import {Like} from "../01_domain/Like/likeSchema";
+import {HydratedLike, LikeLocationsType, LikeStatusType} from "../domain/Like/likeTypes";
+import {Like} from "../domain/Like/likeSchema";
 
 export enum LikeError {
     Success,
@@ -51,7 +51,6 @@ export class LikeService {
             return LikeError.UpdateError;
         }
     }
-    // TODO add all delete functions or remove deleteLike from service
     async deleteLike(userId: string, locationName: LikeLocationsType, locationId: string): Promise<LikeError> {
         const result: boolean = await this.likesRepository.deleteLike(locationId, locationName, userId);
         if (!result) return LikeError.UpdateError;

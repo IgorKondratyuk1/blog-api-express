@@ -1,4 +1,4 @@
-import {SecurityError, SecurityService} from "../../02_application/securityService";
+import {SecurityError, SecurityService} from "../../application/securityService";
 import {Request, Response} from "express";
 import {DeviceViewModel} from "../../models/auth/device/deviceViewModel";
 import {HTTP_STATUSES} from "../../index";

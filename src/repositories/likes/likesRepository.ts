@@ -1,7 +1,7 @@
-import {Like} from "../../01_domain/Like/likeSchema";
+import {Like} from "../../domain/Like/likeSchema";
 import {DeleteResult} from "mongodb";
 import {injectable} from "inversify";
-import {HydratedLike, LikeDbType} from "../../01_domain/Like/likeTypes";
+import {HydratedLike, LikeDbType} from "../../domain/Like/likeTypes";
 
 @injectable()
 export class LikesRepository {

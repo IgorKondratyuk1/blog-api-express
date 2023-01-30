@@ -1,4 +1,4 @@
-import {LikeStatusType} from "../../01_domain/Like/likeTypes";
+import {LikeStatusType} from "../../domain/Like/likeTypes";
 
 export type UpdateLikeModel = {
     likeStatus: LikeStatusType

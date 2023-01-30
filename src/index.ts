@@ -10,7 +10,7 @@ import {commentsRouter} from "./routes/commentsRouter";
 import {mongooseConnectToDB} from "./repositories/db";
 import {securityRouter} from "./routes/securityRouter";
 import {deleteAllRouter} from "./routes/deleteAllRouter";
-import {cookiesLogs} from "./helpers/testLogs";
+import {cookiesLogs} from "./helpers/cookiesLogs";
 
 enum URL_ROUTES {
     auth = "/api/auth",
@@ -66,4 +66,3 @@ const startApp = async () => {
 }
 
 startApp().catch(error => {console.log(error)});
-

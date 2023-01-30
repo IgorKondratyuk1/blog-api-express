@@ -1,10 +1,11 @@
 import {NextFunction, Request, Response} from "express";
 import {container} from "../compositionRoot";
-import {jwtService} from "../02_application/jwtService";
-import {HydratedUser} from "../01_domain/User/UserTypes";
+import {JWTService} from "../application/JWTService";
+import {HydratedUser} from "../domain/User/UserTypes";
 import {UsersRepository} from "../repositories/users/usersRepository";
 
 const usersRepository = container.resolve(UsersRepository);
+const jwtService = container.resolve(JWTService);
 
 export const userIdentification = async (req: Request, res: Response, next: NextFunction) => {
     const clientAuthHeader = req.header("authorization");

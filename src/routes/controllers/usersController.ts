@@ -1,5 +1,5 @@
 import {UsersQueryRepository} from "../../repositories/users/queryUsersRepository";
-import {UsersService} from "../../02_application/usersService";
+import {UsersService} from "../../application/usersService";
 import {Paginator, RequestWithBody, RequestWithParams, RequestWithQuery} from "../../types/types";
 import {QueryUserModel} from "../../types/userTypes";
 import {Response} from "express";
@@ -8,7 +8,7 @@ import {CreateUserModel} from "../../models/user/createUserModel";
 import {mapUserAccountTypeToViewUserModel} from "../../helpers/mappers";
 import {UriParamsUserModel} from "../../models/user/uriParamsUserModel";
 import {inject, injectable} from "inversify";
-import {HydratedUser} from "../../01_domain/User/UserTypes";
+import {HydratedUser} from "../../domain/User/UserTypes";
 
 @injectable()
 export class UsersController {

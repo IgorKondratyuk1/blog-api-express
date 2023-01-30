@@ -4,12 +4,12 @@ import {UpdatePostModel} from "../models/post/updatePostModel";
 import {BlogsRepository} from "../repositories/blogs/blogsRepository";
 import {PostsRepository} from "../repositories/posts/postsRepository";
 import {inject, injectable} from "inversify";
-import {HydratedPost} from "../01_domain/Post/postTypes";
-import {Post} from "../01_domain/Post/postSchema";
-import {LikeDbType, LikeLocation, LikeStatus, LikeStatusType} from "../01_domain/Like/likeTypes";
+import {HydratedPost} from "../domain/Post/postTypes";
+import {Post} from "../domain/Post/postSchema";
+import {LikeDbType, LikeLocation, LikeStatus, LikeStatusType} from "../domain/Like/likeTypes";
 import {LikeError, LikeService} from "./likeService";
-import {HydratedComment} from "../01_domain/Comment/commentTypes";
-import {Like} from "../01_domain/Like/likeSchema";
+import {HydratedComment} from "../domain/Comment/commentTypes";
+import {Like} from "../domain/Like/likeSchema";
 import {CommentError} from "./commentsService";
 import {ViewPostModel} from "../models/post/viewPostModel";
 import {LikesRepository} from "../repositories/likes/likesRepository";
@@ -40,12 +40,12 @@ export class PostsService {
 
         return mapPostTypeToPostViewModel(createdPost, likeStatus, lastLikes);
     }
-    async updatePost(id: string, post: UpdatePostModel): Promise<boolean | PostError> {
+    async updatePost(id: string, post: UpdatePostModel): Promise<boolean> {
         const foundedBlog = await this.blogsRepository.findBlogById(post.blogId);
-        if (!foundedBlog) return PostError.NotFoundError;
+        if (!foundedBlog) return false;
 
         const foundedPost: HydratedPost | null = await this.postsRepository.findPostById(id);
-        if (!foundedPost) return PostError.NotFoundError;
+        if (!foundedPost) return false;
 
         await foundedPost.updatePost(post.blogId, post.content, post.title, post.shortDescription);
         await this.postsRepository.save(foundedPost);

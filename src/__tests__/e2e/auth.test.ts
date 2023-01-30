@@ -9,16 +9,18 @@ jest.setTimeout(21000); //Tests timeout 21s
 
 // Testing: Login
 describe("/login", () => {
+    let accessToken: string = '';
+    let refreshToken: string = '';
+
+    let firstUser: any = null;
+    let secondUser: any = null;
+
     //Clear DB
     beforeAll(async () => {
         await clearDB();
     });
 
-    let accessToken: string = '';
-    let refreshToken: string = '';
-
-    // Create Test User
-    let firstUser: any = null;
+    // Create first test User
     it("POST: should create first user", async () => {
         const data: CreateUserModel = {
             email: "testUser1@gmail.com",
@@ -43,8 +45,65 @@ describe("/login", () => {
         expect(result.body).toEqual(expectedObj);
     });
 
-    //Login
-    it("POST: user should login", async () => {
+    // Create second test User
+    it("POST: should create second user", async () => {
+        const data: CreateUserModel = {
+            email: "testUser2@gmail.com",
+            login: "test2",
+            password: usersPassword
+        };
+
+        const result = await request(app)
+            .post("/api/users")
+            .set("Authorization", basicAuthValue)
+            .send(data);
+
+        secondUser = result.body;
+
+        expect(result.status).toBe(201);
+        const expectedObj: ViewUserModel = {
+            id: expect.any(String),
+            login: data.login,
+            email: data.email,
+            createdAt: expect.any(String)
+        };
+        expect(result.body).toEqual(expectedObj);
+    });
+
+    //Second User Login
+    it("POST: second user should login", async () => {
+        const data: LoginInputModel = {
+            loginOrEmail: secondUser.login,
+            password: usersPassword
+        }
+
+        const result = await request(app)
+            .post("/api/auth/login")
+            .send(data)
+            .expect(200);
+
+        expect(result.body).toEqual({accessToken: expect.any(String)});
+        accessToken = result.body.accessToken;
+
+        const cookies = result.headers['set-cookie'][0].split(',').map((item: any) => item.split(';')[0]);
+        refreshToken = cookies[0];
+    });
+
+    it("GET: second user should get his info", async () => {
+        const result = await request(app)
+            .get("/api/auth/me")
+            .set("Authorization", `Bearer ${accessToken}`)
+            .expect(200);
+
+        expect(result.body).toEqual({
+            "email": secondUser.email,
+            "login": secondUser.login,
+            "userId": expect.any(String)
+        });
+    });
+
+    //First User Login
+    it("POST: first user should login", async () => {
        const data: LoginInputModel = {
            loginOrEmail: firstUser.login,
            password: usersPassword

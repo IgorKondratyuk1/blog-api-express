@@ -1,7 +1,7 @@
 import {PostsQueryRepository} from "../../repositories/posts/queryPostRepository";
-import {PostError, PostsService} from "../../02_application/postsService";
+import {PostError, PostsService} from "../../application/postsService";
 import {PostsRepository} from "../../repositories/posts/postsRepository";
-import {CommentError, CommentsService} from "../../02_application/commentsService";
+import {CommentError, CommentsService} from "../../application/commentsService";
 import {
     Paginator,
     RequestWithBody,
@@ -24,10 +24,10 @@ import {UriParamsCommentModel} from "../../models/comment/uriParamsCommentModel"
 import {CreateCommentModel} from "../../models/comment/createCommentModel";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
 import {inject, injectable} from "inversify";
-import {CommentType} from "../../01_domain/Comment/commentTypes";
-import {PostType} from "../../01_domain/Post/postTypes";
+import {CommentType} from "../../domain/Comment/commentTypes";
+import {PostType} from "../../domain/Post/postTypes";
 import {UpdateLikeModel} from "../../models/like/updateLikeModel";
-import {LikeError} from "../../02_application/likeService";
+import {LikeError} from "../../application/likeService";
 
 @injectable()
 export class PostsController {

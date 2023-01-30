@@ -1,4 +1,4 @@
-import {GuestUserType, UserAccountType} from "../../01_domain/User/UserTypes";
+import {GuestUserType, UserAccountType} from "../../domain/User/UserTypes";
 
 declare global {
     declare namespace Express {

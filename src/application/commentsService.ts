@@ -6,12 +6,12 @@ import {UsersRepository} from "../repositories/users/usersRepository";
 import {LikesRepository} from "../repositories/likes/likesRepository";
 import {LikeError, LikeService} from "./likeService";
 import {inject, injectable} from "inversify";
-import {LikeLocation, LikeStatus, LikeStatusType} from "../01_domain/Like/likeTypes";
-import {Like} from "../01_domain/Like/likeSchema";
-import {HydratedUser} from "../01_domain/User/UserTypes";
-import {HydratedComment} from "../01_domain/Comment/commentTypes";
-import {Comment} from "../01_domain/Comment/commentSchema";
-import {PostType} from "../01_domain/Post/postTypes";
+import {LikeLocation, LikeStatus, LikeStatusType} from "../domain/Like/likeTypes";
+import {Like} from "../domain/Like/likeSchema";
+import {HydratedUser} from "../domain/User/UserTypes";
+import {HydratedComment} from "../domain/Comment/commentTypes";
+import {Comment} from "../domain/Comment/commentSchema";
+import {PostType} from "../domain/Post/postTypes";
 
 export enum CommentError {
     Success,

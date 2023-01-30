@@ -1,33 +1,19 @@
 import {NextFunction, Request, Response} from "express";
 import {HTTP_STATUSES} from "../../index";
 import {SETTINGS} from "../../config";
-import {JWTDataType, jwtService} from "../../02_application/jwtService";
+import {JWTDataType, JWTService} from "../../application/JWTService";
 import {container} from "../../compositionRoot";
-import {SecurityService} from "../../02_application/securityService";
-import {HydratedDevice} from "../../01_domain/Security/securityTypes";
+import {SecurityService} from "../../application/securityService";
+import {HydratedDevice} from "../../domain/Security/securityTypes";
 import {UsersRepository} from "../../repositories/users/usersRepository";
-import {HydratedUser} from "../../01_domain/User/UserTypes";
-
+import {HydratedUser} from "../../domain/User/UserTypes";
+import {logData} from "../../helpers/tokenLogs";
 
 const securityService = container.resolve(SecurityService);
 const usersRepository = container.resolve(UsersRepository);
+const jwtService = container.resolve(JWTService);
 
-const logData = (refreshTokenData: any) => {
-    if(SETTINGS.EXTENDED_LOGS){
-        console.log('\n>>>\tRefresh Token Middleware');
-        try {
-            console.log(refreshTokenData);
-            console.log("iat: " + new Date(1000 * refreshTokenData.iat));
-            console.log("exp " + new Date(1000 * refreshTokenData.exp));
-            console.log("now " + new Date());
-            console.log(new Date(1000 * refreshTokenData.exp) < new Date());
-        } catch (err) {
-            console.log('Error catch');
-            console.log(err);
-        }
-        console.log('>>>\tEnd\n');
-    }
-}
+
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies?.refreshToken;
@@ -55,11 +41,6 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     }
 
     logData(refreshTokenData);
-    // Check that refresh token is not expired (deprecated - if token expired validation function will return NULL)
-    // if (refreshTokenData?.exp && new Date(1000 * refreshTokenData.exp) < new Date()) {
-    //     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-    //     return;
-    // }
 
     // 3. Get device session
     const deviceSession: HydratedDevice | null = await securityService.findDeviceSession(deviceId);

@@ -1,9 +1,9 @@
 import {SecurityRepository} from "../repositories/security/securityRepository";
 import {inject, injectable} from "inversify";
-import {Device} from "../01_domain/Security/securitySchema";
+import {Device} from "../domain/Security/securitySchema";
 import {DeviceViewModel} from "../models/auth/device/deviceViewModel";
 import {mapDeviceDBTypeToDeviceViewModel} from "../helpers/mappers";
-import {DeviceType, HydratedDevice} from "../01_domain/Security/securityTypes";
+import {DeviceType, HydratedDevice} from "../domain/Security/securityTypes";
 
 export enum SecurityError {
     Success,
@@ -21,7 +21,6 @@ export class SecurityService {
         if (!device) return null
         return device;
     }
-    // TODO maybe change to HydrateDevice[]
     async getAllDevices(userId: string): Promise<DeviceViewModel[] | null> {
         const result: DeviceType[] | null = await this.securityRepository.findUserDeviceSessions(userId);
         if (!result) return null;

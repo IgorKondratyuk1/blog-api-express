@@ -3,12 +3,12 @@ import {getFilters, getPagesCount, getSkipValue, getSortValue} from "../../helpe
 import {QueryPostModel} from "../../models/post/queryPostModel";
 import {ViewPostModel} from "../../models/post/viewPostModel";
 import {mapPostTypeToPostViewModel} from "../../helpers/mappers";
-import {Post} from "../../01_domain/Post/postSchema";
+import {Post} from "../../domain/Post/postSchema";
 import {inject, injectable} from "inversify";
-import {HydratedPost, PostDbType, PostType} from "../../01_domain/Post/postTypes";
+import {HydratedPost, PostDbType, PostType} from "../../domain/Post/postTypes";
 import {LikesRepository} from "../likes/likesRepository";
-import {LikeDbType, LikeLocation, LikeStatusType} from "../../01_domain/Like/likeTypes";
-import {Like} from "../../01_domain/Like/likeSchema";
+import {LikeDbType, LikeLocation, LikeStatusType} from "../../domain/Like/likeTypes";
+import {Like} from "../../domain/Like/likeSchema";
 
 @injectable()
 export class PostsQueryRepository {

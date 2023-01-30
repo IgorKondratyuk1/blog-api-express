@@ -1,4 +1,4 @@
-import {CommentError, CommentsService} from "../../02_application/commentsService";
+import {CommentError, CommentsService} from "../../application/commentsService";
 import {RequestWithParams, RequestWithParamsAndBody} from "../../types/types";
 import {UriParamsCommentModel} from "../../models/comment/uriParamsCommentModel";
 import {Response} from "express";
@@ -6,7 +6,7 @@ import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {HTTP_STATUSES} from "../../index";
 import {UpdateCommentModel} from "../../models/comment/updateCommentModel";
 import {UpdateLikeModel} from "../../models/like/updateLikeModel";
-import {LikeError, LikeService} from "../../02_application/likeService";
+import {LikeError, LikeService} from "../../application/likeService";
 import {CommentsWithLikesQueryRepository} from "../../repositories/comments/queryCommentsWithLikesRepository";
 import {inject, injectable} from "inversify";
 

@@ -3,12 +3,12 @@ import {getFilters, getPagesCount, getSkipValue, getSortValue} from "../../helpe
 import {ViewCommentModel} from "../../models/comment/viewCommentModel";
 import {QueryCommentModel} from "../../models/comment/queryCommentModel";
 import {mapCommentDbTypeToViewCommentModel} from "../../helpers/mappers";
-import {Comment} from "../../01_domain/Comment/commentSchema";
+import {Comment} from "../../domain/Comment/commentSchema";
 import {LikesRepository} from "../likes/likesRepository";
 import {inject, injectable} from "inversify";
-import {LikeLocation, LikeStatusType} from "../../01_domain/Like/likeTypes";
-import {CommentDbType} from "../../01_domain/Comment/commentTypes";
-import {Like} from "../../01_domain/Like/likeSchema";
+import {LikeLocation, LikeStatusType} from "../../domain/Like/likeTypes";
+import {CommentDbType} from "../../domain/Comment/commentTypes";
+import {Like} from "../../domain/Like/likeSchema";
 
 @injectable()
 export class CommentsWithLikesQueryRepository {

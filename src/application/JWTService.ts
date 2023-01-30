@@ -1,5 +1,6 @@
 import {SETTINGS} from "../config";
 import jwt from "jsonwebtoken";
+import {injectable} from "inversify";
 
 export type JWTDataType = {
     userId?: string
@@ -7,12 +8,12 @@ export type JWTDataType = {
     issuedAt?: string
 }
 
-// TODO make class jwtService
-export const jwtService = {
+@injectable()
+export class JWTService {
     async createJWT(data: JWTDataType, jwtSecret: string, expiresTime: string | number): Promise<string> {
         const token: string = jwt.sign(data, jwtSecret, {expiresIn: expiresTime }) // expiresIn seconds
         return token;
-    },
+    }
     async getUserIdByToken(token: string) {
         try {
             const result: any = jwt.verify(token, SETTINGS.JWT_SECRET);
@@ -20,7 +21,7 @@ export const jwtService = {
         } catch (error) {
             return null;
         }
-    },
+    }
     async getDataByToken(token: string) {
         try {
             const result: any = jwt.verify(token, SETTINGS.JWT_SECRET);

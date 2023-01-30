@@ -1,5 +1,5 @@
-import {authError, AuthService} from "../../02_application/authService";
-import {UsersService} from "../../02_application/usersService";
+import {authError, AuthService} from "../../application/authService";
+import {UsersService} from "../../application/usersService";
 import {RequestWithBody, TokensPair} from "../../types/types";
 import {LoginInputModel} from "../../models/auth/login/loginInputModel";
 import {Request, Response} from "express";
@@ -12,7 +12,7 @@ import {PasswordRecoveryModel} from "../../models/auth/registration/passwordReco
 import {NewPasswordModel} from "../../models/auth/registration/newPasswordModel";
 import {mapUserAccountTypeToMeViewModel} from "../../helpers/mappers";
 import {inject, injectable} from "inversify";
-import {UserAccountType} from "../../01_domain/User/UserTypes";
+import {UserAccountType} from "../../domain/User/UserTypes";
 import {UsersRepository} from "../../repositories/users/usersRepository";
 
 @injectable()

@@ -3,9 +3,9 @@ import {getFilters, getPagesCount, getSkipValue, getSortValue} from "../../helpe
 import {BlogQueryModel} from "../../models/blog/blogQueryModel";
 import {ViewBlogModel} from "../../models/blog/viewBlogModel";
 import {mapBlogTypeToBlogViewModel} from "../../helpers/mappers";
-import {Blog} from "../../01_domain/Blog/blogSchema";
+import {Blog} from "../../domain/Blog/blogSchema";
 import {injectable} from "inversify";
-import {BlogDbType} from "../../01_domain/Blog/blogTypes";
+import {BlogDbType} from "../../domain/Blog/blogTypes";
 
 @injectable()
 export class BlogsQueryRepository {

@@ -1,5 +1,5 @@
 import mongoose, {Model} from "mongoose";
-import {HydratedPost, PostDbMethodsType, PostDbType, PostType} from "./postTypes";
+import {HydratedPost, PostDbMethodsType, PostDbType} from "./postTypes";
 import {v4 as uuidv4} from "uuid";
 
 type PostModel = Model<PostDbType, {}, PostDbMethodsType> & {
@@ -36,7 +36,6 @@ postSchema.method("setDislikesCount", async function setDislikesCount(dislikesCo
 
 postSchema.method("updatePost", function updatePost(postBlogId: string, postContent: string, postTitle: string, postShortDescription: string) {
     const post = this as PostDbType & PostDbMethodsType;
-
     post.blogId = postBlogId;
     post.content = postContent;
     post.title = postTitle;
